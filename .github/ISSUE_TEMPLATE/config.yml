@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Discussions
+    url: https://github.com/akaieuan/eval-kit/discussions
+    about: Open-ended questions, design ideas, and "is this the right place for X?" posts.
+  - name: Security vulnerability
+    url: https://github.com/akaieuan/eval-kit/blob/main/SECURITY.md
+    about: Please report privately per SECURITY.md — do not file a public issue.

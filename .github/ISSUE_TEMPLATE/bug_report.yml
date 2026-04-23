@@ -1,0 +1,69 @@
+name: Bug report
+description: Report a bug in @eval-kit/core, @eval-kit/ui, or the dashboard
+title: "[bug] "
+labels: ["type/bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing. Please include enough context for someone to reproduce.
+
+  - type: input
+    id: version
+    attributes:
+      label: eval-kit version
+      description: Output of `npx @eval-kit/core --version` (or the commit SHA if you're on `main`).
+      placeholder: "0.3.0-alpha.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: package
+    attributes:
+      label: Which package?
+      multiple: true
+      options:
+        - "@eval-kit/core"
+        - "@eval-kit/ui"
+        - apps/dashboard
+        - CLI
+        - docs
+        - other
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Minimal steps, YAML/CLI commands, or a link to a repo.
+      placeholder: |
+        1. Create `suites/foo.yaml` with …
+        2. Run `eval-kit run suites/foo.yaml --adapter mock`
+        3. …
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include full error output and stack traces if any.
+    validations:
+      required: true
+
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      description: Node version, OS, package manager.
+      placeholder: "Node 20.11.0, macOS 14.2, pnpm 10.4.1"
+    validations:
+      required: true

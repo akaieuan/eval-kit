@@ -13,8 +13,8 @@ This release promotes the `0.3.0-alpha.0` and `0.3.0-alpha.1` work to stable. No
 - `@eval-kit/seed-suite` remains at `0.1.0` — no changes since first publish, no version inflation.
 
 ### Internal
-- Release workflow ([.github/workflows/release.yml](.github/workflows/release.yml)) now skips publishing packages whose current version already exists on npm. Lets a release tag bump only a subset of packages without failing the workflow.
-- All publishes now use **npm Trusted Publishing** (OIDC) with provenance attestations. No long-lived tokens involved.
+- Release workflow ([.github/workflows/release.yml](.github/workflows/release.yml)) now skips publishing packages whose current version already exists on npm. Lets a release tag bump only a subset of packages without failing the workflow. Workflow uses `pnpm pack` + `npm publish <tarball>` to combine pnpm's workspace-deps resolution with npm's OIDC token exchange for Trusted Publishing.
+- **Trusted Publishing partially configured** — workflow is wired for OIDC + provenance attestations, but the v0.3.0 publish itself fell back to a one-time granular token because of org-level publish-permission asymmetry across packages. Per-package trusted publisher config will be re-verified before v0.4.0 ships.
 
 ## [0.3.0-alpha.1] — 2026-04-23
 

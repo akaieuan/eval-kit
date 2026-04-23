@@ -1,8 +1,25 @@
 {
   "name": "@eval-kit/seed-suite",
   "version": "0.1.0",
-  "description": "Reference eval tasks for research agents — porting the ARC-style source eval into YAML.",
+  "description": "Reference eval tasks for research, coding, and support agents — multi-step YAML suites with real distractors.",
   "license": "MIT",
+  "author": "Ieuan King",
+  "homepage": "https://github.com/akaieuan/eval-kit#readme",
+  "bugs": "https://github.com/akaieuan/eval-kit/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akaieuan/eval-kit.git",
+    "directory": "packages/seed-suite"
+  },
+  "keywords": [
+    "eval",
+    "llm",
+    "agent",
+    "evaluation",
+    "research",
+    "coding",
+    "support"
+  ],
   "type": "module",
   "main": "./index.js",
   "files": ["suites", "index.js"],

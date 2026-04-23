@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Git tag to check out and publish (e.g. v0.3.0-alpha.0). Required for manual runs.'
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # OIDC for npm Trusted Publishing + provenance attestations
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: 'https://registry.npmjs.org/'
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r build
+      - run: pnpm -r test
+
+      - id: dist_tag
+        name: Choose npm dist-tag from git tag
+        run: |
+          ref="${{ github.event.inputs.tag || github.ref_name }}"
+          if [[ "$ref" == *alpha* || "$ref" == *beta* || "$ref" == *rc* ]]; then
+            echo "tag=alpha" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=latest" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish @eval-kit/core
+        run: pnpm --filter @eval-kit/core publish --tag ${{ steps.dist_tag.outputs.tag }} --access public --no-git-checks --provenance
+
+      - name: Publish @eval-kit/ui
+        run: pnpm --filter @eval-kit/ui publish --tag ${{ steps.dist_tag.outputs.tag }} --access public --no-git-checks --provenance
+
+      - name: Publish @eval-kit/seed-suite
+        run: pnpm --filter @eval-kit/seed-suite publish --tag ${{ steps.dist_tag.outputs.tag }} --access public --no-git-checks --provenance

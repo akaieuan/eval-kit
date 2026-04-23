@@ -1,0 +1,14 @@
+{
+  "name": "@eval-kit/seed-suite",
+  "version": "0.1.0",
+  "description": "Reference eval tasks for research agents — porting the ARC-style source eval into YAML.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./index.js",
+  "files": ["suites", "index.js"],
+  "scripts": {
+    "build": "echo 'no build step'",
+    "typecheck": "echo 'no typecheck'",
+    "test": "echo 'no tests yet'"
+  }
+}

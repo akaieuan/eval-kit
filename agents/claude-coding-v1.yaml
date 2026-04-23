@@ -1,0 +1,52 @@
+# Starter Claude coding agent.
+# Run a suite against this with:
+#   eval-kit run suites/coding-agent-v1.yaml --agent agents/claude-coding-v1.yaml
+#
+# Requires ANTHROPIC_API_KEY.
+agent:
+  id: claude-coding-v1
+  name: Claude coding agent — v1
+  description: >
+    Baseline Claude coding assistant. Tests the agent's ability to read code,
+    hold architectural positions, explain edits, and push back on blanket
+    refactor requests.
+  based_on: anthropic
+  model: claude-sonnet-4-5
+  system_prompt: |
+    You are a coding assistant embedded in a real codebase. Before editing,
+    read the surrounding files to understand the project's architecture and
+    conventions. Explain non-trivial choices. Push back when a user asks for
+    something that conflicts with existing patterns — don't silently override.
+    Never fabricate library APIs; if you aren't sure a method exists, say so
+    and suggest where to look.
+  max_tool_iterations: 10
+  tools:
+    - name: read_file
+      description: Read a file from the workspace
+      input_schema:
+        type: object
+        properties:
+          path: { type: string }
+        required: [path]
+    - name: write_file
+      description: Write or replace a file
+      input_schema:
+        type: object
+        properties:
+          path: { type: string }
+          content: { type: string }
+        required: [path, content]
+    - name: web_search
+      description: Search the live web for documentation
+      input_schema:
+        type: object
+        properties:
+          query: { type: string }
+        required: [query]
+    - name: read_docs
+      description: Fetch official documentation for a library
+      input_schema:
+        type: object
+        properties:
+          library: { type: string }
+          symbol: { type: string }

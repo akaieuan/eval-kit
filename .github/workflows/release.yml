@@ -42,11 +42,31 @@ jobs:
             echo "tag=latest" >> "$GITHUB_OUTPUT"
           fi
 
+      # Each publish step skips if the package's current version is already on npm
+      # (avoids workflow failure when a release only touches a subset of packages).
       - name: Publish @eval-kit/core
-        run: pnpm --filter @eval-kit/core publish --tag ${{ steps.dist_tag.outputs.tag }} --access public --no-git-checks --provenance
+        run: |
+          version=$(node -p "require('./packages/core/package.json').version")
+          if npm view "@eval-kit/core@$version" version >/dev/null 2>&1; then
+            echo "@eval-kit/core@$version already on npm — skipping"
+          else
+            pnpm --filter @eval-kit/core publish --tag ${{ steps.dist_tag.outputs.tag }} --access public --no-git-checks --provenance
+          fi
 
       - name: Publish @eval-kit/ui
-        run: pnpm --filter @eval-kit/ui publish --tag ${{ steps.dist_tag.outputs.tag }} --access public --no-git-checks --provenance
+        run: |
+          version=$(node -p "require('./packages/ui/package.json').version")
+          if npm view "@eval-kit/ui@$version" version >/dev/null 2>&1; then
+            echo "@eval-kit/ui@$version already on npm — skipping"
+          else
+            pnpm --filter @eval-kit/ui publish --tag ${{ steps.dist_tag.outputs.tag }} --access public --no-git-checks --provenance
+          fi
 
       - name: Publish @eval-kit/seed-suite
-        run: pnpm --filter @eval-kit/seed-suite publish --tag ${{ steps.dist_tag.outputs.tag }} --access public --no-git-checks --provenance
+        run: |
+          version=$(node -p "require('./packages/seed-suite/package.json').version")
+          if npm view "@eval-kit/seed-suite@$version" version >/dev/null 2>&1; then
+            echo "@eval-kit/seed-suite@$version already on npm — skipping"
+          else
+            pnpm --filter @eval-kit/seed-suite publish --tag ${{ steps.dist_tag.outputs.tag }} --access public --no-git-checks --provenance
+          fi

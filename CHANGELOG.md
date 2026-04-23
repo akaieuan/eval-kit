@@ -2,6 +2,13 @@
 
 All notable changes to eval-kit are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.3.0-alpha.1] — 2026-04-23
+
+Patch for `@eval-kit/core` only. `@eval-kit/ui` and `@eval-kit/seed-suite` are unchanged.
+
+### Fixed
+- **`eval-kit init` produced unusable projects.** The scaffolded `package.json` pinned `@eval-kit/core` to `^0.2.0`, a version that was never published — `npm install` failed with `ETARGET`. `init` now injects the running core version at scaffold time, and the fallback template tracks the current alpha.
+
 ## [0.3.0-alpha.0] — 2026-04-23
 
 First public alpha. The scoring cockpit is functional end-to-end: YAML-defined

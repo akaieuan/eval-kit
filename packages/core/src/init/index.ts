@@ -17,6 +17,28 @@ function templatesDir(): string {
   throw new Error(`Could not locate templates dir relative to ${here}`);
 }
 
+async function readOwnVersion(): Promise<string | null> {
+  const candidates = [
+    resolve(here, "..", "..", "package.json"),
+    resolve(here, "..", "package.json"),
+  ];
+  for (const c of candidates) {
+    if (!existsSync(c)) continue;
+    try {
+      const parsed = JSON.parse(await readFile(c, "utf8")) as {
+        name?: string;
+        version?: string;
+      };
+      if (parsed.name === "@eval-kit/core" && typeof parsed.version === "string") {
+        return parsed.version;
+      }
+    } catch {
+      // keep looking
+    }
+  }
+  return null;
+}
+
 export interface InitOptions {
   targetDir: string;
   projectName?: string;
@@ -64,6 +86,12 @@ export async function runInit(opts: InitOptions): Promise<{
   const pkgRaw = await readFile(pkgSrc, "utf8");
   const pkg = JSON.parse(pkgRaw);
   pkg.name = name;
+
+  const ownVersion = await readOwnVersion();
+  if (ownVersion && pkg.dependencies?.["@eval-kit/core"]) {
+    pkg.dependencies["@eval-kit/core"] = `^${ownVersion}`;
+  }
+
   await writeFile(join(abs, "package.json"), JSON.stringify(pkg, null, 2));
   created.push(join(abs, "package.json"));
 

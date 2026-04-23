@@ -1,0 +1,7 @@
+# Drop PNG screenshots here:
+#   inbox.png   — /inbox page showing the prioritized queue
+#   review.png  — /runs/[id] with a scoring card visible
+#   agents.png  — /agents page with both seed profiles
+#
+# On macOS: open the dashboard, ⌘⇧4 → Space → click the window → save to this dir.
+# Target size: ~1400×900.

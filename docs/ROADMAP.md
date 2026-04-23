@@ -14,7 +14,7 @@ The [philosophical guardrails in BRIEF §13](./BRIEF.md#13-philosophical-guardra
 | v0.3.0-alpha.0 | Scoring cockpit, tiered automation, YAML agents | ✅ Shipped 2026-04-23 |
 | v0.3.0 (stable) | Hygiene, polish, npm publish | 🚧 In progress |
 | v0.4.0 | Reviewer maturation + standalone dashboard | 📋 Planned |
-| v0.5.0 | Continuous-learning flywheel (RFC-gated) | 📋 Planned — see [RFC 0001](./rfcs/0001-continuous-learning.md) |
+| v0.5.0 | Continuous-learning flywheel | 📋 Planned — [RFC 0001](./rfcs/0001-continuous-learning.md) accepted, ready to implement |
 | v1.0.0 | API stability commitment | 🔮 Gated on external usage |
 
 ---
@@ -63,11 +63,11 @@ The [philosophical guardrails in BRIEF §13](./BRIEF.md#13-philosophical-guardra
 
 **Theme:** Close the loop from scored runs to improved agents, with humans as the gate — never replaced.
 
-**RFC-gated:** no v0.5 code merges until [RFC 0001 — continuous learning](./rfcs/0001-continuous-learning.md) is accepted.
+**RFC status:** [RFC 0001 — continuous learning](./rfcs/0001-continuous-learning.md) accepted 2026-04-23. Implementation unblocked.
 
 **Acceptance criteria**
 
-- [ ] RFC 0001 merged
+- [x] RFC 0001 accepted
 - [ ] New zod-first schema types in [packages/core/src/schema.ts](../packages/core/src/schema.ts): `RunLineage`, `TrainingProposal`, with matching `parseX` helpers
 - [ ] `AgentProfile` gains a `version` field so lineage can reference specific agent builds
 - [ ] CLI commands (commander pattern matches existing [cli.ts](../packages/core/src/cli.ts)):

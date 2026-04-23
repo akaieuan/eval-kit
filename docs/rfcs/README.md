@@ -35,4 +35,4 @@ Every RFC has:
 
 | # | Title | Status | Targets |
 |---|---|---|---|
-| [0001](./0001-continuous-learning.md) | Continuous-learning flywheel | Draft | v0.5.0 |
+| [0001](./0001-continuous-learning.md) | Continuous-learning flywheel | **Accepted** (2026-04-23) | v0.5.0 |

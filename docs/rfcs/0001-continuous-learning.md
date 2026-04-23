@@ -1,9 +1,10 @@
 # RFC 0001 — Continuous-learning flywheel
 
-- **Status:** Draft
+- **Status:** Accepted
 - **Target:** v0.5.0
 - **Author:** @akaieuan
 - **Created:** 2026-04-23
+- **Accepted:** 2026-04-23
 
 ## Summary
 
@@ -60,9 +61,12 @@ export function parseTrainingProposal(input: unknown): TrainingProposal { return
 ### Storage
 
 - `runs/<id>.lineage.json` — one per run; sibling to existing `.json` and `.scored.json`
-- `proposals/<id>.json` — top-level `proposals/` directory (added to `.gitignore` by default)
+- `proposals/<id>.json` — **one file per proposal**, top-level `proposals/` directory (added to `.gitignore` by default)
+- Rejected proposals are retained indefinitely under `proposals/<id>.json` with `approved: false` — audit log, not a queue
 
 Follows the existing file-based storage model (per BRIEF §12 — "Don't build hosted storage yet").
+
+**Schema design constraint:** the `TrainingProposal` shape must compose well into training datasets when many proposals are concatenated (predictable nesting, stable key order, no free-form prose where structured data fits). This keeps the format compressible and lets future agent-to-agent training pipelines fold many proposals into a single training payload without expensive schema-normalization passes.
 
 ### CLI (commander pattern — matches existing [cli.ts](../../packages/core/src/cli.ts))
 
@@ -114,24 +118,30 @@ If this guardrail is ever removed (e.g., "let's auto-approve proposals above a c
 - **Make approval automatic when tier-1 auto-score improves.** Rejected outright — this is the guardrail violation. No automatic approval, ever, without explicit config the user has to set and BRIEF has to permit.
 - **Use existing `pre_filled` flag for proposal approval.** Rejected — `pre_filled` is about LLM-drafted scores a human accepted. Proposals are a different lifecycle artifact with different auditability needs. Merging them would overload the flag.
 
-## Open questions
+## Resolved decisions
 
-1. **Proposal storage format** — one file per proposal (easy to diff) vs. append-only JSONL (easy to stream)? Leaning toward one-file-per-proposal to match the existing `.json`/`.scored.json` pattern.
-2. **Rejected proposal retention** — do we keep rejected proposals forever (audit log) or purge after N days? Leaning audit log forever.
-3. **CI integration** — should `eval-kit ci` surface "N pending proposals" as a non-blocking warning? Probably yes, but needs a threshold.
-4. **Multi-reviewer interaction** — if v0.4 lands `ReviewerAgreement`, does a proposal need κ-agreement between reviewers before approval, or is a single approval sufficient? Needs resolution before implementation.
+(Originally "Open questions" — resolved 2026-04-23 before acceptance.)
+
+1. **Proposal storage format** → **one file per proposal** at `proposals/<id>.json`. Matches the existing `.json`/`.scored.json` pattern; easy to diff, easy to track in git history if a team chooses to commit them. Schema is designed to compose/fold cleanly when many proposals are batched into training payloads (see "Storage" section above).
+
+2. **Rejected proposal retention** → **kept indefinitely**. Cost is trivial (a few KB of JSON per proposal); value as an audit trail is high — explains why an agent version DIDN'T get certain training examples. Purging is the kind of decision that should require explicit deletion, not silent expiry.
+
+3. **CI integration** → **warn on staleness, not on count**. `eval-kit ci` surfaces a non-blocking warning if **any pending proposal is older than 7 days** (default; tunable via `--max-pending-age <duration>`). Pure count is a bad signal — a productive scoring session can legitimately produce many fresh proposals. Staleness is the actual sign of neglect. A `--strict-proposals` flag flips the warning into a non-zero exit so teams can opt into hard enforcement.
+
+4. **Multi-reviewer interaction** → **single human approval is sufficient**. A proposal must be approved by a human before it feeds training, but it does NOT require κ-agreement between two reviewers. Multi-reviewer concurrence is a recommended team practice, not a schema-enforced precondition. The dashboard `/proposals` page MAY surface "no second reviewer" as soft signal next to a proposal, but the approval gate stays single-human. Quoting the maintainer's resolution: *"review before approval, if review needed it is human (end of line)."*
 
 ## Implementation sequence
 
-Blocked until this RFC is accepted. Once accepted:
+Unblocked as of 2026-04-23 (RFC accepted). Implementation order:
 
 1. Schema additions + parse helpers + tests (in [packages/core/src/schema.ts](../../packages/core/src/schema.ts))
 2. `AgentProfile.version` field + tests
 3. CLI commands one at a time: `propose` → `lineage` → `train`
 4. Aggregation guard + scoring.ts additions
-5. Dashboard `/proposals` route (server component + approve/reject server action)
-6. BRIEF §13 amendment PR
-7. CHANGELOG entry for v0.5.0
+5. CI integration: `eval-kit ci` staleness warning (`--max-pending-age 7d` default, `--strict-proposals` flag)
+6. Dashboard `/proposals` route (server component + approve/reject server action)
+7. BRIEF §13 amendment PR
+8. CHANGELOG entry for v0.5.0
 
 ## Links
 

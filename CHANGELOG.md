@@ -2,6 +2,20 @@
 
 All notable changes to eval-kit are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.3.0] — 2026-04-23
+
+First stable minor of the v0.3 line. **API stable** — minor releases (0.3.x) will not break public surfaces. Patches go to existing functionality only; new features land in 0.4 and beyond per [docs/ROADMAP.md](docs/ROADMAP.md).
+
+This release promotes the `0.3.0-alpha.0` and `0.3.0-alpha.1` work to stable. No new feature work since `0.3.0-alpha.1` — see those entries below for the substance of the v0.3 release.
+
+### Changed
+- `@eval-kit/core` and `@eval-kit/ui` published under `latest` dist-tag for the first time. The `alpha` dist-tag now tracks pre-release work for v0.4 and beyond.
+- `@eval-kit/seed-suite` remains at `0.1.0` — no changes since first publish, no version inflation.
+
+### Internal
+- Release workflow ([.github/workflows/release.yml](.github/workflows/release.yml)) now skips publishing packages whose current version already exists on npm. Lets a release tag bump only a subset of packages without failing the workflow.
+- All publishes now use **npm Trusted Publishing** (OIDC) with provenance attestations. No long-lived tokens involved.
+
 ## [0.3.0-alpha.1] — 2026-04-23
 
 Patch for `@eval-kit/core` only. `@eval-kit/ui` and `@eval-kit/seed-suite` are unchanged.

@@ -1,0 +1,107 @@
+{
+  "name": "@eval-kit/core",
+  "version": "0.3.0-alpha.0",
+  "description": "Schema, runner, scoring engine, and agent adapters for eval-kit — the scoring cockpit for research agents.",
+  "license": "MIT",
+  "author": "Ieuan King",
+  "homepage": "https://github.com/akaieuan/eval-kit#readme",
+  "bugs": "https://github.com/akaieuan/eval-kit/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akaieuan/eval-kit.git",
+    "directory": "packages/core"
+  },
+  "keywords": [
+    "eval",
+    "llm",
+    "agent",
+    "evaluation",
+    "hitl",
+    "claude",
+    "anthropic",
+    "benchmark"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./schema": {
+      "types": "./dist/schema.d.ts",
+      "import": "./dist/schema.js"
+    },
+    "./runner": {
+      "types": "./dist/runner.d.ts",
+      "import": "./dist/runner.js"
+    },
+    "./scoring": {
+      "types": "./dist/scoring.d.ts",
+      "import": "./dist/scoring.js"
+    },
+    "./adapters": {
+      "types": "./dist/adapters/index.d.ts",
+      "import": "./dist/adapters/index.js"
+    },
+    "./agents": {
+      "types": "./dist/agents/index.d.ts",
+      "import": "./dist/agents/index.js"
+    },
+    "./loader": {
+      "types": "./dist/loader.d.ts",
+      "import": "./dist/loader.js"
+    },
+    "./ci": {
+      "types": "./dist/ci.d.ts",
+      "import": "./dist/ci.js"
+    },
+    "./export": {
+      "types": "./dist/export.d.ts",
+      "import": "./dist/export.js"
+    },
+    "./rubric": {
+      "types": "./dist/rubric.d.ts",
+      "import": "./dist/rubric.js"
+    },
+    "./anthropic/extract-task": {
+      "types": "./dist/anthropic/extract-task.d.ts",
+      "import": "./dist/anthropic/extract-task.js"
+    },
+    "./anthropic/prefill-score": {
+      "types": "./dist/anthropic/prefill-score.d.ts",
+      "import": "./dist/anthropic/prefill-score.js"
+    }
+  },
+  "bin": {
+    "eval-kit": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "templates"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "prepublishOnly": "pnpm run build && pnpm run test",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.56.0",
+    "ansis": "^3.7.0",
+    "commander": "^13.0.0",
+    "yaml": "^2.7.0",
+    "zod": "^3.24.1",
+    "zod-to-json-schema": "^3.24.1"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  }
+}

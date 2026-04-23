@@ -1,0 +1,12 @@
+{
+  "name": "my-evals",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "eval-kit": "eval-kit"
+  },
+  "dependencies": {
+    "@eval-kit/core": "^0.2.0"
+  }
+}

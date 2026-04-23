@@ -1,0 +1,90 @@
+/*
+ * eval-kit design tokens.
+ *
+ * Aesthetic: minimal, thin-line. Muted surfaces, hairline borders, whisper shadows.
+ * Base (:root) = LIGHT. `.dark` on <html> flips to dark.
+ * Values are "R G B" triples so Tailwind alpha syntax (`bg-accent/20`) works.
+ */
+
+:root {
+  /* Surfaces — light. Paper-white base, elevations shift by only a hair. */
+  --bg: 252 252 253;
+  --bg-elev: 255 255 255;
+  --bg-elev-2: 248 248 250;
+  --bg-elev-3: 242 242 245;
+
+  /* Borders — hairline in light mode */
+  --border: 232 232 236;
+  --border-strong: 214 215 221;
+
+  /* Foreground — slightly softer than pure black for minimal feel */
+  --fg: 32 34 40;
+  --fg-strong: 14 15 19;
+  --muted: 105 108 118;
+  --muted-2: 162 165 174;
+
+  /* Accent = deep blue, confident but restrained */
+  --accent: 48 108 220;
+  --accent-hover: 66 125 233;
+  --accent-pressed: 36 92 195;
+
+  --secondary: 140 158 95;
+
+  --good: 34 150 90;
+  --warn: 197 128 47;
+  --danger: 206 85 72;
+  --info: 100 144 196;
+
+  /* Elevation — near-invisible shadows. We rely on hairlines instead. */
+  --shadow-sm: 0 1px 0 rgb(0 0 0 / 0.02);
+  --shadow-md: 0 1px 2px rgb(0 0 0 / 0.04), 0 1px 1px rgb(0 0 0 / 0.02);
+  --shadow-lg: 0 8px 24px rgb(0 0 0 / 0.06), 0 1px 2px rgb(0 0 0 / 0.03);
+
+  /* Radii — tight, consistent. Large rounds reserved for pills. */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+
+  /* Typography */
+  --font-sans:
+    "Inter", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    system-ui, sans-serif;
+  --font-mono: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, monospace;
+
+  color-scheme: light;
+}
+
+.dark {
+  /* Surfaces — dark. Deep neutral with subtle tonal steps. */
+  --bg: 9 10 12;
+  --bg-elev: 15 16 19;
+  --bg-elev-2: 21 22 26;
+  --bg-elev-3: 28 30 35;
+
+  --border: 30 32 38;
+  --border-strong: 50 53 62;
+
+  --fg: 226 228 234;
+  --fg-strong: 244 245 248;
+  --muted: 140 144 154;
+  --muted-2: 92 96 106;
+
+  --accent: 120 165 250;
+  --accent-hover: 146 183 252;
+  --accent-pressed: 96 146 240;
+
+  --secondary: 160 178 115;
+
+  --good: 110 200 140;
+  --warn: 216 165 92;
+  --danger: 232 120 105;
+  --info: 140 180 225;
+
+  --shadow-sm: 0 1px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 1px 2px rgb(0 0 0 / 0.4), 0 1px 1px rgb(0 0 0 / 0.25);
+  --shadow-lg: 0 12px 32px rgb(0 0 0 / 0.55), 0 1px 2px rgb(0 0 0 / 0.35);
+
+  color-scheme: dark;
+}

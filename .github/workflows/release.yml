@@ -48,9 +48,9 @@ jobs:
       - name: Pack all packages
         run: |
           mkdir -p /tmp/pkg
-          pnpm --filter @eval-kit/core       pack --pack-destination /tmp/pkg
-          pnpm --filter @eval-kit/ui         pack --pack-destination /tmp/pkg
-          pnpm --filter @eval-kit/seed-suite pack --pack-destination /tmp/pkg
+          (cd packages/core && pnpm pack --pack-destination /tmp/pkg)
+          (cd packages/ui && pnpm pack --pack-destination /tmp/pkg)
+          (cd packages/seed-suite && pnpm pack --pack-destination /tmp/pkg)
           ls -la /tmp/pkg
 
       - name: Publish @eval-kit/core

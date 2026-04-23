@@ -1,0 +1,46 @@
+{
+  "name": "@eval-kit/dashboard",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Next.js dashboard that dogfoods @eval-kit/ui for scoring and diffing runs.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf .next"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.56.0",
+    "@eval-kit/core": "workspace:*",
+    "@eval-kit/ui": "workspace:*",
+    "@monaco-editor/react": "^4.6.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.0.4",
+    "lucide-react": "^0.469.0",
+    "monaco-editor": "^0.52.2",
+    "next": "^15.1.4",
+    "next-mdx-remote": "^5.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hotkeys-hook": "^4.6.1",
+    "rehype-autolink-headings": "^7.1.0",
+    "rehype-slug": "^6.0.0",
+    "remark-gfm": "^4.0.0",
+    "sonner": "^1.7.1",
+    "tailwind-merge": "^2.6.0",
+    "yaml": "^2.7.0",
+    "zod": "^3.24.1",
+    "zod-to-json-schema": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.1",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.3"
+  }
+}

@@ -1,5 +1,9 @@
 # eval-kit
 
+[![CI](https://github.com/akaieuan/eval-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/akaieuan/eval-kit/actions/workflows/ci.yml)
+[![npm (@eval-kit/core)](https://img.shields.io/npm/v/@eval-kit/core?label=%40eval-kit%2Fcore)](https://www.npmjs.com/package/@eval-kit/core)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 **The scoring cockpit for research agents. Humans score, not LLMs. Real tasks, not synthetic. Multi-step, not single-turn.**
 
 <!-- Drop a PNG of the /inbox page at docs/images/inbox.png to surface the scoring loop. -->
@@ -165,9 +169,12 @@ Pre-filled scores are excluded by default (`--include-prefilled` to opt in).
 
 **v0.3.0-alpha** — APIs may break. File-based, single-user. Designed for internal use inside research/safety teams, not as a hosted service.
 
+- [Roadmap](docs/ROADMAP.md) — phased plan through v1.0 with acceptance criteria
 - [CHANGELOG](CHANGELOG.md)
 - [Project brief](docs/BRIEF.md) — mission, architecture, schema, seed-eval spec, philosophical guardrails
+- [RFCs](docs/rfcs/) — design docs for non-trivial changes
 - [CONTRIBUTING](CONTRIBUTING.md)
+- [Security policy](SECURITY.md)
 
 Report bugs or request features: https://github.com/akaieuan/eval-kit/issues
 

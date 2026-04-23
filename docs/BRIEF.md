@@ -488,10 +488,12 @@ A reviewer should be able to:
 
 ## 12. Open questions — resolve before v0.1 merge
 
+> **Status (2026-04-23):** v0.1 and v0.3.0-alpha.0 have shipped. Multi-reviewer + inter-rater agreement slipped from v0.3 and is now tracked under v0.4 in [ROADMAP.md](./ROADMAP.md#v040--reviewer-maturation--standalone-dashboard). The LLM-pre-fill hook shipped in v0.3 (see CHANGELOG). Continuous-learning considerations are under [RFC 0001](./rfcs/0001-continuous-learning.md) (v0.5).
+
 - **Storage**: File-based (`runs/*.json`) for v0.1. SQLite or Postgres later. Don't build hosted storage yet.
-- **Reviewer identity**: Hardcode a single reviewer for v0.1. Multi-reviewer + inter-rater agreement is v0.3.
-- **LLM-as-judge as pre-fill**: Do NOT ship in v0.1 — the whole point is that humans score. But note a future hook: optional LLM pre-fill that the human accepts/overrides, tracked as `pre_filled: true` on the score. Useful later for calibration studies.
-- **Agent adapter surface**: Minimum: `run(prompt, context) => { tool_calls, final_output, latency_ms }`. Avoid over-abstracting — one real adapter (Claude) and one mock is enough for v0.1.
+- **Reviewer identity**: Hardcoded a single reviewer for v0.1. Multi-reviewer + inter-rater agreement → v0.4.
+- **LLM-as-judge as pre-fill**: Did NOT ship in v0.1. Shipped in v0.3 as opt-in, flagged `pre_filled: true`. Humans remain the source of truth.
+- **Agent adapter surface**: Minimum: `run(prompt, context) => { tool_calls, final_output, latency_ms }`. Shipped in v0.1; extended in v0.3 with openai and http built-ins and a custom-path escape hatch.
 
 ---
 

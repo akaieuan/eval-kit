@@ -28,12 +28,6 @@ jobs:
           cache: pnpm
           registry-url: 'https://registry.npmjs.org/'
 
-      # npm 11.5.1+ has first-class OIDC trusted-publishing support; the bundled
-      # version with Node 22 is older. Without this, pnpm publish attempts an
-      # anonymous PUT and npm responds 404.
-      - name: Upgrade npm for OIDC trusted publishing
-        run: npm install -g npm@latest
-
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r build
       - run: pnpm -r test
@@ -48,15 +42,24 @@ jobs:
             echo "tag=latest" >> "$GITHUB_OUTPUT"
           fi
 
-      # Each publish step skips if the package's current version is already on npm
-      # (avoids workflow failure when a release only touches a subset of packages).
+      # Pack with pnpm (resolves workspace:* deps to concrete versions) then publish
+      # with npm (which performs the OIDC token exchange for npm Trusted Publishing).
+      # pnpm publish on its own doesn't do the OIDC dance and 404s anonymously.
+      - name: Pack all packages
+        run: |
+          mkdir -p /tmp/pkg
+          pnpm --filter @eval-kit/core       pack --pack-destination /tmp/pkg
+          pnpm --filter @eval-kit/ui         pack --pack-destination /tmp/pkg
+          pnpm --filter @eval-kit/seed-suite pack --pack-destination /tmp/pkg
+          ls -la /tmp/pkg
+
       - name: Publish @eval-kit/core
         run: |
           version=$(node -p "require('./packages/core/package.json').version")
           if npm view "@eval-kit/core@$version" version >/dev/null 2>&1; then
             echo "@eval-kit/core@$version already on npm — skipping"
           else
-            pnpm --filter @eval-kit/core publish --tag ${{ steps.dist_tag.outputs.tag }} --access public --no-git-checks --provenance
+            npm publish "/tmp/pkg/eval-kit-core-${version}.tgz" --tag ${{ steps.dist_tag.outputs.tag }} --access public --provenance
           fi
 
       - name: Publish @eval-kit/ui
@@ -65,7 +68,7 @@ jobs:
           if npm view "@eval-kit/ui@$version" version >/dev/null 2>&1; then
             echo "@eval-kit/ui@$version already on npm — skipping"
           else
-            pnpm --filter @eval-kit/ui publish --tag ${{ steps.dist_tag.outputs.tag }} --access public --no-git-checks --provenance
+            npm publish "/tmp/pkg/eval-kit-ui-${version}.tgz" --tag ${{ steps.dist_tag.outputs.tag }} --access public --provenance
           fi
 
       - name: Publish @eval-kit/seed-suite
@@ -74,5 +77,5 @@ jobs:
           if npm view "@eval-kit/seed-suite@$version" version >/dev/null 2>&1; then
             echo "@eval-kit/seed-suite@$version already on npm — skipping"
           else
-            pnpm --filter @eval-kit/seed-suite publish --tag ${{ steps.dist_tag.outputs.tag }} --access public --no-git-checks --provenance
+            npm publish "/tmp/pkg/eval-kit-seed-suite-${version}.tgz" --tag ${{ steps.dist_tag.outputs.tag }} --access public --provenance
           fi

@@ -28,6 +28,12 @@ jobs:
           cache: pnpm
           registry-url: 'https://registry.npmjs.org/'
 
+      # npm 11.5.1+ has first-class OIDC trusted-publishing support; the bundled
+      # version with Node 22 is older. Without this, pnpm publish attempts an
+      # anonymous PUT and npm responds 404.
+      - name: Upgrade npm for OIDC trusted publishing
+        run: npm install -g npm@latest
+
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r build
       - run: pnpm -r test

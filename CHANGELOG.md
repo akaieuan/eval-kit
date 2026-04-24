@@ -2,6 +2,13 @@
 
 All notable changes to eval-kit are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.3.1] — 2026-04-23
+
+Docs-only patch. No code changes.
+
+### Added
+- Per-package READMEs for `@eval-kit/core`, `@eval-kit/ui`, and `@eval-kit/seed-suite`. The npm.com pages were rendering empty before because none of the packages shipped with a README inside their tarball. This release ships those READMEs so the npm pages have install instructions, quickstart, API surface, and links back to the project.
+
 ## [0.3.0] — 2026-04-23
 
 First stable minor of the v0.3 line. **API stable** — minor releases (0.3.x) will not break public surfaces. Patches go to existing functionality only; new features land in 0.4 and beyond per [docs/ROADMAP.md](docs/ROADMAP.md).

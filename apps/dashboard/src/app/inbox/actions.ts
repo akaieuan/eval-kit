@@ -10,6 +10,7 @@ import {
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { revalidatePath } from "next/cache";
+import { reviewerIdentity } from "@/lib/env";
 import { RUNS_DIR, listRuns, writeScoredRun } from "@/lib/runs";
 
 export interface InlineScoreRequest {
@@ -68,7 +69,7 @@ export async function scoreStepInline(
         req.reviewer_notes !== undefined
           ? req.reviewer_notes
           : (current?.reviewer_notes ?? ""),
-      reviewer_id: "local",
+      reviewer_id: reviewerIdentity(),
       reviewed_at: new Date().toISOString(),
       pre_filled: req.accept
         ? false

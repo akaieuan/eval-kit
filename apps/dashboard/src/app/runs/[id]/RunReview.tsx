@@ -20,6 +20,7 @@ export interface RunReviewProps {
   run: Run;
   initialScores: Array<{ task_id: string; score: StepScore }>;
   prefillAvailable: boolean;
+  reviewerId: string;
 }
 
 export function RunReview({
@@ -27,6 +28,7 @@ export function RunReview({
   run,
   initialScores,
   prefillAvailable,
+  reviewerId,
 }: RunReviewProps) {
   const [pending, startTransition] = useTransition();
   const [savedAt, setSavedAt] = useState<Date | null>(null);
@@ -97,7 +99,7 @@ export function RunReview({
     <RunReviewPage
       suite={suite}
       run={run}
-      reviewerId="local"
+      reviewerId={reviewerId}
       initialScores={initialScores}
       onScoreChange={handleSave}
       onPrefillTask={handlePrefill}

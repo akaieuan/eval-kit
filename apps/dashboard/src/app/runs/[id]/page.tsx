@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { hasAnthropicKey } from "@/lib/env";
+import { hasAnthropicKey, reviewerIdentity } from "@/lib/env";
 import { loadRunById, loadSuiteById } from "@/lib/runs";
 import { RunReview } from "./RunReview";
 
@@ -58,6 +58,7 @@ export default async function Page({
       run={baseRun}
       initialScores={existingScored}
       prefillAvailable={hasAnthropicKey()}
+      reviewerId={reviewerIdentity()}
     />
   );
 }

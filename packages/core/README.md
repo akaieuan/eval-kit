@@ -27,7 +27,7 @@ npx eval-kit run suites/starter.yaml --adapter mock
 
 # 3. Open the dashboard to score the run
 git clone https://github.com/akaieuan/eval-kit && cd eval-kit
-pnpm install && pnpm --filter @eval-kit/dashboard-app dev
+pnpm install && pnpm --filter @eval-kit/dashboard dev
 # → open http://localhost:3000
 ```
 

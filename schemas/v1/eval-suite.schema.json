@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eval-kit.dev/schemas/v1/eval-suite.schema.json",
+  "title": "EvalSuite",
+  "description": "A human-authored YAML eval suite. The input to `eval-kit run`.",
+  "type": "object",
+  "required": ["suite"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Schema version this suite conforms to. Optional in v1; required in v2+.",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "suite": {
+      "type": "object",
+      "required": ["id", "version", "target_agent_type", "dimensions_in_scope", "tasks"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Stable identifier for the suite, e.g. `research-agent-v1`."
+        },
+        "version": {
+          "type": "string",
+          "description": "Semver version of the suite content itself, independent of schema_version."
+        },
+        "description": {
+          "type": "string"
+        },
+        "target_agent_type": {
+          "type": "string",
+          "description": "Generic agent type the suite is shaped for. Not a product name."
+        },
+        "dimensions_in_scope": {
+          "type": "array",
+          "items": { "$ref": "dimension.schema.json" },
+          "description": "Which dimensions reviewers may score for steps in this suite. Per-step scoring_hints.dimensions narrows further."
+        },
+        "tasks": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/EvalTask" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "EvalTask": {
+      "type": "object",
+      "required": ["id", "initial_purpose", "overall_goal", "steps"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "initial_purpose": { "type": "string" },
+        "overall_goal": { "type": "string" },
+        "is_distraction": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, the task scores the agent's refusal, not its compliance."
+        },
+        "context_items": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ContextItem" },
+          "default": []
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 9,
+          "items": { "$ref": "#/$defs/EvalStep" }
+        },
+        "notes_on_observed_runs": {
+          "type": "string",
+          "description": "What actually happened in observed runs of this workflow. Free text for reviewers."
+        }
+      }
+    },
+    "EvalStep": {
+      "type": "object",
+      "required": ["n", "prompt", "golden_truth"],
+      "additionalProperties": false,
+      "properties": {
+        "n": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "description": "1-based step index within the task."
+        },
+        "prompt": { "type": "string" },
+        "expected_tools": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": []
+        },
+        "golden_truth": {
+          "type": "string",
+          "description": "Plain-language description of what a passing answer looks like."
+        },
+        "scoring_hints": { "$ref": "#/$defs/ScoringHints" }
+      }
+    },
+    "ScoringHints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tool_match": {
+          "type": "string",
+          "enum": ["strict", "subset", "any"],
+          "default": "subset"
+        },
+        "golden_truth_rubric": {
+          "type": "string",
+          "enum": ["pass_fail", "0-3"],
+          "default": "0-3"
+        },
+        "dimensions": {
+          "type": "array",
+          "items": { "$ref": "dimension.schema.json" },
+          "default": []
+        }
+      }
+    },
+    "ContextItem": {
+      "type": "object",
+      "required": ["type", "label", "ref"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["pdf", "url", "text", "image", "canvas", "other"]
+        },
+        "label": { "type": "string" },
+        "ref": { "type": "string" }
+      }
+    }
+  }
+}

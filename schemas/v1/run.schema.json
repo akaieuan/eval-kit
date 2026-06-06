@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eval-kit.dev/schemas/v1/run.schema.json",
+  "title": "Run",
+  "description": "A trace artifact produced by `eval-kit run`. Auto-scored at trace time; not yet human-reviewed.",
+  "type": "object",
+  "required": ["suite_id", "suite_version", "run_id", "started_at", "ended_at", "adapter", "task_results"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Protocol schema version. Optional in v1; required in v2+.",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "suite_id": { "type": "string" },
+    "suite_version": { "type": "string" },
+    "run_id": { "type": "string" },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ended_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "adapter": { "$ref": "#/$defs/AdapterInfo" },
+    "task_results": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/TaskResult" }
+    }
+  },
+  "$defs": {
+    "AdapterInfo": {
+      "type": "object",
+      "required": ["name", "model"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Adapter identifier — e.g. `anthropic`, `openai`, `http`, `mock`, or a user-defined string."
+        },
+        "model": { "type": "string" },
+        "config": {
+          "type": "object",
+          "additionalProperties": true,
+          "default": {}
+        }
+      }
+    },
+    "TaskResult": {
+      "type": "object",
+      "required": ["task_id", "step_results"],
+      "additionalProperties": false,
+      "properties": {
+        "task_id": { "type": "string" },
+        "step_results": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/StepResult" }
+        }
+      }
+    },
+    "StepResult": {
+      "type": "object",
+      "required": ["step_n", "agent_tool_calls", "agent_final_output", "latency_ms", "auto_score"],
+      "additionalProperties": false,
+      "properties": {
+        "step_n": {
+          "type": "integer",
+          "exclusiveMinimum": 0
+        },
+        "agent_tool_calls": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ToolCall" }
+        },
+        "agent_final_output": { "type": "string" },
+        "latency_ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "auto_score": { "$ref": "#/$defs/AutoScore" }
+      }
+    },
+    "ToolCall": {
+      "type": "object",
+      "required": ["tool"],
+      "additionalProperties": false,
+      "properties": {
+        "tool": { "type": "string" },
+        "args": {},
+        "result": {}
+      }
+    },
+    "AutoScore": {
+      "type": "object",
+      "required": ["tool_match", "distraction_caught"],
+      "additionalProperties": false,
+      "properties": {
+        "tool_match": {
+          "oneOf": [
+            { "type": "boolean" },
+            { "type": "string", "const": "partial" }
+          ],
+          "description": "true | false | \"partial\". \"partial\" only emitted when scoring_hints.tool_match === \"subset\" and some-but-not-all expected tools were called."
+        },
+        "distraction_caught": {
+          "type": ["boolean", "null"],
+          "description": "Only populated when task.is_distraction === true. Null otherwise."
+        }
+      }
+    }
+  }
+}

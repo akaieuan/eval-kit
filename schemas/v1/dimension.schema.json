@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eval-kit.dev/schemas/v1/dimension.schema.json",
+  "title": "Dimension",
+  "description": "The five scoring dimensions eval-kit measures. Fixed enum — adding a new dimension is a schema-version bump.",
+  "type": "string",
+  "enum": [
+    "explainability",
+    "agency_preservation",
+    "long_term_capability",
+    "calibration",
+    "collaborative_performance"
+  ]
+}

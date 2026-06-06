@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eval-kit.dev/schemas/v1/scored-run.schema.json",
+  "title": "ScoredRun",
+  "description": "A Run with human scores merged in. Produced by mergeScores() — same shape as Run, with each StepResult extended by an optional StepScore.",
+  "type": "object",
+  "required": ["suite_id", "suite_version", "run_id", "started_at", "ended_at", "adapter", "task_results"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "suite_id": { "type": "string" },
+    "suite_version": { "type": "string" },
+    "run_id": { "type": "string" },
+    "started_at": { "type": "string", "format": "date-time" },
+    "ended_at": { "type": "string", "format": "date-time" },
+    "adapter": {
+      "type": "object",
+      "required": ["name", "model"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "model": { "type": "string" },
+        "config": { "type": "object", "additionalProperties": true, "default": {} }
+      }
+    },
+    "task_results": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ScoredTaskResult" }
+    }
+  },
+  "$defs": {
+    "ScoredTaskResult": {
+      "type": "object",
+      "required": ["task_id", "step_results"],
+      "additionalProperties": false,
+      "properties": {
+        "task_id": { "type": "string" },
+        "step_results": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ScoredStepResult" }
+        }
+      }
+    },
+    "ScoredStepResult": {
+      "type": "object",
+      "required": ["step_n", "agent_tool_calls", "agent_final_output", "latency_ms", "auto_score", "score"],
+      "additionalProperties": false,
+      "properties": {
+        "step_n": { "type": "integer", "exclusiveMinimum": 0 },
+        "agent_tool_calls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["tool"],
+            "additionalProperties": false,
+            "properties": {
+              "tool": { "type": "string" },
+              "args": {},
+              "result": {}
+            }
+          }
+        },
+        "agent_final_output": { "type": "string" },
+        "latency_ms": { "type": "number", "minimum": 0 },
+        "auto_score": {
+          "type": "object",
+          "required": ["tool_match", "distraction_caught"],
+          "additionalProperties": false,
+          "properties": {
+            "tool_match": {
+              "oneOf": [
+                { "type": "boolean" },
+                { "type": "string", "const": "partial" }
+              ]
+            },
+            "distraction_caught": { "type": ["boolean", "null"] }
+          }
+        },
+        "score": {
+          "oneOf": [
+            { "$ref": "step-score.schema.json" },
+            { "type": "null" }
+          ],
+          "description": "Null until a human reviews the step."
+        }
+      }
+    }
+  }
+}

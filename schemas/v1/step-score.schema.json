@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eval-kit.dev/schemas/v1/step-score.schema.json",
+  "title": "StepScore",
+  "description": "A single per-step human verdict. Produced by the dashboard or `eval-kit review`. Stitched onto a Run by mergeScores() to produce a ScoredRun.",
+  "type": "object",
+  "required": ["step_n", "tool_match", "golden_truth", "distraction_caught", "reviewer_id", "reviewed_at"],
+  "additionalProperties": false,
+  "properties": {
+    "step_n": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "tool_match": {
+      "oneOf": [
+        { "type": "boolean" },
+        { "type": "string", "const": "partial" }
+      ],
+      "description": "Mirror of the auto-scored tool_match. Carried forward into the score so consumers don't need to join back to the Run."
+    },
+    "golden_truth": {
+      "oneOf": [
+        { "type": "integer", "minimum": 0, "maximum": 3 },
+        { "type": "null" }
+      ],
+      "description": "Human-scored 0-3 rubric. Null until reviewed."
+    },
+    "distraction_caught": {
+      "type": ["boolean", "null"]
+    },
+    "dimensions": {
+      "type": "object",
+      "description": "Per-dimension 0-3 score. Keys must be Dimension enum values; not every dimension is present.",
+      "additionalProperties": false,
+      "properties": {
+        "explainability":           { "type": "integer", "minimum": 0, "maximum": 3 },
+        "agency_preservation":      { "type": "integer", "minimum": 0, "maximum": 3 },
+        "long_term_capability":     { "type": "integer", "minimum": 0, "maximum": 3 },
+        "calibration":              { "type": "integer", "minimum": 0, "maximum": 3 },
+        "collaborative_performance":{ "type": "integer", "minimum": 0, "maximum": 3 }
+      },
+      "default": {}
+    },
+    "reviewer_notes": {
+      "type": "string",
+      "default": ""
+    },
+    "reviewer_id": {
+      "type": "string",
+      "description": "Identifier for the human reviewer. v0.4 multi-reviewer schema will extend this with `ReviewerAgreement`."
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "pre_filled": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if the score was drafted by an LLM pre-fill and not yet overridden. Any human edit MUST flip this to false."
+    },
+    "pre_fill_confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Confidence the pre-fill model assigned. Only populated when pre_filled=true. Used by tier-3 active triage to surface low-confidence drafts."
+    }
+  }
+}

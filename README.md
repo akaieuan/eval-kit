@@ -4,7 +4,7 @@
 
 # eval-kit
 
-**A measurement instrument for multi-step research agents.** Per-step tool-match auto-scoring, a structured human rubric on the dimensions LLM-judges can't reach, real workflows ported from observed agent–user sessions, and a deterministic replay harness that lets you diff runs across model versions. Not a benchmark, not a leaderboard, not a hosted service:
+**A trace + scoring protocol for multi-step research agents — with a TypeScript reference implementation and a local-first scoring dashboard.** The protocol is schema-first ([`schemas/v1/`](schemas/)), language-agnostic, and versioned independently from the implementation. Per-step tool-match auto-scoring, a structured human rubric on the dimensions LLM-judges can't reach, real workflows ported from observed agent–user sessions, and a deterministic replay harness that lets you diff runs across model versions. Not a benchmark, not a leaderboard, not a hosted service:
 
 > *Multi-step YAML suites with per-step `expected_tools` and `golden_truth` checks, four built-in adapters (`anthropic`, `openai`, `http`, `mock`) plus a custom-module escape hatch, deterministic tier-1 auto-scoring, opt-in tier-2 LLM pre-fill flagged on every score it produces, tier-3 active triage that ranks the inbox by where human attention pays off, and a Linear-style local dashboard for the five-dimension scoring rubric.*
 
@@ -23,7 +23,7 @@ This is opinionated infrastructure for internal research and safety teams measur
 
 > **Status — v0.3.1 stable.** Public API is stable across the 0.3 line; minor releases (0.3.x) won't break public surfaces. `@eval-kit/core`, `@eval-kit/ui`, and `@eval-kit/seed-suite` live on npm under `latest`. Three reference suites (research, coding, support). Four real adapters (`anthropic` with tool-use + prompt caching, `openai` function-calling, `http` generic, `mock` deterministic + degradable). **22 passing tests** in `@eval-kit/core` (`scoring.test.ts` × 8, `schema.test.ts` × 14); CI verified on Node 20 + 22. The dashboard ships nine surfaces; multi-reviewer support is v0.4. File-based, single-user, internal-team-shaped — not a hosted service.
 
-[**Quickstart**](#60-second-quickstart) · [**YAML agents**](#define-an-agent-in-yaml--zero-code) · [**Custom adapter**](#custom-adapter--typescript) · [**Scoring rubric**](#scoring-rubric) · [**Roadmap**](#roadmap) · [**Project brief**](docs/BRIEF.md)
+[**Quickstart**](#60-second-quickstart) · [**Protocol spec**](docs/SCHEMA.md) · [**Architecture**](docs/ARCHITECTURE.md) · [**YAML agents**](#define-an-agent-in-yaml--zero-code) · [**Custom adapter**](#custom-adapter--typescript) · [**Scoring rubric**](#scoring-rubric) · [**Roadmap**](#roadmap) · [**Project brief**](docs/BRIEF.md)
 
 ---
 
@@ -59,9 +59,27 @@ That thesis — humans grading agents on real work, with a UI built specifically
 
 ---
 
+## The protocol contract
+
+Before any implementation: the contract. Every artifact eval-kit produces or consumes is defined by a JSON Schema in [`schemas/v1/`](schemas/). The TypeScript implementation in `@eval-kit/core` is the **reference implementation** of this contract; any conformant producer in any language (Python, Go, your internal framework) is a first-class consumer of the protocol.
+
+| Schema | Describes | Produced by |
+|---|---|---|
+| [`eval-suite.schema.json`](schemas/v1/eval-suite.schema.json) | The YAML suite shape | Human-authored suite YAMLs |
+| [`run.schema.json`](schemas/v1/run.schema.json) | A trace artifact (auto-scored, not yet human-reviewed) | `eval-kit run` |
+| [`scored-run.schema.json`](schemas/v1/scored-run.schema.json) | A trace with human review merged in | `eval-kit review` / dashboard autosave |
+| [`step-score.schema.json`](schemas/v1/step-score.schema.json) | A single per-step human verdict | Inline scoring, dashboard autosave |
+| [`dimension.schema.json`](schemas/v1/dimension.schema.json) | The fixed 5-value `Dimension` enum | Referenced by suites and scores |
+
+`schema_version` is **independent of the package version**. `@eval-kit/core@0.3.x` and `@eval-kit/core@0.4.x` both emit `schema_version: "1.0.0"` artifacts. See [`docs/SCHEMA.md`](docs/SCHEMA.md) for the field-by-field narrative spec and [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md) for the versioning policy.
+
+A Python researcher producing a conformant `run.json` from their own runner drops it into the dashboard with zero TypeScript involvement. That's the protocol-first commitment.
+
+---
+
 ## What ships
 
-Three coordinated artifacts, one project:
+Three coordinated artifacts conforming to the protocol above:
 
 ### 1. The eval suite schema — `@eval-kit/seed-suite`
 
@@ -643,6 +661,29 @@ eval-kit is part of a small constellation of opinionated, framework-agnostic pri
 - [**HITL-KIT**](https://github.com/akaieuan/HITL-KIT) — 15 React primitives for human-in-the-loop agentic UIs (paper + component library + shadcn registry). `@eval-kit/ui` is built on `@hitl-kit/react` — don't fork, consume.
 - [**tag-kit**](https://github.com/akaieuan/tag-kit) — structured tagging primitives with scope-aware agreement scoring (catalog + scope-aware matching + PRF scoring + headless React). Different problem domain (annotation vs. evaluation), same authoring style.
 - [**inertial**](https://github.com/akaieuan/inertial-moderation-tool) — open-source AI content moderation toolkit. Uses `@eval-kit/ui` primitives in its eval cockpit and will use `@eval-kit/core` for calibration scoring.
+
+---
+
+## Documentation map
+
+Single source of truth for each concern. If something is documented twice and the versions disagree, the file linked here is the canonical one.
+
+| Concern | Document |
+|---|---|
+| Why the project exists, philosophy, guardrails | [`docs/BRIEF.md`](docs/BRIEF.md) |
+| How the pieces fit together | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| The data contract (narrative form) | [`docs/SCHEMA.md`](docs/SCHEMA.md) |
+| The data contract (machine-readable JSON Schema) | [`schemas/v1/`](schemas/) |
+| Semver + schema-version policy | [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md) |
+| How decisions get made + RFC process | [`docs/GOVERNANCE.md`](docs/GOVERNANCE.md) |
+| Security boundaries + assumptions | [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md) |
+| Security disclosure procedure | [`SECURITY.md`](SECURITY.md) |
+| Bridges to other eval frameworks | [`docs/INTEGRATIONS.md`](docs/INTEGRATIONS.md) |
+| Per-version roadmap + acceptance criteria | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
+| Accepted/rejected design proposals | [`docs/rfcs/`](docs/rfcs/) |
+| What shipped in each release | [`CHANGELOG.md`](CHANGELOG.md) |
+| How to contribute | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| Community standards | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
 
 ---
 

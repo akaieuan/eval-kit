@@ -2,6 +2,43 @@
 
 All notable changes to eval-kit are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+Documentation + protocol-artifact additions. No code changes; no `schema_version` bump (still v1.0.0); no `@eval-kit/*` package version bump.
+
+### Added
+
+- **Protocol artifacts** — JSON Schema exports of every persisted shape, committed to disk at [`schemas/v1/`](schemas/v1/):
+  - `eval-suite.schema.json`, `run.schema.json`, `scored-run.schema.json`, `step-score.schema.json`, `dimension.schema.json`
+  - [`schemas/README.md`](schemas/README.md) documents versioning policy and the schema-version-vs-package-version separation
+  - Reframes eval-kit as a **trace + scoring protocol** with a TypeScript reference implementation, not a single-language framework. Python or Go producers emitting conformant artifacts are first-class consumers.
+- **Protocol + architecture documentation:**
+  - [`docs/SCHEMA.md`](docs/SCHEMA.md) — field-by-field narrative spec of the protocol
+  - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — system map, package boundaries, data flow, tier separation
+- **Institutional documentation:**
+  - [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md) — semver + schema-version + suite-version policy
+  - [`docs/GOVERNANCE.md`](docs/GOVERNANCE.md) — decision categories, RFC process, how policy changes
+  - [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md) — security boundaries, assumptions, hardening checklist for CI
+  - [`docs/INTEGRATIONS.md`](docs/INTEGRATIONS.md) — bridge patterns for Inspect, OpenAI evals, LangSmith, Weave
+- **Reference integration bridges:**
+  - [`examples/with-inspect/`](examples/with-inspect/) — import AISI Inspect `.eval` logs as eval-kit `Run` artifacts
+  - [`examples/with-openai-evals/`](examples/with-openai-evals/) — import OpenAI evals JSONL as eval-kit `Run` artifacts
+- **Trust scaffolding:**
+  - [`.github/dependabot.yml`](.github/dependabot.yml) — weekly grouped patch/minor updates; majors get individual PRs
+  - [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) — Contributor Covenant 2.1
+
+### Changed
+
+- **README hero reframed** as "trace + scoring protocol with a TypeScript reference implementation and a local-first scoring dashboard." New top-level **"The protocol contract"** section before "What ships" makes the schema-first commitment visible upfront.
+- **README "Documentation map" section** added before Contributing — single index pointing at the canonical doc for each concern (philosophy, architecture, schema, compatibility, governance, threat model, integrations, roadmap, RFCs).
+- **BRIEF.md §1 Mission** reframed from "two halves" (`core` + `ui`) to "three layers" (protocol + reference implementation + dashboard), with the protocol explicitly versioned independently of the package.
+
+### Verified
+
+- `pnpm typecheck` — clean across all four workspace projects
+- `pnpm test` — 22/22 tests pass (`scoring.test.ts` × 8, `schema.test.ts` × 14)
+- `pnpm build` — all packages + dashboard build cleanly (Next.js prerendered 19 routes)
+
 ## [0.3.1] — 2026-04-23
 
 Docs-only patch. No code changes.

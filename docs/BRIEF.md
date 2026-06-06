@@ -47,12 +47,15 @@ Full docs live in-app at `http://localhost:3000/docs/quickstart`.
 
 ## 1. Mission
 
-Build an **open-source evaluation framework for research agents** that measures *collaborative task performance on real human workflows*, not autonomous benchmark completion.
+Build a **trace + scoring protocol for multi-step research agents**, with a TypeScript reference implementation and a local-first scoring dashboard. The protocol measures *collaborative task performance on real human workflows*, not autonomous benchmark completion.
 
-The framework ships in two halves:
+The work ships in three layers, intentionally separated so the contract survives implementation churn:
 
-- **`@eval-kit/core`** — a task schema, runner, and scoring engine. TypeScript. CLI-driven. Re-runnable against any LLM agent.
-- **`@eval-kit/ui`** — a React dashboard for human-in-the-loop scoring, regression visualization, and eval authoring. Reuses `@hitl-kit/*` primitives (separate repo, already built — see §10).
+- **The protocol** — language-agnostic JSON Schemas in [`schemas/v1/`](../schemas/) defining `EvalSuite`, `Run`, `ScoredRun`, `StepScore`, and `Dimension`. The contract any conformant producer or consumer must satisfy. Versioned independently of the implementation (`schema_version: "1.0.0"`). See [`docs/SCHEMA.md`](./SCHEMA.md) for the field-by-field spec.
+- **`@eval-kit/core`** — the TypeScript reference implementation: Zod-first schema, runner, scoring engine, four built-in adapters (anthropic/openai/http/mock), and an 8-subcommand CLI. Re-runnable against any LLM agent via the `AgentAdapter` interface.
+- **`@eval-kit/ui` + `apps/dashboard`** — the React dashboard for human-in-the-loop scoring, regression visualization, and eval authoring. Built on `@hitl-kit/react` primitives (separate repo — see §10).
+
+A Python or Go runner producing a conformant `run.json` is a first-class eval-kit producer. The TypeScript implementation is the **reference**, not the gate.
 
 ### Why this exists
 

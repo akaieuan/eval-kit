@@ -2,11 +2,10 @@
 # Docs: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 #
 # Policy:
-# - npm updates run weekly. Patch + minor open as a grouped PR per ecosystem;
-#   majors get their own PR per package so they can be reviewed individually.
-# - GitHub Actions updates run weekly. Actions are pinned by major version in
-#   workflows — Dependabot opens PRs when a new major is available.
-# - Security advisories (regardless of cadence) open immediately.
+# - Monthly cadence. Low-volume by design — one PR at a time per ecosystem.
+# - Patch + minor grouped into a single PR per ecosystem.
+# - Majors get their own PRs (still capped at 1 open at a time per ecosystem).
+# - Security advisories open immediately regardless of cadence or cap.
 
 version: 2
 updates:
@@ -14,11 +13,11 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
       day: "monday"
       time: "06:00"
       timezone: "Europe/London"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 1
     labels:
       - "dependencies"
       - "javascript"
@@ -44,11 +43,11 @@ updates:
   - package-ecosystem: "npm"
     directory: "/apps/dashboard"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
       day: "monday"
       time: "06:00"
       timezone: "Europe/London"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
     labels:
       - "dependencies"
       - "dashboard"
@@ -60,11 +59,11 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
       day: "monday"
       time: "06:00"
       timezone: "Europe/London"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
     labels:
       - "dependencies"
       - "github-actions"

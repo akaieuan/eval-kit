@@ -92,10 +92,10 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.56.0",
+    "@anthropic-ai/sdk": "^0.101.0",
     "ansis": "^3.7.0",
     "commander": "^13.0.0",
-    "yaml": "^2.7.0",
+    "yaml": "^2.9.0",
     "zod": "^3.24.1",
     "zod-to-json-schema": "^3.24.1"
   },

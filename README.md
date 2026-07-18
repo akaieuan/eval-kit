@@ -21,6 +21,8 @@ In plain terms: you write a YAML describing a multi-step agent workflow, run you
 [![pnpm](https://img.shields.io/badge/pnpm-10-orange.svg)](#)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue.svg)](#)
 
+> **Part of [akaOSS](https://www.akaoss.dev/projects/eval-kit)** — findings produced with eval-kit are published on the studio's [research feed](https://www.akaoss.dev/research), each one a reproducible experiment with checked-in runs.
+
 > **Status — v0.3.1 stable.** Public API is stable across the 0.3 line; minor releases (0.3.x) won't break public surfaces. `@eval-kit/core`, `@eval-kit/ui`, and `@eval-kit/seed-suite` live on npm under `latest`. Three reference suites (research, coding, support). Four real adapters (`anthropic` with tool-use + prompt caching, `openai` function-calling, `http` generic, `mock` deterministic + degradable). **22 passing tests** in `@eval-kit/core` (`scoring.test.ts` × 8, `schema.test.ts` × 14); CI verified on Node 20 + 22. The dashboard ships nine surfaces; multi-reviewer support is v0.4. File-based, single-user, run-it-locally — not a hosted service.
 
 [**Quickstart**](#60-second-quickstart) · [**YAML agents**](#define-an-agent-in-yaml--zero-code) · [**Custom adapter**](#custom-adapter--typescript) · [**Scoring rubric**](#scoring-rubric) · [**Roadmap**](#roadmap) · [**Project brief**](docs/BRIEF.md)

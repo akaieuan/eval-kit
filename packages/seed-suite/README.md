@@ -43,6 +43,20 @@ npx eval-kit run suites/my-research.yaml --adapter anthropic
 
 ## Programmatic access
 
+Each suite's absolute path is exported as a constant:
+
+```js
+import {
+  researchAgentV1Path,
+  codingAgentV1Path,
+  supportAgentV1Path,
+} from "@eval-kit/seed-suite";
+
+// → /abs/path/to/node_modules/@eval-kit/seed-suite/suites/research-agent-v1.yaml
+```
+
+Or resolve by name with `suitePath`:
+
 ```js
 import { suitePath } from "@eval-kit/seed-suite";
 
@@ -58,7 +72,7 @@ When adding tasks: prefer porting real workflows over inventing them. See the [p
 
 ## Status
 
-**v0.1.0** — three reference suites covering research, coding, and support agents. Stable; new task domains land as new files (e.g. `suites/legal-agent-v1.yaml`) without versioning the existing suites.
+**v0.1.2** — three reference suites covering research, coding, and support agents. Stable; new task domains land as new files (e.g. `suites/legal-agent-v1.yaml`) without versioning the existing suites.
 
 ## Links
 

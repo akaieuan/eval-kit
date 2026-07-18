@@ -2,6 +2,17 @@
 
 All notable changes to eval-kit are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## seed-suite [0.1.2] — 2026-07-18
+
+Patch for `@eval-kit/seed-suite` only. `@eval-kit/core` and `@eval-kit/ui` are unchanged.
+
+### Added
+- `codingAgentV1Path` and `supportAgentV1Path` exports — the package always shipped all three suite YAMLs, but only `researchAgentV1Path` was exported, forcing consumers to resolve sibling paths by hand.
+- `suitePath(name)` helper, which the README already documented but the package never implemented. `suitePath("coding-agent-v1")` returns the absolute path to that suite's YAML.
+
+### Fixed
+- README "Programmatic access" section now matches the actual exports (it previously documented only the nonexistent `suitePath`).
+
 ## [0.3.1] — 2026-04-23
 
 Docs-only patch. No code changes.

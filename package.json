@@ -18,6 +18,10 @@
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
     "lint": "pnpm -r lint",
+    "smoke:publish": "node scripts/publish-smoke.mjs",
+    "check:readme": "node scripts/readme-check.mjs",
+    "test:api": "vitest run --config vitest.api.config.ts",
+    "api:check": "node scripts/api-surface.mjs && vitest run --config vitest.api.config.ts",
     "clean": "pnpm -r clean && rm -rf node_modules"
   },
   "devDependencies": {

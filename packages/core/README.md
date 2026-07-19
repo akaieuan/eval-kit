@@ -59,7 +59,7 @@ eval-kit export <run.scored.json> --format sft|dpo   # emit training JSONL
 
 ## Use it programmatically
 
-```ts
+```ts check
 import { parseSuite, runSuite, createAnthropicAdapter } from "@eval-kit/core";
 import { readFileSync } from "node:fs";
 import { parse } from "yaml";
@@ -69,7 +69,7 @@ const adapter = createAnthropicAdapter({
   model: "claude-sonnet-4-5",
   systemPrompt: "You are a research assistant. Use tools when they help.",
 });
-const run = await runSuite(suite, adapter);
+const run = await runSuite(suite, { adapter });
 ```
 
 ## CI integration

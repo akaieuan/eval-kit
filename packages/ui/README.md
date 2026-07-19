@@ -34,16 +34,17 @@ import "@eval-kit/ui/styles.css";
 
 Then use components directly:
 
-```tsx
+```tsx check
 import { RunReviewPage } from "@eval-kit/ui";
-import type { ScoredRun, EvalSuite } from "@eval-kit/core";
+import type { Run, EvalSuite } from "@eval-kit/core";
 
-export default function ReviewRoute({ run, suite }: { run: ScoredRun; suite: EvalSuite }) {
+export default function ReviewRoute({ run, suite }: { run: Run; suite: EvalSuite }) {
   return (
     <RunReviewPage
-      run={run}
       suite={suite}
-      onSave={async (updated) => { /* server action */ }}
+      run={run}
+      reviewerId="reviewer@example.com"
+      onScoreChange={async (scored) => { /* persist via server action */ }}
     />
   );
 }

@@ -22,7 +22,14 @@
   ],
   "type": "module",
   "main": "./index.js",
-  "files": ["suites", "index.js"],
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    }
+  },
+  "files": ["suites", "index.js", "index.d.ts"],
   "scripts": {
     "build": "echo 'no build step'",
     "typecheck": "echo 'no typecheck'",

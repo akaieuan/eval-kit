@@ -291,7 +291,9 @@ Two seed profiles ship for reference: [`agents/claude-research-v1.yaml`](agents/
 
 When YAML isn't enough (you've got a custom orchestration layer, a graph runtime, an agent SDK eval-kit hasn't shipped a built-in for), implement the adapter contract. The full type lives in [`packages/core/src/adapters/types.ts`](packages/core/src/adapters/types.ts):
 
-```ts
+```ts check
+import type { ContextItem, ToolCall } from "@eval-kit/core";
+
 export interface AgentRunInput {
   prompt: string;
   context: ContextItem[];
@@ -353,7 +355,9 @@ eval-kit run suites/my-suite.yaml --adapter ./adapters/my-agent.mjs
 
 Every reviewed step produces a `StepScore` (full type in [`packages/core/src/schema.ts`](packages/core/src/schema.ts)):
 
-```ts
+```ts check
+import type { Dimension } from "@eval-kit/core";
+
 type StepScore = {
   step_n: number;
   tool_match: boolean | "partial";              // auto-scored

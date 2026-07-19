@@ -62,18 +62,36 @@ function collectSurface(dir, pj) {
   return [...seen];
 }
 
+/*
+ * Canonicalize into a deterministic form. tsup/rollup-dts emits the members of zod-inferred
+ * object/union types in a NON-deterministic order run-to-run (verified: the same `pnpm build`
+ * alternates the order of properties inside `z.ZodObject<{...}>` bodies, including moves across
+ * nested-property blocks and intersection/union connectors). A structural sort can't safely handle
+ * those `} & ({...} | {...})` connectors, so we canonicalize each file to a SORTED MULTISET of its
+ * trimmed declaration lines: any pure reordering preserves the multiset (→ stable), while any added,
+ * removed, or retyped member changes a line (→ a real, reviewable diff). The snapshot is therefore a
+ * sorted inventory of the public type surface, not pretty-printed TypeScript — that's the trade for a
+ * gate that never flakes. Type NAMES and shapes are still fully captured; only cosmetic order is lost.
+ */
+function canonicalize(text) {
+  return stripHash(text)
+    .split("\n")
+    .map((l) => l.trim())
+    // Keep only lines that carry an identifier (property/type/signature). Pure-punctuation lines
+    // (`}`, `};`, `}>`, `}, {`, ...) encode no API surface on their own and only add noise; a real
+    // API change always alters an identifier-bearing line too.
+    .filter((l) => /[A-Za-z]/.test(l) && !l.startsWith("//# sourceMappingURL="))
+    .sort((a, b) => a.localeCompare(b))
+    .join("\n");
+}
+
 function normalize(dir, files) {
-  const entries = files.map((abs) => {
-    const relName = stripHash(relative(dir, abs).split("\\").join("/"));
-    const body = readFileSync(abs, "utf8")
-      .split("\n")
-      .filter((l) => !l.startsWith("//# sourceMappingURL="))
-      .join("\n")
-      .replace(/\s+$/g, "");
-    return { relName, body: stripHash(body) };
-  });
+  const entries = files.map((abs) => ({
+    relName: stripHash(relative(dir, abs).split("\\").join("/")),
+    body: canonicalize(readFileSync(abs, "utf8")),
+  }));
   entries.sort((a, b) => a.relName.localeCompare(b.relName));
-  return entries.map((e) => `// ===== ${e.relName} =====\n${e.body}\n`).join("\n");
+  return entries.map((e) => `// ===== ${e.relName} (sorted line inventory) =====\n${e.body}\n`).join("\n");
 }
 
 // ---- regenerate --------------------------------------------------------------------

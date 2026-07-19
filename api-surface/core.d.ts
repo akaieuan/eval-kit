@@ -2,2160 +2,1847 @@
 // Public type surface of @eval-kit/core. Regenerate with `pnpm api:check`.
 // A diff here is a public-API change: review it, then commit this file on purpose.
 
-// ===== dist/adapters/index.d.ts =====
-import { A as AgentAdapter, a as AgentRunInput, b as AgentRunOutput } from '../types.js';
-import '../schema.js';
-import 'zod';
-
-interface MockAdapterOptions {
-    model?: string;
-    degraded?: boolean;
-    latency_ms?: number;
-}
-declare function createMockAdapter(opts?: MockAdapterOptions): AgentAdapter;
-
-interface ToolDefinition {
-    description: string;
-    input_schema: Record<string, unknown>;
-    /** Return value when this tool is called. If omitted, a generic mock result is used. */
-    simulate?: (args: unknown) => unknown;
-}
-interface AnthropicAdapterOptions {
-    apiKey?: string;
-    model?: string;
-    systemPrompt?: string;
-    maxTokens?: number;
-    maxToolIterations?: number;
-    toolDefinitions?: Record<string, ToolDefinition>;
-}
-declare function createAnthropicAdapter(opts?: AnthropicAdapterOptions): AgentAdapter;
-
-interface OpenAIAdapterOptions {
-    apiKey?: string;
-    model?: string;
-    systemPrompt?: string;
-    maxToolIterations?: number;
-    baseURL?: string;
-}
-/**
- * OpenAI adapter. Stubs against the OpenAI SDK shape but does NOT bundle the
- * SDK — the consumer installs `openai` themselves so eval-kit stays slim.
- *
- * Usage:
- *   import OpenAI from "openai";
- *   import { createOpenAIAdapter } from "@eval-kit/core/adapters";
- *   const adapter = createOpenAIAdapter({ client: new OpenAI(), model: "gpt-5" });
- *
- * The actual API calls are the consumer's responsibility — eval-kit never
- * proxies credentials. The stub below documents the expected shape.
- */
-declare function createOpenAIAdapter(opts?: OpenAIAdapterOptions & {
-    client?: {
-        chat: {
-            completions: {
-                create: (req: unknown) => Promise<unknown>;
-            };
-        };
-    };
+// ===== dist/adapters/index.d.ts (sorted line inventory) =====
 }): AgentAdapter;
-
-interface HttpAdapterOptions {
-    /** URL of the POST endpoint that runs your agent */
-    url: string;
-    /** Optional static headers (e.g. auth) */
-    headers?: Record<string, string>;
-    /** Human-readable name shown in the dashboard */
-    name?: string;
-    /** Model identifier (for display + export metadata) */
-    model?: string;
-    /**
-     * Optional request transformer. By default eval-kit POSTs AgentRunInput
-     * as JSON. Use this to reshape for your backend (e.g. OpenAI-compatible,
-     * your own routes).
-     */
-    requestBody?: (input: AgentRunInput) => unknown;
-    /**
-     * Optional response parser. By default eval-kit expects AgentRunOutput
-     * back as JSON. Use this when your endpoint returns a different shape.
-     */
-    parseResponse?: (body: unknown) => AgentRunOutput;
-}
-/**
- * Generic HTTP adapter — point it at any endpoint that runs your agent.
- * This is the simplest path to integrating a custom / internal agent with
- * eval-kit. No SDK required.
- *
- * The endpoint receives JSON like:
- *   { prompt, context, expected_tools, prior_steps }
- *
- * And is expected to return:
- *   { tool_calls: [...], final_output: "...", latency_ms: 1234 }
- *
- * Override `requestBody` / `parseResponse` for any other shape.
- */
+*   { prompt, context, expected_tools, prior_steps }
+*   { tool_calls: [...], final_output: "...", latency_ms: 1234 }
+*   const adapter = createOpenAIAdapter({ client: new OpenAI(), model: "gpt-5" });
+*   import { createOpenAIAdapter } from "@eval-kit/core/adapters";
+*   import OpenAI from "openai";
+* And is expected to return:
+* as JSON. Use this to reshape for your backend (e.g. OpenAI-compatible,
+* back as JSON. Use this when your endpoint returns a different shape.
+* eval-kit. No SDK required.
+* Generic HTTP adapter — point it at any endpoint that runs your agent.
+* OpenAI adapter. Stubs against the OpenAI SDK shape but does NOT bundle the
+* Optional request transformer. By default eval-kit POSTs AgentRunInput
+* Optional response parser. By default eval-kit expects AgentRunOutput
+* Override `requestBody` / `parseResponse` for any other shape.
+* proxies credentials. The stub below documents the expected shape.
+* SDK — the consumer installs `openai` themselves so eval-kit stays slim.
+* The actual API calls are the consumer's responsibility — eval-kit never
+* The endpoint receives JSON like:
+* This is the simplest path to integrating a custom / internal agent with
+* Usage:
+* your own routes).
+/** Human-readable name shown in the dashboard */
+/** Model identifier (for display + export metadata) */
+/** Optional static headers (e.g. auth) */
+/** Return value when this tool is called. If omitted, a generic mock result is used. */
+/** URL of the POST endpoint that runs your agent */
+apiKey?: string;
+apiKey?: string;
+baseURL?: string;
+chat: {
+client?: {
+completions: {
+create: (req: unknown) => Promise<unknown>;
+declare function createAnthropicAdapter(opts?: AnthropicAdapterOptions): AgentAdapter;
 declare function createHttpAdapter(opts: HttpAdapterOptions): AgentAdapter;
-
+declare function createMockAdapter(opts?: MockAdapterOptions): AgentAdapter;
+declare function createOpenAIAdapter(opts?: OpenAIAdapterOptions & {
+degraded?: boolean;
+description: string;
 export { AgentAdapter, AgentRunInput, AgentRunOutput, type AnthropicAdapterOptions, type HttpAdapterOptions, type MockAdapterOptions, type OpenAIAdapterOptions, type ToolDefinition, createAnthropicAdapter, createHttpAdapter, createMockAdapter, createOpenAIAdapter };
-
-// ===== dist/agents/index.d.ts =====
-import { z } from 'zod';
-import { A as AgentAdapter } from '../types.js';
+headers?: Record<string, string>;
 import '../schema.js';
+import 'zod';
+import { A as AgentAdapter, a as AgentRunInput, b as AgentRunOutput } from '../types.js';
+input_schema: Record<string, unknown>;
+interface AnthropicAdapterOptions {
+interface HttpAdapterOptions {
+interface MockAdapterOptions {
+interface OpenAIAdapterOptions {
+interface ToolDefinition {
+latency_ms?: number;
+maxTokens?: number;
+maxToolIterations?: number;
+maxToolIterations?: number;
+model?: string;
+model?: string;
+model?: string;
+model?: string;
+name?: string;
+parseResponse?: (body: unknown) => AgentRunOutput;
+requestBody?: (input: AgentRunInput) => unknown;
+simulate?: (args: unknown) => unknown;
+systemPrompt?: string;
+systemPrompt?: string;
+toolDefinitions?: Record<string, ToolDefinition>;
+url: string;
 
-/**
- * AgentProfile — a zero-code, YAML-defined description of an agent.
- * Captures everything needed to construct an AgentAdapter without the user
- * writing TypeScript: which backend, which model, system prompt, tools.
- */
-declare const AgentProfileTool: z.ZodObject<{
-    name: z.ZodString;
-    description: z.ZodOptional<z.ZodString>;
-    input_schema: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
+// ===== dist/agents/index.d.ts (sorted line inventory) =====
 }, "strip", z.ZodTypeAny, {
-    name: string;
-    description?: string | undefined;
-    input_schema?: Record<string, unknown> | undefined;
-}, {
-    name: string;
-    description?: string | undefined;
-    input_schema?: Record<string, unknown> | undefined;
-}>;
-type AgentProfileTool = z.infer<typeof AgentProfileTool>;
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, z.ZodDiscriminatedUnion<"based_on", [z.ZodObject<{
+}>, z.ZodObject<{
+}>, z.ZodObject<{
+}>, z.ZodObject<{
+}>, z.ZodObject<{
+}>, z.ZodObject<{
+}>, z.ZodObject<{
+* AgentProfile — a zero-code, YAML-defined description of an agent.
+* Build an AgentAdapter from a validated profile. The profile carries all
+* Captures everything needed to construct an AgentAdapter without the user
+* options; the returned adapter's `.name` is the profile id for clarity in
+* run artifacts.
+* skipped quietly — this is a discovery helper, not a validator.
+* Walk a directory for agent profile YAML/JSON files. Malformed files are
+* writing TypeScript: which backend, which model, system prompt, tools.
+agent: {
+agent: {
+agent: z.ZodIntersection<z.ZodObject<{
+api_key_env: z.ZodOptional<z.ZodString>;
+api_key_env: z.ZodOptional<z.ZodString>;
+api_key_env: z.ZodOptional<z.ZodString>;
+api_key_env: z.ZodOptional<z.ZodString>;
+api_key_env?: string | undefined;
+api_key_env?: string | undefined;
+api_key_env?: string | undefined;
+api_key_env?: string | undefined;
+api_key_env?: string | undefined;
+api_key_env?: string | undefined;
+api_key_env?: string | undefined;
+api_key_env?: string | undefined;
+api_key_env?: string | undefined;
+api_key_env?: string | undefined;
+api_key_env?: string | undefined;
+api_key_env?: string | undefined;
+base_url: z.ZodOptional<z.ZodString>;
+base_url: z.ZodOptional<z.ZodString>;
+base_url?: string | undefined;
+base_url?: string | undefined;
+base_url?: string | undefined;
+base_url?: string | undefined;
+base_url?: string | undefined;
+base_url?: string | undefined;
+based_on: "anthropic";
+based_on: "anthropic";
+based_on: "anthropic";
+based_on: "anthropic";
+based_on: "anthropic";
+based_on: "anthropic";
+based_on: "http";
+based_on: "http";
+based_on: "http";
+based_on: "http";
+based_on: "http";
+based_on: "http";
+based_on: "mock";
+based_on: "mock";
+based_on: "mock";
+based_on: "mock";
+based_on: "mock";
+based_on: "mock";
+based_on: "openai";
+based_on: "openai";
+based_on: "openai";
+based_on: "openai";
+based_on: "openai";
+based_on: "openai";
+based_on: z.ZodLiteral<"anthropic">;
+based_on: z.ZodLiteral<"anthropic">;
+based_on: z.ZodLiteral<"http">;
+based_on: z.ZodLiteral<"http">;
+based_on: z.ZodLiteral<"mock">;
+based_on: z.ZodLiteral<"mock">;
+based_on: z.ZodLiteral<"openai">;
+based_on: z.ZodLiteral<"openai">;
 declare const AgentBackend: z.ZodDiscriminatedUnion<"based_on", [z.ZodObject<{
-    based_on: z.ZodLiteral<"anthropic">;
-    model: z.ZodDefault<z.ZodString>;
-    system_prompt: z.ZodOptional<z.ZodString>;
-    tools: z.ZodDefault<z.ZodArray<z.ZodObject<{
-        name: z.ZodString;
-        description: z.ZodOptional<z.ZodString>;
-        input_schema: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
-    }, "strip", z.ZodTypeAny, {
-        name: string;
-        description?: string | undefined;
-        input_schema?: Record<string, unknown> | undefined;
-    }, {
-        name: string;
-        description?: string | undefined;
-        input_schema?: Record<string, unknown> | undefined;
-    }>, "many">>;
-    max_tool_iterations: z.ZodOptional<z.ZodNumber>;
-    max_tokens: z.ZodOptional<z.ZodNumber>;
-    api_key_env: z.ZodOptional<z.ZodString>;
-}, "strip", z.ZodTypeAny, {
-    model: string;
-    based_on: "anthropic";
-    tools: {
-        name: string;
-        description?: string | undefined;
-        input_schema?: Record<string, unknown> | undefined;
-    }[];
-    max_tokens?: number | undefined;
-    system_prompt?: string | undefined;
-    max_tool_iterations?: number | undefined;
-    api_key_env?: string | undefined;
-}, {
-    based_on: "anthropic";
-    model?: string | undefined;
-    max_tokens?: number | undefined;
-    system_prompt?: string | undefined;
-    tools?: {
-        name: string;
-        description?: string | undefined;
-        input_schema?: Record<string, unknown> | undefined;
-    }[] | undefined;
-    max_tool_iterations?: number | undefined;
-    api_key_env?: string | undefined;
-}>, z.ZodObject<{
-    based_on: z.ZodLiteral<"openai">;
-    model: z.ZodString;
-    system_prompt: z.ZodOptional<z.ZodString>;
-    tools: z.ZodDefault<z.ZodArray<z.ZodObject<{
-        name: z.ZodString;
-        description: z.ZodOptional<z.ZodString>;
-        input_schema: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
-    }, "strip", z.ZodTypeAny, {
-        name: string;
-        description?: string | undefined;
-        input_schema?: Record<string, unknown> | undefined;
-    }, {
-        name: string;
-        description?: string | undefined;
-        input_schema?: Record<string, unknown> | undefined;
-    }>, "many">>;
-    max_tool_iterations: z.ZodOptional<z.ZodNumber>;
-    api_key_env: z.ZodOptional<z.ZodString>;
-    base_url: z.ZodOptional<z.ZodString>;
-}, "strip", z.ZodTypeAny, {
-    model: string;
-    based_on: "openai";
-    tools: {
-        name: string;
-        description?: string | undefined;
-        input_schema?: Record<string, unknown> | undefined;
-    }[];
-    system_prompt?: string | undefined;
-    max_tool_iterations?: number | undefined;
-    api_key_env?: string | undefined;
-    base_url?: string | undefined;
-}, {
-    model: string;
-    based_on: "openai";
-    system_prompt?: string | undefined;
-    tools?: {
-        name: string;
-        description?: string | undefined;
-        input_schema?: Record<string, unknown> | undefined;
-    }[] | undefined;
-    max_tool_iterations?: number | undefined;
-    api_key_env?: string | undefined;
-    base_url?: string | undefined;
-}>, z.ZodObject<{
-    based_on: z.ZodLiteral<"http">;
-    url: z.ZodString;
-    model: z.ZodOptional<z.ZodString>;
-    headers: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodString>>;
-}, "strip", z.ZodTypeAny, {
-    url: string;
-    based_on: "http";
-    model?: string | undefined;
-    headers?: Record<string, string> | undefined;
-}, {
-    url: string;
-    based_on: "http";
-    model?: string | undefined;
-    headers?: Record<string, string> | undefined;
-}>, z.ZodObject<{
-    based_on: z.ZodLiteral<"mock">;
-    model: z.ZodDefault<z.ZodString>;
-    degraded: z.ZodOptional<z.ZodBoolean>;
-}, "strip", z.ZodTypeAny, {
-    model: string;
-    based_on: "mock";
-    degraded?: boolean | undefined;
-}, {
-    based_on: "mock";
-    model?: string | undefined;
-    degraded?: boolean | undefined;
-}>]>;
-type AgentBackend = z.infer<typeof AgentBackend>;
 declare const AgentProfile: z.ZodObject<{
-    agent: z.ZodIntersection<z.ZodObject<{
-        id: z.ZodString;
-        name: z.ZodString;
-        description: z.ZodOptional<z.ZodString>;
-    }, "strip", z.ZodTypeAny, {
-        id: string;
-        name: string;
-        description?: string | undefined;
-    }, {
-        id: string;
-        name: string;
-        description?: string | undefined;
-    }>, z.ZodDiscriminatedUnion<"based_on", [z.ZodObject<{
-        based_on: z.ZodLiteral<"anthropic">;
-        model: z.ZodDefault<z.ZodString>;
-        system_prompt: z.ZodOptional<z.ZodString>;
-        tools: z.ZodDefault<z.ZodArray<z.ZodObject<{
-            name: z.ZodString;
-            description: z.ZodOptional<z.ZodString>;
-            input_schema: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
-        }, "strip", z.ZodTypeAny, {
-            name: string;
-            description?: string | undefined;
-            input_schema?: Record<string, unknown> | undefined;
-        }, {
-            name: string;
-            description?: string | undefined;
-            input_schema?: Record<string, unknown> | undefined;
-        }>, "many">>;
-        max_tool_iterations: z.ZodOptional<z.ZodNumber>;
-        max_tokens: z.ZodOptional<z.ZodNumber>;
-        api_key_env: z.ZodOptional<z.ZodString>;
-    }, "strip", z.ZodTypeAny, {
-        model: string;
-        based_on: "anthropic";
-        tools: {
-            name: string;
-            description?: string | undefined;
-            input_schema?: Record<string, unknown> | undefined;
-        }[];
-        max_tokens?: number | undefined;
-        system_prompt?: string | undefined;
-        max_tool_iterations?: number | undefined;
-        api_key_env?: string | undefined;
-    }, {
-        based_on: "anthropic";
-        model?: string | undefined;
-        max_tokens?: number | undefined;
-        system_prompt?: string | undefined;
-        tools?: {
-            name: string;
-            description?: string | undefined;
-            input_schema?: Record<string, unknown> | undefined;
-        }[] | undefined;
-        max_tool_iterations?: number | undefined;
-        api_key_env?: string | undefined;
-    }>, z.ZodObject<{
-        based_on: z.ZodLiteral<"openai">;
-        model: z.ZodString;
-        system_prompt: z.ZodOptional<z.ZodString>;
-        tools: z.ZodDefault<z.ZodArray<z.ZodObject<{
-            name: z.ZodString;
-            description: z.ZodOptional<z.ZodString>;
-            input_schema: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
-        }, "strip", z.ZodTypeAny, {
-            name: string;
-            description?: string | undefined;
-            input_schema?: Record<string, unknown> | undefined;
-        }, {
-            name: string;
-            description?: string | undefined;
-            input_schema?: Record<string, unknown> | undefined;
-        }>, "many">>;
-        max_tool_iterations: z.ZodOptional<z.ZodNumber>;
-        api_key_env: z.ZodOptional<z.ZodString>;
-        base_url: z.ZodOptional<z.ZodString>;
-    }, "strip", z.ZodTypeAny, {
-        model: string;
-        based_on: "openai";
-        tools: {
-            name: string;
-            description?: string | undefined;
-            input_schema?: Record<string, unknown> | undefined;
-        }[];
-        system_prompt?: string | undefined;
-        max_tool_iterations?: number | undefined;
-        api_key_env?: string | undefined;
-        base_url?: string | undefined;
-    }, {
-        model: string;
-        based_on: "openai";
-        system_prompt?: string | undefined;
-        tools?: {
-            name: string;
-            description?: string | undefined;
-            input_schema?: Record<string, unknown> | undefined;
-        }[] | undefined;
-        max_tool_iterations?: number | undefined;
-        api_key_env?: string | undefined;
-        base_url?: string | undefined;
-    }>, z.ZodObject<{
-        based_on: z.ZodLiteral<"http">;
-        url: z.ZodString;
-        model: z.ZodOptional<z.ZodString>;
-        headers: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodString>>;
-    }, "strip", z.ZodTypeAny, {
-        url: string;
-        based_on: "http";
-        model?: string | undefined;
-        headers?: Record<string, string> | undefined;
-    }, {
-        url: string;
-        based_on: "http";
-        model?: string | undefined;
-        headers?: Record<string, string> | undefined;
-    }>, z.ZodObject<{
-        based_on: z.ZodLiteral<"mock">;
-        model: z.ZodDefault<z.ZodString>;
-        degraded: z.ZodOptional<z.ZodBoolean>;
-    }, "strip", z.ZodTypeAny, {
-        model: string;
-        based_on: "mock";
-        degraded?: boolean | undefined;
-    }, {
-        based_on: "mock";
-        model?: string | undefined;
-        degraded?: boolean | undefined;
-    }>]>>;
-}, "strip", z.ZodTypeAny, {
-    agent: {
-        id: string;
-        name: string;
-        description?: string | undefined;
-    } & ({
-        model: string;
-        based_on: "anthropic";
-        tools: {
-            name: string;
-            description?: string | undefined;
-            input_schema?: Record<string, unknown> | undefined;
-        }[];
-        max_tokens?: number | undefined;
-        system_prompt?: string | undefined;
-        max_tool_iterations?: number | undefined;
-        api_key_env?: string | undefined;
-    } | {
-        model: string;
-        based_on: "openai";
-        tools: {
-            name: string;
-            description?: string | undefined;
-            input_schema?: Record<string, unknown> | undefined;
-        }[];
-        system_prompt?: string | undefined;
-        max_tool_iterations?: number | undefined;
-        api_key_env?: string | undefined;
-        base_url?: string | undefined;
-    } | {
-        url: string;
-        based_on: "http";
-        model?: string | undefined;
-        headers?: Record<string, string> | undefined;
-    } | {
-        model: string;
-        based_on: "mock";
-        degraded?: boolean | undefined;
-    });
-}, {
-    agent: {
-        id: string;
-        name: string;
-        description?: string | undefined;
-    } & ({
-        based_on: "anthropic";
-        model?: string | undefined;
-        max_tokens?: number | undefined;
-        system_prompt?: string | undefined;
-        tools?: {
-            name: string;
-            description?: string | undefined;
-            input_schema?: Record<string, unknown> | undefined;
-        }[] | undefined;
-        max_tool_iterations?: number | undefined;
-        api_key_env?: string | undefined;
-    } | {
-        model: string;
-        based_on: "openai";
-        system_prompt?: string | undefined;
-        tools?: {
-            name: string;
-            description?: string | undefined;
-            input_schema?: Record<string, unknown> | undefined;
-        }[] | undefined;
-        max_tool_iterations?: number | undefined;
-        api_key_env?: string | undefined;
-        base_url?: string | undefined;
-    } | {
-        url: string;
-        based_on: "http";
-        model?: string | undefined;
-        headers?: Record<string, string> | undefined;
-    } | {
-        based_on: "mock";
-        model?: string | undefined;
-        degraded?: boolean | undefined;
-    });
-}>;
-type AgentProfile = z.infer<typeof AgentProfile>;
-declare function parseAgentProfile(input: unknown): AgentProfile;
-/**
- * Build an AgentAdapter from a validated profile. The profile carries all
- * options; the returned adapter's `.name` is the profile id for clarity in
- * run artifacts.
- */
+declare const AgentProfileTool: z.ZodObject<{
 declare function adapterFromProfile(profile: AgentProfile): AgentAdapter;
-
-declare function loadAgentProfile(path: string): Promise<AgentProfile>;
-interface AgentProfileEntry {
-    file: string;
-    path: string;
-    profile: AgentProfile;
-}
-/**
- * Walk a directory for agent profile YAML/JSON files. Malformed files are
- * skipped quietly — this is a discovery helper, not a validator.
- */
-declare function listAgentProfilesIn(dir: string): Promise<AgentProfileEntry[]>;
 declare function agentProfileToYaml(profile: AgentProfile): string;
-
+declare function listAgentProfilesIn(dir: string): Promise<AgentProfileEntry[]>;
+declare function loadAgentProfile(path: string): Promise<AgentProfile>;
+declare function parseAgentProfile(input: unknown): AgentProfile;
+degraded: z.ZodOptional<z.ZodBoolean>;
+degraded: z.ZodOptional<z.ZodBoolean>;
+degraded?: boolean | undefined;
+degraded?: boolean | undefined;
+degraded?: boolean | undefined;
+degraded?: boolean | undefined;
+degraded?: boolean | undefined;
+degraded?: boolean | undefined;
+description: z.ZodOptional<z.ZodString>;
+description: z.ZodOptional<z.ZodString>;
+description: z.ZodOptional<z.ZodString>;
+description: z.ZodOptional<z.ZodString>;
+description: z.ZodOptional<z.ZodString>;
+description: z.ZodOptional<z.ZodString>;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
 export { AgentBackend, AgentProfile, type AgentProfileEntry, AgentProfileTool, adapterFromProfile, agentProfileToYaml, listAgentProfilesIn, loadAgentProfile, parseAgentProfile };
+file: string;
+headers: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodString>>;
+headers: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodString>>;
+headers?: Record<string, string> | undefined;
+headers?: Record<string, string> | undefined;
+headers?: Record<string, string> | undefined;
+headers?: Record<string, string> | undefined;
+headers?: Record<string, string> | undefined;
+headers?: Record<string, string> | undefined;
+id: string;
+id: string;
+id: string;
+id: string;
+id: z.ZodString;
+import '../schema.js';
+import { A as AgentAdapter } from '../types.js';
+import { z } from 'zod';
+input_schema: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
+input_schema: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
+input_schema: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
+input_schema: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
+input_schema: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+input_schema?: Record<string, unknown> | undefined;
+interface AgentProfileEntry {
+max_tokens: z.ZodOptional<z.ZodNumber>;
+max_tokens: z.ZodOptional<z.ZodNumber>;
+max_tokens?: number | undefined;
+max_tokens?: number | undefined;
+max_tokens?: number | undefined;
+max_tokens?: number | undefined;
+max_tokens?: number | undefined;
+max_tokens?: number | undefined;
+max_tool_iterations: z.ZodOptional<z.ZodNumber>;
+max_tool_iterations: z.ZodOptional<z.ZodNumber>;
+max_tool_iterations: z.ZodOptional<z.ZodNumber>;
+max_tool_iterations: z.ZodOptional<z.ZodNumber>;
+max_tool_iterations?: number | undefined;
+max_tool_iterations?: number | undefined;
+max_tool_iterations?: number | undefined;
+max_tool_iterations?: number | undefined;
+max_tool_iterations?: number | undefined;
+max_tool_iterations?: number | undefined;
+max_tool_iterations?: number | undefined;
+max_tool_iterations?: number | undefined;
+max_tool_iterations?: number | undefined;
+max_tool_iterations?: number | undefined;
+max_tool_iterations?: number | undefined;
+max_tool_iterations?: number | undefined;
+model: string;
+model: string;
+model: string;
+model: string;
+model: string;
+model: string;
+model: string;
+model: string;
+model: string;
+model: string;
+model: string;
+model: string;
+model: z.ZodDefault<z.ZodString>;
+model: z.ZodDefault<z.ZodString>;
+model: z.ZodDefault<z.ZodString>;
+model: z.ZodDefault<z.ZodString>;
+model: z.ZodOptional<z.ZodString>;
+model: z.ZodOptional<z.ZodString>;
+model: z.ZodString;
+model: z.ZodString;
+model?: string | undefined;
+model?: string | undefined;
+model?: string | undefined;
+model?: string | undefined;
+model?: string | undefined;
+model?: string | undefined;
+model?: string | undefined;
+model?: string | undefined;
+model?: string | undefined;
+model?: string | undefined;
+model?: string | undefined;
+model?: string | undefined;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: z.ZodString;
+name: z.ZodString;
+name: z.ZodString;
+name: z.ZodString;
+name: z.ZodString;
+name: z.ZodString;
+path: string;
+profile: AgentProfile;
+system_prompt: z.ZodOptional<z.ZodString>;
+system_prompt: z.ZodOptional<z.ZodString>;
+system_prompt: z.ZodOptional<z.ZodString>;
+system_prompt: z.ZodOptional<z.ZodString>;
+system_prompt?: string | undefined;
+system_prompt?: string | undefined;
+system_prompt?: string | undefined;
+system_prompt?: string | undefined;
+system_prompt?: string | undefined;
+system_prompt?: string | undefined;
+system_prompt?: string | undefined;
+system_prompt?: string | undefined;
+system_prompt?: string | undefined;
+system_prompt?: string | undefined;
+system_prompt?: string | undefined;
+system_prompt?: string | undefined;
+tools: {
+tools: {
+tools: {
+tools: {
+tools: {
+tools: {
+tools: z.ZodDefault<z.ZodArray<z.ZodObject<{
+tools: z.ZodDefault<z.ZodArray<z.ZodObject<{
+tools: z.ZodDefault<z.ZodArray<z.ZodObject<{
+tools: z.ZodDefault<z.ZodArray<z.ZodObject<{
+tools?: {
+tools?: {
+tools?: {
+tools?: {
+tools?: {
+tools?: {
+type AgentBackend = z.infer<typeof AgentBackend>;
+type AgentProfile = z.infer<typeof AgentProfile>;
+type AgentProfileTool = z.infer<typeof AgentProfileTool>;
+url: string;
+url: string;
+url: string;
+url: string;
+url: string;
+url: string;
+url: z.ZodString;
+url: z.ZodString;
 
-// ===== dist/anthropic/extract-task.d.ts =====
-import { EvalTask } from '../schema.js';
-import 'zod';
-
-interface ExtractTaskOptions {
-    apiKey?: string;
-    model?: string;
-}
-type ExtractTaskResult = {
-    ok: true;
-    task: EvalTask;
-} | {
-    ok: false;
-    error: string;
-};
+// ===== dist/anthropic/extract-task.d.ts (sorted line inventory) =====
+apiKey?: string;
 declare function extractTaskFromTranscript(transcript: string, opts?: ExtractTaskOptions): Promise<ExtractTaskResult>;
-
+error: string;
 export { type ExtractTaskOptions, type ExtractTaskResult, extractTaskFromTranscript };
-
-// ===== dist/anthropic/prefill-score.d.ts =====
-import { StepScore, EvalTask, EvalStep, StepResult, Dimension } from '../schema.js';
 import 'zod';
+import { EvalTask } from '../schema.js';
+interface ExtractTaskOptions {
+model?: string;
+ok: false;
+ok: true;
+task: EvalTask;
+type ExtractTaskResult = {
 
-interface PrefillScoreOptions {
-    apiKey?: string;
-    model?: string;
-    reviewerId?: string;
-}
-type PrefillScoreResult = {
-    ok: true;
-    score: StepScore;
-    confidence: number;
-    rationale: string;
-} | {
-    ok: false;
-    error: string;
-};
-declare function prefillStepScore(args: {
-    task: EvalTask;
-    step: EvalStep;
-    result: StepResult;
-    dimensions: Dimension[];
-    opts?: PrefillScoreOptions;
-}): Promise<PrefillScoreResult>;
-declare function prefillRunScores(args: {
-    task: EvalTask;
-    steps: Array<{
-        step: EvalStep;
-        result: StepResult;
-        dimensions: Dimension[];
-    }>;
-    opts?: PrefillScoreOptions;
+// ===== dist/anthropic/prefill-score.d.ts (sorted line inventory) =====
 }): Promise<PrefillScoreResult[]>;
-
+}): Promise<PrefillScoreResult>;
+apiKey?: string;
+confidence: number;
+declare function prefillRunScores(args: {
+declare function prefillStepScore(args: {
+dimensions: Dimension[];
+dimensions: Dimension[];
+error: string;
 export { type PrefillScoreOptions, type PrefillScoreResult, prefillRunScores, prefillStepScore };
+import 'zod';
+import { StepScore, EvalTask, EvalStep, StepResult, Dimension } from '../schema.js';
+interface PrefillScoreOptions {
+model?: string;
+ok: false;
+ok: true;
+opts?: PrefillScoreOptions;
+opts?: PrefillScoreOptions;
+rationale: string;
+result: StepResult;
+result: StepResult;
+reviewerId?: string;
+score: StepScore;
+step: EvalStep;
+step: EvalStep;
+steps: Array<{
+task: EvalTask;
+task: EvalTask;
+type PrefillScoreResult = {
 
-// ===== dist/ci.d.ts =====
+// ===== dist/ci.d.ts (sorted line inventory) =====
+export { C as CiOutcome, a as CiThresholds, e as evaluateCi } from './ci.js';
 import './schema.js';
 import './scoring.js';
-export { C as CiOutcome, a as CiThresholds, e as evaluateCi } from './ci.js';
 import 'zod';
 
-// ===== dist/ci.d.ts =====
+// ===== dist/ci.d.ts (sorted line inventory) =====
+}): CiOutcome;
+* are reported-only unless both runs are scored.
+* Evaluate a fresh run (and optional baseline) against CI gates.
+* Only tier-1 auto-scored metrics can fail a build. Golden-truth regressions
+/** Maximum tolerated pre_filled ratio — guards against automation creep */
+/** Minimum aggregate tool-match accuracy (0..1) */
+/** Minimum distraction detection rate (0..1). Only checked if any distraction tasks exist. */
+a: {
+a: {
+aggregate?: SuiteAggregate;
+b: {
+b: {
+baseline?: ScoredRun;
+declare function diffRuns(a: ScoredRun, b: ScoredRun): StepDiff[];
+declare function evaluateCi(opts: {
+exitCode: number;
+export { type CiOutcome as C, type StepDiff as S, type CiThresholds as a, diffRuns as d, evaluateCi as e };
 import { StepScore, ScoredRun, Run } from './schema.js';
 import { SuiteAggregate } from './scoring.js';
-
-type StepDiff = {
-    kind: "only_in_a";
-    task_id: string;
-    step_n: number;
-} | {
-    kind: "only_in_b";
-    task_id: string;
-    step_n: number;
-} | {
-    kind: "regression";
-    task_id: string;
-    step_n: number;
-    reasons: string[];
-    a: {
-        tool_match: unknown;
-        score: StepScore | null;
-    };
-    b: {
-        tool_match: unknown;
-        score: StepScore | null;
-    };
-} | {
-    kind: "improvement";
-    task_id: string;
-    step_n: number;
-    reasons: string[];
-    a: {
-        tool_match: unknown;
-        score: StepScore | null;
-    };
-    b: {
-        tool_match: unknown;
-        score: StepScore | null;
-    };
-} | {
-    kind: "unchanged";
-    task_id: string;
-    step_n: number;
-};
-declare function diffRuns(a: ScoredRun, b: ScoredRun): StepDiff[];
-
-interface CiThresholds {
-    /** Minimum aggregate tool-match accuracy (0..1) */
-    minToolMatch?: number;
-    /** Minimum distraction detection rate (0..1). Only checked if any distraction tasks exist. */
-    minDistractionCatch?: number;
-    /** Maximum tolerated pre_filled ratio — guards against automation creep */
-    maxPrefilledRatio?: number;
-}
 interface CiOutcome {
-    pass: boolean;
-    exitCode: number;
-    aggregate?: SuiteAggregate;
-    regressions: StepDiff[];
-    violations: string[];
-}
-/**
- * Evaluate a fresh run (and optional baseline) against CI gates.
- * Only tier-1 auto-scored metrics can fail a build. Golden-truth regressions
- * are reported-only unless both runs are scored.
- */
-declare function evaluateCi(opts: {
-    run: Run | ScoredRun;
-    baseline?: ScoredRun;
-    thresholds?: CiThresholds;
-}): CiOutcome;
+interface CiThresholds {
+kind: "improvement";
+kind: "only_in_a";
+kind: "only_in_b";
+kind: "regression";
+kind: "unchanged";
+maxPrefilledRatio?: number;
+minDistractionCatch?: number;
+minToolMatch?: number;
+pass: boolean;
+reasons: string[];
+reasons: string[];
+regressions: StepDiff[];
+run: Run | ScoredRun;
+score: StepScore | null;
+score: StepScore | null;
+score: StepScore | null;
+score: StepScore | null;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+task_id: string;
+task_id: string;
+task_id: string;
+task_id: string;
+task_id: string;
+thresholds?: CiThresholds;
+tool_match: unknown;
+tool_match: unknown;
+tool_match: unknown;
+tool_match: unknown;
+type StepDiff = {
+violations: string[];
 
-export { type CiOutcome as C, type StepDiff as S, type CiThresholds as a, diffRuns as d, evaluateCi as e };
-
-// ===== dist/export.d.ts =====
-import { EvalSuite, ScoredRun } from './schema.js';
-import 'zod';
-
-type ExportFormat = "sft" | "dpo" | "raw";
-interface SftRecord {
-    prompt: string;
-    completion: string;
-    tool_calls: Array<{
-        tool: string;
-        args?: unknown;
-        result?: unknown;
-    }>;
-    label: {
-        golden_truth: number | null;
-        tool_match: boolean | "partial";
-        distraction_caught: boolean | null;
-        pre_filled: boolean;
-        dimensions: Record<string, number>;
-    };
-    metadata: {
-        run_id: string;
-        suite_id: string;
-        task_id: string;
-        step_n: number;
-        adapter: string;
-        model: string;
-        latency_ms: number;
-        reviewer_id: string | null;
-    };
-}
-interface DpoRecord {
-    prompt: string;
-    chosen: string;
-    rejected: string;
-    metadata: {
-        task_id: string;
-        step_n: number;
-        chosen: {
-            run_id: string;
-            golden_truth: number | null;
-        };
-        rejected: {
-            run_id: string;
-            golden_truth: number | null;
-        };
-    };
-}
-interface ExportOptions {
-    minGoldenTruth?: number;
-    includePreFilled?: boolean;
-    /** Optional — when provided, export records include real step prompts. */
-    suite?: EvalSuite;
-}
-/**
- * SFT export: one record per scored step. Pass `opts.suite` to include real
- * step prompts (otherwise a placeholder is used).
- */
-declare function exportSft(run: ScoredRun, opts?: ExportOptions): SftRecord[];
-/**
- * DPO export: for each (task_id, step_n) present in both runs with distinct
- * golden_truth scores, emit (chosen = higher, rejected = lower).
- */
-declare function exportDpo(a: ScoredRun, b: ScoredRun, opts?: {
-    suite?: EvalSuite;
-}): DpoRecord[];
-declare function exportRaw(run: ScoredRun, opts?: {
-    suite?: EvalSuite;
+// ===== dist/export.d.ts (sorted line inventory) =====
 }): Array<Record<string, unknown>>;
+}): DpoRecord[];
+* DPO export: for each (task_id, step_n) present in both runs with distinct
+* golden_truth scores, emit (chosen = higher, rejected = lower).
+* SFT export: one record per scored step. Pass `opts.suite` to include real
+* step prompts (otherwise a placeholder is used).
+/** Optional — when provided, export records include real step prompts. */
+adapter: string;
+args?: unknown;
+chosen: {
+chosen: string;
+completion: string;
+declare function exportDpo(a: ScoredRun, b: ScoredRun, opts?: {
+declare function exportRaw(run: ScoredRun, opts?: {
+declare function exportSft(run: ScoredRun, opts?: ExportOptions): SftRecord[];
 declare function toJsonl(records: Array<Record<string, unknown>>): string;
-
+dimensions: Record<string, number>;
+distraction_caught: boolean | null;
 export { type DpoRecord, type ExportFormat, type ExportOptions, type SftRecord, exportDpo, exportRaw, exportSft, toJsonl };
+golden_truth: number | null;
+golden_truth: number | null;
+golden_truth: number | null;
+import 'zod';
+import { EvalSuite, ScoredRun } from './schema.js';
+includePreFilled?: boolean;
+interface DpoRecord {
+interface ExportOptions {
+interface SftRecord {
+label: {
+latency_ms: number;
+metadata: {
+metadata: {
+minGoldenTruth?: number;
+model: string;
+pre_filled: boolean;
+prompt: string;
+prompt: string;
+rejected: {
+rejected: string;
+result?: unknown;
+reviewer_id: string | null;
+run_id: string;
+run_id: string;
+run_id: string;
+step_n: number;
+step_n: number;
+suite_id: string;
+suite?: EvalSuite;
+suite?: EvalSuite;
+suite?: EvalSuite;
+task_id: string;
+task_id: string;
+tool_calls: Array<{
+tool_match: boolean | "partial";
+tool: string;
+type ExportFormat = "sft" | "dpo" | "raw";
 
-// ===== dist/index.d.ts =====
-export { AdapterInfo, AutoScore, ContextItem, Dimension, EvalStep, EvalSuite, EvalTask, RubricScore, Run, ScoredRun, ScoredStepResult, ScoredTaskResult, ScoringHints, StepResult, StepScore, TaskResult, ToolCall, parseRun, parseScoredRun, parseSuite } from './schema.js';
-export { SuiteAggregate, aggregateScoredRun, autoScoreStep, mergeScores } from './scoring.js';
-export { RunnerOptions, runSuite } from './runner.js';
-export { C as CiOutcome, a as CiThresholds, S as StepDiff, d as diffRuns, e as evaluateCi } from './ci.js';
-export { DpoRecord, ExportFormat, ExportOptions, SftRecord, exportDpo, exportRaw, exportSft, toJsonl } from './export.js';
-export { DIMENSION_DESCRIPTIONS, DIMENSION_LABELS, DIMENSION_ORDER, DIMENSION_RUBRIC_EXAMPLES } from './rubric.js';
+// ===== dist/index.d.ts (sorted line inventory) =====
 export { A as AgentAdapter, a as AgentRunInput, b as AgentRunOutput } from './types.js';
+export { AdapterInfo, AutoScore, ContextItem, Dimension, EvalStep, EvalSuite, EvalTask, RubricScore, Run, ScoredRun, ScoredStepResult, ScoredTaskResult, ScoringHints, StepResult, StepScore, TaskResult, ToolCall, parseRun, parseScoredRun, parseSuite } from './schema.js';
 export { AnthropicAdapterOptions, HttpAdapterOptions, MockAdapterOptions, OpenAIAdapterOptions, ToolDefinition, createAnthropicAdapter, createHttpAdapter, createMockAdapter, createOpenAIAdapter } from './adapters/index.js';
+export { C as CiOutcome, a as CiThresholds, S as StepDiff, d as diffRuns, e as evaluateCi } from './ci.js';
+export { DIMENSION_DESCRIPTIONS, DIMENSION_LABELS, DIMENSION_ORDER, DIMENSION_RUBRIC_EXAMPLES } from './rubric.js';
+export { DpoRecord, ExportFormat, ExportOptions, SftRecord, exportDpo, exportRaw, exportSft, toJsonl } from './export.js';
+export { RunnerOptions, runSuite } from './runner.js';
+export { SuiteAggregate, aggregateScoredRun, autoScoreStep, mergeScores } from './scoring.js';
 import 'zod';
 
-// ===== dist/loader.d.ts =====
-import { Run, ScoredRun, EvalSuite } from './schema.js';
-import 'zod';
-
-declare function loadSuite(path: string): Promise<EvalSuite>;
+// ===== dist/loader.d.ts (sorted line inventory) =====
 declare function loadRun(path: string): Promise<Run>;
 declare function loadScoredRun(path: string): Promise<ScoredRun>;
-
+declare function loadSuite(path: string): Promise<EvalSuite>;
 export { loadRun, loadScoredRun, loadSuite };
-
-// ===== dist/rubric.d.ts =====
-import { Dimension } from './schema.js';
 import 'zod';
+import { Run, ScoredRun, EvalSuite } from './schema.js';
 
-declare const DIMENSION_LABELS: Record<Dimension, string>;
+// ===== dist/rubric.d.ts (sorted line inventory) =====
 declare const DIMENSION_DESCRIPTIONS: Record<Dimension, string>;
-declare const DIMENSION_RUBRIC_EXAMPLES: Record<Dimension, Record<0 | 1 | 2 | 3, string>>;
+declare const DIMENSION_LABELS: Record<Dimension, string>;
 declare const DIMENSION_ORDER: Dimension[];
-
+declare const DIMENSION_RUBRIC_EXAMPLES: Record<Dimension, Record<0 | 1 | 2 | 3, string>>;
 export { DIMENSION_DESCRIPTIONS, DIMENSION_LABELS, DIMENSION_ORDER, DIMENSION_RUBRIC_EXAMPLES };
+import 'zod';
+import { Dimension } from './schema.js';
 
-// ===== dist/runner.d.ts =====
+// ===== dist/runner.d.ts (sorted line inventory) =====
+adapter: AgentAdapter;
+declare function runSuite(suite: EvalSuite, opts: RunnerOptions): Promise<Run>;
+export { type RunnerOptions, runSuite };
+import 'zod';
 import { A as AgentAdapter } from './types.js';
 import { EvalTask, StepResult, EvalSuite, Run } from './schema.js';
-import 'zod';
-
 interface RunnerOptions {
-    adapter: AgentAdapter;
-    onStepStart?: (task: EvalTask, stepN: number) => void;
-    onStepComplete?: (task: EvalTask, result: StepResult) => void;
-}
-declare function runSuite(suite: EvalSuite, opts: RunnerOptions): Promise<Run>;
+onStepComplete?: (task: EvalTask, result: StepResult) => void;
+onStepStart?: (task: EvalTask, stepN: number) => void;
 
-export { type RunnerOptions, runSuite };
-
-// ===== dist/schema.d.ts =====
-import { z } from 'zod';
-
-declare const Dimension: z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>;
-type Dimension = z.infer<typeof Dimension>;
-declare const ContextItem: z.ZodObject<{
-    type: z.ZodEnum<["pdf", "url", "text", "image", "canvas", "other"]>;
-    label: z.ZodString;
-    ref: z.ZodString;
+// ===== dist/schema.d.ts (sorted line inventory) =====
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
 }, "strip", z.ZodTypeAny, {
-    type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
-    label: string;
-    ref: string;
-}, {
-    type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
-    label: string;
-    ref: string;
-}>;
-type ContextItem = z.infer<typeof ContextItem>;
-declare const ScoringHints: z.ZodDefault<z.ZodObject<{
-    tool_match: z.ZodDefault<z.ZodEnum<["strict", "subset", "any"]>>;
-    golden_truth_rubric: z.ZodDefault<z.ZodEnum<["pass_fail", "0-3"]>>;
-    dimensions: z.ZodDefault<z.ZodArray<z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>, "many">>;
 }, "strip", z.ZodTypeAny, {
-    tool_match: "strict" | "subset" | "any";
-    dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
-    golden_truth_rubric: "pass_fail" | "0-3";
-}, {
-    tool_match?: "strict" | "subset" | "any" | undefined;
-    dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
-    golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
-}>>;
-type ScoringHints = z.infer<typeof ScoringHints>;
-declare const EvalStep: z.ZodObject<{
-    n: z.ZodNumber;
-    prompt: z.ZodString;
-    expected_tools: z.ZodDefault<z.ZodArray<z.ZodString, "many">>;
-    golden_truth: z.ZodString;
-    scoring_hints: z.ZodDefault<z.ZodObject<{
-        tool_match: z.ZodDefault<z.ZodEnum<["strict", "subset", "any"]>>;
-        golden_truth_rubric: z.ZodDefault<z.ZodEnum<["pass_fail", "0-3"]>>;
-        dimensions: z.ZodDefault<z.ZodArray<z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>, "many">>;
-    }, "strip", z.ZodTypeAny, {
-        tool_match: "strict" | "subset" | "any";
-        dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
-        golden_truth_rubric: "pass_fail" | "0-3";
-    }, {
-        tool_match?: "strict" | "subset" | "any" | undefined;
-        dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
-        golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
-    }>>;
 }, "strip", z.ZodTypeAny, {
-    golden_truth: string;
-    n: number;
-    prompt: string;
-    expected_tools: string[];
-    scoring_hints: {
-        tool_match: "strict" | "subset" | "any";
-        dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
-        golden_truth_rubric: "pass_fail" | "0-3";
-    };
-}, {
-    golden_truth: string;
-    n: number;
-    prompt: string;
-    expected_tools?: string[] | undefined;
-    scoring_hints?: {
-        tool_match?: "strict" | "subset" | "any" | undefined;
-        dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
-        golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
-    } | undefined;
-}>;
-type EvalStep = z.infer<typeof EvalStep>;
-declare const EvalTask: z.ZodObject<{
-    id: z.ZodString;
-    initial_purpose: z.ZodString;
-    overall_goal: z.ZodString;
-    is_distraction: z.ZodDefault<z.ZodBoolean>;
-    context_items: z.ZodDefault<z.ZodArray<z.ZodObject<{
-        type: z.ZodEnum<["pdf", "url", "text", "image", "canvas", "other"]>;
-        label: z.ZodString;
-        ref: z.ZodString;
-    }, "strip", z.ZodTypeAny, {
-        type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
-        label: string;
-        ref: string;
-    }, {
-        type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
-        label: string;
-        ref: string;
-    }>, "many">>;
-    steps: z.ZodArray<z.ZodObject<{
-        n: z.ZodNumber;
-        prompt: z.ZodString;
-        expected_tools: z.ZodDefault<z.ZodArray<z.ZodString, "many">>;
-        golden_truth: z.ZodString;
-        scoring_hints: z.ZodDefault<z.ZodObject<{
-            tool_match: z.ZodDefault<z.ZodEnum<["strict", "subset", "any"]>>;
-            golden_truth_rubric: z.ZodDefault<z.ZodEnum<["pass_fail", "0-3"]>>;
-            dimensions: z.ZodDefault<z.ZodArray<z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>, "many">>;
-        }, "strip", z.ZodTypeAny, {
-            tool_match: "strict" | "subset" | "any";
-            dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
-            golden_truth_rubric: "pass_fail" | "0-3";
-        }, {
-            tool_match?: "strict" | "subset" | "any" | undefined;
-            dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
-            golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
-        }>>;
-    }, "strip", z.ZodTypeAny, {
-        golden_truth: string;
-        n: number;
-        prompt: string;
-        expected_tools: string[];
-        scoring_hints: {
-            tool_match: "strict" | "subset" | "any";
-            dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
-            golden_truth_rubric: "pass_fail" | "0-3";
-        };
-    }, {
-        golden_truth: string;
-        n: number;
-        prompt: string;
-        expected_tools?: string[] | undefined;
-        scoring_hints?: {
-            tool_match?: "strict" | "subset" | "any" | undefined;
-            dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
-            golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
-        } | undefined;
-    }>, "many">;
-    notes_on_observed_runs: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    id: string;
-    initial_purpose: string;
-    overall_goal: string;
-    is_distraction: boolean;
-    context_items: {
-        type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
-        label: string;
-        ref: string;
-    }[];
-    steps: {
-        golden_truth: string;
-        n: number;
-        prompt: string;
-        expected_tools: string[];
-        scoring_hints: {
-            tool_match: "strict" | "subset" | "any";
-            dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
-            golden_truth_rubric: "pass_fail" | "0-3";
-        };
-    }[];
-    notes_on_observed_runs?: string | undefined;
-}, {
-    id: string;
-    initial_purpose: string;
-    overall_goal: string;
-    steps: {
-        golden_truth: string;
-        n: number;
-        prompt: string;
-        expected_tools?: string[] | undefined;
-        scoring_hints?: {
-            tool_match?: "strict" | "subset" | "any" | undefined;
-            dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
-            golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
-        } | undefined;
-    }[];
-    is_distraction?: boolean | undefined;
-    context_items?: {
-        type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
-        label: string;
-        ref: string;
-    }[] | undefined;
-    notes_on_observed_runs?: string | undefined;
-}>;
-type EvalTask = z.infer<typeof EvalTask>;
-declare const EvalSuite: z.ZodObject<{
-    suite: z.ZodObject<{
-        id: z.ZodString;
-        version: z.ZodString;
-        description: z.ZodString;
-        target_agent_type: z.ZodString;
-        dimensions_in_scope: z.ZodArray<z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>, "many">;
-        tasks: z.ZodArray<z.ZodObject<{
-            id: z.ZodString;
-            initial_purpose: z.ZodString;
-            overall_goal: z.ZodString;
-            is_distraction: z.ZodDefault<z.ZodBoolean>;
-            context_items: z.ZodDefault<z.ZodArray<z.ZodObject<{
-                type: z.ZodEnum<["pdf", "url", "text", "image", "canvas", "other"]>;
-                label: z.ZodString;
-                ref: z.ZodString;
-            }, "strip", z.ZodTypeAny, {
-                type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
-                label: string;
-                ref: string;
-            }, {
-                type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
-                label: string;
-                ref: string;
-            }>, "many">>;
-            steps: z.ZodArray<z.ZodObject<{
-                n: z.ZodNumber;
-                prompt: z.ZodString;
-                expected_tools: z.ZodDefault<z.ZodArray<z.ZodString, "many">>;
-                golden_truth: z.ZodString;
-                scoring_hints: z.ZodDefault<z.ZodObject<{
-                    tool_match: z.ZodDefault<z.ZodEnum<["strict", "subset", "any"]>>;
-                    golden_truth_rubric: z.ZodDefault<z.ZodEnum<["pass_fail", "0-3"]>>;
-                    dimensions: z.ZodDefault<z.ZodArray<z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>, "many">>;
-                }, "strip", z.ZodTypeAny, {
-                    tool_match: "strict" | "subset" | "any";
-                    dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
-                    golden_truth_rubric: "pass_fail" | "0-3";
-                }, {
-                    tool_match?: "strict" | "subset" | "any" | undefined;
-                    dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
-                    golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
-                }>>;
-            }, "strip", z.ZodTypeAny, {
-                golden_truth: string;
-                n: number;
-                prompt: string;
-                expected_tools: string[];
-                scoring_hints: {
-                    tool_match: "strict" | "subset" | "any";
-                    dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
-                    golden_truth_rubric: "pass_fail" | "0-3";
-                };
-            }, {
-                golden_truth: string;
-                n: number;
-                prompt: string;
-                expected_tools?: string[] | undefined;
-                scoring_hints?: {
-                    tool_match?: "strict" | "subset" | "any" | undefined;
-                    dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
-                    golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
-                } | undefined;
-            }>, "many">;
-            notes_on_observed_runs: z.ZodOptional<z.ZodString>;
-        }, "strip", z.ZodTypeAny, {
-            id: string;
-            initial_purpose: string;
-            overall_goal: string;
-            is_distraction: boolean;
-            context_items: {
-                type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
-                label: string;
-                ref: string;
-            }[];
-            steps: {
-                golden_truth: string;
-                n: number;
-                prompt: string;
-                expected_tools: string[];
-                scoring_hints: {
-                    tool_match: "strict" | "subset" | "any";
-                    dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
-                    golden_truth_rubric: "pass_fail" | "0-3";
-                };
-            }[];
-            notes_on_observed_runs?: string | undefined;
-        }, {
-            id: string;
-            initial_purpose: string;
-            overall_goal: string;
-            steps: {
-                golden_truth: string;
-                n: number;
-                prompt: string;
-                expected_tools?: string[] | undefined;
-                scoring_hints?: {
-                    tool_match?: "strict" | "subset" | "any" | undefined;
-                    dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
-                    golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
-                } | undefined;
-            }[];
-            is_distraction?: boolean | undefined;
-            context_items?: {
-                type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
-                label: string;
-                ref: string;
-            }[] | undefined;
-            notes_on_observed_runs?: string | undefined;
-        }>, "many">;
-    }, "strip", z.ZodTypeAny, {
-        id: string;
-        version: string;
-        description: string;
-        target_agent_type: string;
-        dimensions_in_scope: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
-        tasks: {
-            id: string;
-            initial_purpose: string;
-            overall_goal: string;
-            is_distraction: boolean;
-            context_items: {
-                type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
-                label: string;
-                ref: string;
-            }[];
-            steps: {
-                golden_truth: string;
-                n: number;
-                prompt: string;
-                expected_tools: string[];
-                scoring_hints: {
-                    tool_match: "strict" | "subset" | "any";
-                    dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
-                    golden_truth_rubric: "pass_fail" | "0-3";
-                };
-            }[];
-            notes_on_observed_runs?: string | undefined;
-        }[];
-    }, {
-        id: string;
-        version: string;
-        description: string;
-        target_agent_type: string;
-        dimensions_in_scope: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
-        tasks: {
-            id: string;
-            initial_purpose: string;
-            overall_goal: string;
-            steps: {
-                golden_truth: string;
-                n: number;
-                prompt: string;
-                expected_tools?: string[] | undefined;
-                scoring_hints?: {
-                    tool_match?: "strict" | "subset" | "any" | undefined;
-                    dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
-                    golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
-                } | undefined;
-            }[];
-            is_distraction?: boolean | undefined;
-            context_items?: {
-                type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
-                label: string;
-                ref: string;
-            }[] | undefined;
-            notes_on_observed_runs?: string | undefined;
-        }[];
-    }>;
 }, "strip", z.ZodTypeAny, {
-    suite: {
-        id: string;
-        version: string;
-        description: string;
-        target_agent_type: string;
-        dimensions_in_scope: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
-        tasks: {
-            id: string;
-            initial_purpose: string;
-            overall_goal: string;
-            is_distraction: boolean;
-            context_items: {
-                type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
-                label: string;
-                ref: string;
-            }[];
-            steps: {
-                golden_truth: string;
-                n: number;
-                prompt: string;
-                expected_tools: string[];
-                scoring_hints: {
-                    tool_match: "strict" | "subset" | "any";
-                    dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
-                    golden_truth_rubric: "pass_fail" | "0-3";
-                };
-            }[];
-            notes_on_observed_runs?: string | undefined;
-        }[];
-    };
-}, {
-    suite: {
-        id: string;
-        version: string;
-        description: string;
-        target_agent_type: string;
-        dimensions_in_scope: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
-        tasks: {
-            id: string;
-            initial_purpose: string;
-            overall_goal: string;
-            steps: {
-                golden_truth: string;
-                n: number;
-                prompt: string;
-                expected_tools?: string[] | undefined;
-                scoring_hints?: {
-                    tool_match?: "strict" | "subset" | "any" | undefined;
-                    dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
-                    golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
-                } | undefined;
-            }[];
-            is_distraction?: boolean | undefined;
-            context_items?: {
-                type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
-                label: string;
-                ref: string;
-            }[] | undefined;
-            notes_on_observed_runs?: string | undefined;
-        }[];
-    };
-}>;
-type EvalSuite = z.infer<typeof EvalSuite>;
-declare const ToolCall: z.ZodObject<{
-    tool: z.ZodString;
-    args: z.ZodUnknown;
-    result: z.ZodUnknown;
 }, "strip", z.ZodTypeAny, {
-    tool: string;
-    args?: unknown;
-    result?: unknown;
-}, {
-    tool: string;
-    args?: unknown;
-    result?: unknown;
-}>;
-type ToolCall = z.infer<typeof ToolCall>;
-declare const AutoScore: z.ZodObject<{
-    tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
-    distraction_caught: z.ZodNullable<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
-    tool_match: boolean | "partial";
-    distraction_caught: boolean | null;
-}, {
-    tool_match: boolean | "partial";
-    distraction_caught: boolean | null;
-}>;
-type AutoScore = z.infer<typeof AutoScore>;
-declare const StepResult: z.ZodObject<{
-    step_n: z.ZodNumber;
-    agent_tool_calls: z.ZodArray<z.ZodObject<{
-        tool: z.ZodString;
-        args: z.ZodUnknown;
-        result: z.ZodUnknown;
-    }, "strip", z.ZodTypeAny, {
-        tool: string;
-        args?: unknown;
-        result?: unknown;
-    }, {
-        tool: string;
-        args?: unknown;
-        result?: unknown;
-    }>, "many">;
-    agent_final_output: z.ZodString;
-    latency_ms: z.ZodNumber;
-    auto_score: z.ZodObject<{
-        tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
-        distraction_caught: z.ZodNullable<z.ZodBoolean>;
-    }, "strip", z.ZodTypeAny, {
-        tool_match: boolean | "partial";
-        distraction_caught: boolean | null;
-    }, {
-        tool_match: boolean | "partial";
-        distraction_caught: boolean | null;
-    }>;
 }, "strip", z.ZodTypeAny, {
-    step_n: number;
-    agent_tool_calls: {
-        tool: string;
-        args?: unknown;
-        result?: unknown;
-    }[];
-    agent_final_output: string;
-    latency_ms: number;
-    auto_score: {
-        tool_match: boolean | "partial";
-        distraction_caught: boolean | null;
-    };
-}, {
-    step_n: number;
-    agent_tool_calls: {
-        tool: string;
-        args?: unknown;
-        result?: unknown;
-    }[];
-    agent_final_output: string;
-    latency_ms: number;
-    auto_score: {
-        tool_match: boolean | "partial";
-        distraction_caught: boolean | null;
-    };
-}>;
-type StepResult = z.infer<typeof StepResult>;
-declare const TaskResult: z.ZodObject<{
-    task_id: z.ZodString;
-    step_results: z.ZodArray<z.ZodObject<{
-        step_n: z.ZodNumber;
-        agent_tool_calls: z.ZodArray<z.ZodObject<{
-            tool: z.ZodString;
-            args: z.ZodUnknown;
-            result: z.ZodUnknown;
-        }, "strip", z.ZodTypeAny, {
-            tool: string;
-            args?: unknown;
-            result?: unknown;
-        }, {
-            tool: string;
-            args?: unknown;
-            result?: unknown;
-        }>, "many">;
-        agent_final_output: z.ZodString;
-        latency_ms: z.ZodNumber;
-        auto_score: z.ZodObject<{
-            tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
-            distraction_caught: z.ZodNullable<z.ZodBoolean>;
-        }, "strip", z.ZodTypeAny, {
-            tool_match: boolean | "partial";
-            distraction_caught: boolean | null;
-        }, {
-            tool_match: boolean | "partial";
-            distraction_caught: boolean | null;
-        }>;
-    }, "strip", z.ZodTypeAny, {
-        step_n: number;
-        agent_tool_calls: {
-            tool: string;
-            args?: unknown;
-            result?: unknown;
-        }[];
-        agent_final_output: string;
-        latency_ms: number;
-        auto_score: {
-            tool_match: boolean | "partial";
-            distraction_caught: boolean | null;
-        };
-    }, {
-        step_n: number;
-        agent_tool_calls: {
-            tool: string;
-            args?: unknown;
-            result?: unknown;
-        }[];
-        agent_final_output: string;
-        latency_ms: number;
-        auto_score: {
-            tool_match: boolean | "partial";
-            distraction_caught: boolean | null;
-        };
-    }>, "many">;
 }, "strip", z.ZodTypeAny, {
-    task_id: string;
-    step_results: {
-        step_n: number;
-        agent_tool_calls: {
-            tool: string;
-            args?: unknown;
-            result?: unknown;
-        }[];
-        agent_final_output: string;
-        latency_ms: number;
-        auto_score: {
-            tool_match: boolean | "partial";
-            distraction_caught: boolean | null;
-        };
-    }[];
-}, {
-    task_id: string;
-    step_results: {
-        step_n: number;
-        agent_tool_calls: {
-            tool: string;
-            args?: unknown;
-            result?: unknown;
-        }[];
-        agent_final_output: string;
-        latency_ms: number;
-        auto_score: {
-            tool_match: boolean | "partial";
-            distraction_caught: boolean | null;
-        };
-    }[];
-}>;
-type TaskResult = z.infer<typeof TaskResult>;
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}>, "many">;
+}>, "many">;
+}>, "many">;
+}>, "many">;
+}>, "many">;
+}>, "many">;
+}>, "many">;
+}>, "many">;
+}>, "many">;
+}>, "many">;
+}>, "many">;
+}>, "many">;
+}>, "many">;
+}>, "many">;
+}>, "many">;
+}>, "many">>;
+}>, "many">>;
+* Confidence (0..1) the LLM pre-fill assigned when drafting this score.
+* Confidence (0..1) the LLM pre-fill assigned when drafting this score.
+* Confidence (0..1) the LLM pre-fill assigned when drafting this score.
+* Confidence (0..1) the LLM pre-fill assigned when drafting this score.
+* Only populated when pre_filled=true. Used by the review-queue triage
+* Only populated when pre_filled=true. Used by the review-queue triage
+* Only populated when pre_filled=true. Used by the review-queue triage
+* Only populated when pre_filled=true. Used by the review-queue triage
+* sort: lower confidence → higher priority for human review.
+* sort: lower confidence → higher priority for human review.
+* sort: lower confidence → higher priority for human review.
+* sort: lower confidence → higher priority for human review.
+adapter: {
+adapter: {
+adapter: {
+adapter: {
+adapter: z.ZodObject<{
+adapter: z.ZodObject<{
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: string;
+agent_final_output: z.ZodString;
+agent_final_output: z.ZodString;
+agent_final_output: z.ZodString;
+agent_final_output: z.ZodString;
+agent_final_output: z.ZodString;
+agent_final_output: z.ZodString;
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: {
+agent_tool_calls: z.ZodArray<z.ZodObject<{
+agent_tool_calls: z.ZodArray<z.ZodObject<{
+agent_tool_calls: z.ZodArray<z.ZodObject<{
+agent_tool_calls: z.ZodArray<z.ZodObject<{
+agent_tool_calls: z.ZodArray<z.ZodObject<{
+agent_tool_calls: z.ZodArray<z.ZodObject<{
+args: z.ZodUnknown;
+args: z.ZodUnknown;
+args: z.ZodUnknown;
+args: z.ZodUnknown;
+args: z.ZodUnknown;
+args: z.ZodUnknown;
+args: z.ZodUnknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+args?: unknown;
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: {
+auto_score: z.ZodObject<{
+auto_score: z.ZodObject<{
+auto_score: z.ZodObject<{
+auto_score: z.ZodObject<{
+auto_score: z.ZodObject<{
+auto_score: z.ZodObject<{
+config: Record<string, unknown>;
+config: Record<string, unknown>;
+config: Record<string, unknown>;
+config: Record<string, unknown>;
+config: Record<string, unknown>;
+config: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
+config: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
+config: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
+config?: Record<string, unknown> | undefined;
+config?: Record<string, unknown> | undefined;
+config?: Record<string, unknown> | undefined;
+config?: Record<string, unknown> | undefined;
+config?: Record<string, unknown> | undefined;
+context_items: {
+context_items: {
+context_items: {
+context_items: {
+context_items: z.ZodDefault<z.ZodArray<z.ZodObject<{
+context_items: z.ZodDefault<z.ZodArray<z.ZodObject<{
+context_items?: {
+context_items?: {
+context_items?: {
+context_items?: {
 declare const AdapterInfo: z.ZodObject<{
-    name: z.ZodString;
-    model: z.ZodString;
-    config: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
-}, "strip", z.ZodTypeAny, {
-    name: string;
-    model: string;
-    config: Record<string, unknown>;
-}, {
-    name: string;
-    model: string;
-    config?: Record<string, unknown> | undefined;
-}>;
-type AdapterInfo = z.infer<typeof AdapterInfo>;
-declare const Run: z.ZodObject<{
-    suite_id: z.ZodString;
-    suite_version: z.ZodString;
-    run_id: z.ZodString;
-    started_at: z.ZodString;
-    ended_at: z.ZodString;
-    adapter: z.ZodObject<{
-        name: z.ZodString;
-        model: z.ZodString;
-        config: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
-    }, "strip", z.ZodTypeAny, {
-        name: string;
-        model: string;
-        config: Record<string, unknown>;
-    }, {
-        name: string;
-        model: string;
-        config?: Record<string, unknown> | undefined;
-    }>;
-    task_results: z.ZodArray<z.ZodObject<{
-        task_id: z.ZodString;
-        step_results: z.ZodArray<z.ZodObject<{
-            step_n: z.ZodNumber;
-            agent_tool_calls: z.ZodArray<z.ZodObject<{
-                tool: z.ZodString;
-                args: z.ZodUnknown;
-                result: z.ZodUnknown;
-            }, "strip", z.ZodTypeAny, {
-                tool: string;
-                args?: unknown;
-                result?: unknown;
-            }, {
-                tool: string;
-                args?: unknown;
-                result?: unknown;
-            }>, "many">;
-            agent_final_output: z.ZodString;
-            latency_ms: z.ZodNumber;
-            auto_score: z.ZodObject<{
-                tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
-                distraction_caught: z.ZodNullable<z.ZodBoolean>;
-            }, "strip", z.ZodTypeAny, {
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-            }, {
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-            }>;
-        }, "strip", z.ZodTypeAny, {
-            step_n: number;
-            agent_tool_calls: {
-                tool: string;
-                args?: unknown;
-                result?: unknown;
-            }[];
-            agent_final_output: string;
-            latency_ms: number;
-            auto_score: {
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-            };
-        }, {
-            step_n: number;
-            agent_tool_calls: {
-                tool: string;
-                args?: unknown;
-                result?: unknown;
-            }[];
-            agent_final_output: string;
-            latency_ms: number;
-            auto_score: {
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-            };
-        }>, "many">;
-    }, "strip", z.ZodTypeAny, {
-        task_id: string;
-        step_results: {
-            step_n: number;
-            agent_tool_calls: {
-                tool: string;
-                args?: unknown;
-                result?: unknown;
-            }[];
-            agent_final_output: string;
-            latency_ms: number;
-            auto_score: {
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-            };
-        }[];
-    }, {
-        task_id: string;
-        step_results: {
-            step_n: number;
-            agent_tool_calls: {
-                tool: string;
-                args?: unknown;
-                result?: unknown;
-            }[];
-            agent_final_output: string;
-            latency_ms: number;
-            auto_score: {
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-            };
-        }[];
-    }>, "many">;
-}, "strip", z.ZodTypeAny, {
-    suite_id: string;
-    suite_version: string;
-    run_id: string;
-    started_at: string;
-    ended_at: string;
-    adapter: {
-        name: string;
-        model: string;
-        config: Record<string, unknown>;
-    };
-    task_results: {
-        task_id: string;
-        step_results: {
-            step_n: number;
-            agent_tool_calls: {
-                tool: string;
-                args?: unknown;
-                result?: unknown;
-            }[];
-            agent_final_output: string;
-            latency_ms: number;
-            auto_score: {
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-            };
-        }[];
-    }[];
-}, {
-    suite_id: string;
-    suite_version: string;
-    run_id: string;
-    started_at: string;
-    ended_at: string;
-    adapter: {
-        name: string;
-        model: string;
-        config?: Record<string, unknown> | undefined;
-    };
-    task_results: {
-        task_id: string;
-        step_results: {
-            step_n: number;
-            agent_tool_calls: {
-                tool: string;
-                args?: unknown;
-                result?: unknown;
-            }[];
-            agent_final_output: string;
-            latency_ms: number;
-            auto_score: {
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-            };
-        }[];
-    }[];
-}>;
-type Run = z.infer<typeof Run>;
+declare const AutoScore: z.ZodObject<{
+declare const ContextItem: z.ZodObject<{
+declare const Dimension: z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>;
+declare const EvalStep: z.ZodObject<{
+declare const EvalSuite: z.ZodObject<{
+declare const EvalTask: z.ZodObject<{
 declare const RubricScore: z.ZodUnion<[z.ZodLiteral<0>, z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>]>;
-type RubricScore = z.infer<typeof RubricScore>;
-declare const StepScore: z.ZodObject<{
-    step_n: z.ZodNumber;
-    tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
-    golden_truth: z.ZodNullable<z.ZodUnion<[z.ZodLiteral<0>, z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>]>>;
-    distraction_caught: z.ZodNullable<z.ZodBoolean>;
-    dimensions: z.ZodDefault<z.ZodRecord<z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>, z.ZodUnion<[z.ZodLiteral<0>, z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>]>>>;
-    reviewer_notes: z.ZodDefault<z.ZodString>;
-    reviewer_id: z.ZodString;
-    reviewed_at: z.ZodString;
-    pre_filled: z.ZodDefault<z.ZodBoolean>;
-    /**
-     * Confidence (0..1) the LLM pre-fill assigned when drafting this score.
-     * Only populated when pre_filled=true. Used by the review-queue triage
-     * sort: lower confidence → higher priority for human review.
-     */
-    pre_fill_confidence: z.ZodOptional<z.ZodNumber>;
-}, "strip", z.ZodTypeAny, {
-    step_n: number;
-    tool_match: boolean | "partial";
-    distraction_caught: boolean | null;
-    golden_truth: 0 | 1 | 2 | 3 | null;
-    dimensions: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>>;
-    reviewer_notes: string;
-    reviewer_id: string;
-    reviewed_at: string;
-    pre_filled: boolean;
-    pre_fill_confidence?: number | undefined;
-}, {
-    step_n: number;
-    tool_match: boolean | "partial";
-    distraction_caught: boolean | null;
-    golden_truth: 0 | 1 | 2 | 3 | null;
-    reviewer_id: string;
-    reviewed_at: string;
-    dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
-    reviewer_notes?: string | undefined;
-    pre_filled?: boolean | undefined;
-    pre_fill_confidence?: number | undefined;
-}>;
-type StepScore = z.infer<typeof StepScore>;
-declare const ScoredStepResult: z.ZodObject<{
-    step_n: z.ZodNumber;
-    agent_tool_calls: z.ZodArray<z.ZodObject<{
-        tool: z.ZodString;
-        args: z.ZodUnknown;
-        result: z.ZodUnknown;
-    }, "strip", z.ZodTypeAny, {
-        tool: string;
-        args?: unknown;
-        result?: unknown;
-    }, {
-        tool: string;
-        args?: unknown;
-        result?: unknown;
-    }>, "many">;
-    agent_final_output: z.ZodString;
-    latency_ms: z.ZodNumber;
-    auto_score: z.ZodObject<{
-        tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
-        distraction_caught: z.ZodNullable<z.ZodBoolean>;
-    }, "strip", z.ZodTypeAny, {
-        tool_match: boolean | "partial";
-        distraction_caught: boolean | null;
-    }, {
-        tool_match: boolean | "partial";
-        distraction_caught: boolean | null;
-    }>;
-} & {
-    score: z.ZodNullable<z.ZodObject<{
-        step_n: z.ZodNumber;
-        tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
-        golden_truth: z.ZodNullable<z.ZodUnion<[z.ZodLiteral<0>, z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>]>>;
-        distraction_caught: z.ZodNullable<z.ZodBoolean>;
-        dimensions: z.ZodDefault<z.ZodRecord<z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>, z.ZodUnion<[z.ZodLiteral<0>, z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>]>>>;
-        reviewer_notes: z.ZodDefault<z.ZodString>;
-        reviewer_id: z.ZodString;
-        reviewed_at: z.ZodString;
-        pre_filled: z.ZodDefault<z.ZodBoolean>;
-        /**
-         * Confidence (0..1) the LLM pre-fill assigned when drafting this score.
-         * Only populated when pre_filled=true. Used by the review-queue triage
-         * sort: lower confidence → higher priority for human review.
-         */
-        pre_fill_confidence: z.ZodOptional<z.ZodNumber>;
-    }, "strip", z.ZodTypeAny, {
-        step_n: number;
-        tool_match: boolean | "partial";
-        distraction_caught: boolean | null;
-        golden_truth: 0 | 1 | 2 | 3 | null;
-        dimensions: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>>;
-        reviewer_notes: string;
-        reviewer_id: string;
-        reviewed_at: string;
-        pre_filled: boolean;
-        pre_fill_confidence?: number | undefined;
-    }, {
-        step_n: number;
-        tool_match: boolean | "partial";
-        distraction_caught: boolean | null;
-        golden_truth: 0 | 1 | 2 | 3 | null;
-        reviewer_id: string;
-        reviewed_at: string;
-        dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
-        reviewer_notes?: string | undefined;
-        pre_filled?: boolean | undefined;
-        pre_fill_confidence?: number | undefined;
-    }>>;
-}, "strip", z.ZodTypeAny, {
-    step_n: number;
-    agent_tool_calls: {
-        tool: string;
-        args?: unknown;
-        result?: unknown;
-    }[];
-    agent_final_output: string;
-    latency_ms: number;
-    auto_score: {
-        tool_match: boolean | "partial";
-        distraction_caught: boolean | null;
-    };
-    score: {
-        step_n: number;
-        tool_match: boolean | "partial";
-        distraction_caught: boolean | null;
-        golden_truth: 0 | 1 | 2 | 3 | null;
-        dimensions: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>>;
-        reviewer_notes: string;
-        reviewer_id: string;
-        reviewed_at: string;
-        pre_filled: boolean;
-        pre_fill_confidence?: number | undefined;
-    } | null;
-}, {
-    step_n: number;
-    agent_tool_calls: {
-        tool: string;
-        args?: unknown;
-        result?: unknown;
-    }[];
-    agent_final_output: string;
-    latency_ms: number;
-    auto_score: {
-        tool_match: boolean | "partial";
-        distraction_caught: boolean | null;
-    };
-    score: {
-        step_n: number;
-        tool_match: boolean | "partial";
-        distraction_caught: boolean | null;
-        golden_truth: 0 | 1 | 2 | 3 | null;
-        reviewer_id: string;
-        reviewed_at: string;
-        dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
-        reviewer_notes?: string | undefined;
-        pre_filled?: boolean | undefined;
-        pre_fill_confidence?: number | undefined;
-    } | null;
-}>;
-type ScoredStepResult = z.infer<typeof ScoredStepResult>;
-declare const ScoredTaskResult: z.ZodObject<{
-    task_id: z.ZodString;
-    step_results: z.ZodArray<z.ZodObject<{
-        step_n: z.ZodNumber;
-        agent_tool_calls: z.ZodArray<z.ZodObject<{
-            tool: z.ZodString;
-            args: z.ZodUnknown;
-            result: z.ZodUnknown;
-        }, "strip", z.ZodTypeAny, {
-            tool: string;
-            args?: unknown;
-            result?: unknown;
-        }, {
-            tool: string;
-            args?: unknown;
-            result?: unknown;
-        }>, "many">;
-        agent_final_output: z.ZodString;
-        latency_ms: z.ZodNumber;
-        auto_score: z.ZodObject<{
-            tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
-            distraction_caught: z.ZodNullable<z.ZodBoolean>;
-        }, "strip", z.ZodTypeAny, {
-            tool_match: boolean | "partial";
-            distraction_caught: boolean | null;
-        }, {
-            tool_match: boolean | "partial";
-            distraction_caught: boolean | null;
-        }>;
-    } & {
-        score: z.ZodNullable<z.ZodObject<{
-            step_n: z.ZodNumber;
-            tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
-            golden_truth: z.ZodNullable<z.ZodUnion<[z.ZodLiteral<0>, z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>]>>;
-            distraction_caught: z.ZodNullable<z.ZodBoolean>;
-            dimensions: z.ZodDefault<z.ZodRecord<z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>, z.ZodUnion<[z.ZodLiteral<0>, z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>]>>>;
-            reviewer_notes: z.ZodDefault<z.ZodString>;
-            reviewer_id: z.ZodString;
-            reviewed_at: z.ZodString;
-            pre_filled: z.ZodDefault<z.ZodBoolean>;
-            /**
-             * Confidence (0..1) the LLM pre-fill assigned when drafting this score.
-             * Only populated when pre_filled=true. Used by the review-queue triage
-             * sort: lower confidence → higher priority for human review.
-             */
-            pre_fill_confidence: z.ZodOptional<z.ZodNumber>;
-        }, "strip", z.ZodTypeAny, {
-            step_n: number;
-            tool_match: boolean | "partial";
-            distraction_caught: boolean | null;
-            golden_truth: 0 | 1 | 2 | 3 | null;
-            dimensions: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>>;
-            reviewer_notes: string;
-            reviewer_id: string;
-            reviewed_at: string;
-            pre_filled: boolean;
-            pre_fill_confidence?: number | undefined;
-        }, {
-            step_n: number;
-            tool_match: boolean | "partial";
-            distraction_caught: boolean | null;
-            golden_truth: 0 | 1 | 2 | 3 | null;
-            reviewer_id: string;
-            reviewed_at: string;
-            dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
-            reviewer_notes?: string | undefined;
-            pre_filled?: boolean | undefined;
-            pre_fill_confidence?: number | undefined;
-        }>>;
-    }, "strip", z.ZodTypeAny, {
-        step_n: number;
-        agent_tool_calls: {
-            tool: string;
-            args?: unknown;
-            result?: unknown;
-        }[];
-        agent_final_output: string;
-        latency_ms: number;
-        auto_score: {
-            tool_match: boolean | "partial";
-            distraction_caught: boolean | null;
-        };
-        score: {
-            step_n: number;
-            tool_match: boolean | "partial";
-            distraction_caught: boolean | null;
-            golden_truth: 0 | 1 | 2 | 3 | null;
-            dimensions: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>>;
-            reviewer_notes: string;
-            reviewer_id: string;
-            reviewed_at: string;
-            pre_filled: boolean;
-            pre_fill_confidence?: number | undefined;
-        } | null;
-    }, {
-        step_n: number;
-        agent_tool_calls: {
-            tool: string;
-            args?: unknown;
-            result?: unknown;
-        }[];
-        agent_final_output: string;
-        latency_ms: number;
-        auto_score: {
-            tool_match: boolean | "partial";
-            distraction_caught: boolean | null;
-        };
-        score: {
-            step_n: number;
-            tool_match: boolean | "partial";
-            distraction_caught: boolean | null;
-            golden_truth: 0 | 1 | 2 | 3 | null;
-            reviewer_id: string;
-            reviewed_at: string;
-            dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
-            reviewer_notes?: string | undefined;
-            pre_filled?: boolean | undefined;
-            pre_fill_confidence?: number | undefined;
-        } | null;
-    }>, "many">;
-}, "strip", z.ZodTypeAny, {
-    task_id: string;
-    step_results: {
-        step_n: number;
-        agent_tool_calls: {
-            tool: string;
-            args?: unknown;
-            result?: unknown;
-        }[];
-        agent_final_output: string;
-        latency_ms: number;
-        auto_score: {
-            tool_match: boolean | "partial";
-            distraction_caught: boolean | null;
-        };
-        score: {
-            step_n: number;
-            tool_match: boolean | "partial";
-            distraction_caught: boolean | null;
-            golden_truth: 0 | 1 | 2 | 3 | null;
-            dimensions: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>>;
-            reviewer_notes: string;
-            reviewer_id: string;
-            reviewed_at: string;
-            pre_filled: boolean;
-            pre_fill_confidence?: number | undefined;
-        } | null;
-    }[];
-}, {
-    task_id: string;
-    step_results: {
-        step_n: number;
-        agent_tool_calls: {
-            tool: string;
-            args?: unknown;
-            result?: unknown;
-        }[];
-        agent_final_output: string;
-        latency_ms: number;
-        auto_score: {
-            tool_match: boolean | "partial";
-            distraction_caught: boolean | null;
-        };
-        score: {
-            step_n: number;
-            tool_match: boolean | "partial";
-            distraction_caught: boolean | null;
-            golden_truth: 0 | 1 | 2 | 3 | null;
-            reviewer_id: string;
-            reviewed_at: string;
-            dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
-            reviewer_notes?: string | undefined;
-            pre_filled?: boolean | undefined;
-            pre_fill_confidence?: number | undefined;
-        } | null;
-    }[];
-}>;
-type ScoredTaskResult = z.infer<typeof ScoredTaskResult>;
+declare const Run: z.ZodObject<{
 declare const ScoredRun: z.ZodObject<{
-    suite_id: z.ZodString;
-    suite_version: z.ZodString;
-    run_id: z.ZodString;
-    started_at: z.ZodString;
-    ended_at: z.ZodString;
-    adapter: z.ZodObject<{
-        name: z.ZodString;
-        model: z.ZodString;
-        config: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
-    }, "strip", z.ZodTypeAny, {
-        name: string;
-        model: string;
-        config: Record<string, unknown>;
-    }, {
-        name: string;
-        model: string;
-        config?: Record<string, unknown> | undefined;
-    }>;
-} & {
-    task_results: z.ZodArray<z.ZodObject<{
-        task_id: z.ZodString;
-        step_results: z.ZodArray<z.ZodObject<{
-            step_n: z.ZodNumber;
-            agent_tool_calls: z.ZodArray<z.ZodObject<{
-                tool: z.ZodString;
-                args: z.ZodUnknown;
-                result: z.ZodUnknown;
-            }, "strip", z.ZodTypeAny, {
-                tool: string;
-                args?: unknown;
-                result?: unknown;
-            }, {
-                tool: string;
-                args?: unknown;
-                result?: unknown;
-            }>, "many">;
-            agent_final_output: z.ZodString;
-            latency_ms: z.ZodNumber;
-            auto_score: z.ZodObject<{
-                tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
-                distraction_caught: z.ZodNullable<z.ZodBoolean>;
-            }, "strip", z.ZodTypeAny, {
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-            }, {
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-            }>;
-        } & {
-            score: z.ZodNullable<z.ZodObject<{
-                step_n: z.ZodNumber;
-                tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
-                golden_truth: z.ZodNullable<z.ZodUnion<[z.ZodLiteral<0>, z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>]>>;
-                distraction_caught: z.ZodNullable<z.ZodBoolean>;
-                dimensions: z.ZodDefault<z.ZodRecord<z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>, z.ZodUnion<[z.ZodLiteral<0>, z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>]>>>;
-                reviewer_notes: z.ZodDefault<z.ZodString>;
-                reviewer_id: z.ZodString;
-                reviewed_at: z.ZodString;
-                pre_filled: z.ZodDefault<z.ZodBoolean>;
-                /**
-                 * Confidence (0..1) the LLM pre-fill assigned when drafting this score.
-                 * Only populated when pre_filled=true. Used by the review-queue triage
-                 * sort: lower confidence → higher priority for human review.
-                 */
-                pre_fill_confidence: z.ZodOptional<z.ZodNumber>;
-            }, "strip", z.ZodTypeAny, {
-                step_n: number;
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-                golden_truth: 0 | 1 | 2 | 3 | null;
-                dimensions: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>>;
-                reviewer_notes: string;
-                reviewer_id: string;
-                reviewed_at: string;
-                pre_filled: boolean;
-                pre_fill_confidence?: number | undefined;
-            }, {
-                step_n: number;
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-                golden_truth: 0 | 1 | 2 | 3 | null;
-                reviewer_id: string;
-                reviewed_at: string;
-                dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
-                reviewer_notes?: string | undefined;
-                pre_filled?: boolean | undefined;
-                pre_fill_confidence?: number | undefined;
-            }>>;
-        }, "strip", z.ZodTypeAny, {
-            step_n: number;
-            agent_tool_calls: {
-                tool: string;
-                args?: unknown;
-                result?: unknown;
-            }[];
-            agent_final_output: string;
-            latency_ms: number;
-            auto_score: {
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-            };
-            score: {
-                step_n: number;
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-                golden_truth: 0 | 1 | 2 | 3 | null;
-                dimensions: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>>;
-                reviewer_notes: string;
-                reviewer_id: string;
-                reviewed_at: string;
-                pre_filled: boolean;
-                pre_fill_confidence?: number | undefined;
-            } | null;
-        }, {
-            step_n: number;
-            agent_tool_calls: {
-                tool: string;
-                args?: unknown;
-                result?: unknown;
-            }[];
-            agent_final_output: string;
-            latency_ms: number;
-            auto_score: {
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-            };
-            score: {
-                step_n: number;
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-                golden_truth: 0 | 1 | 2 | 3 | null;
-                reviewer_id: string;
-                reviewed_at: string;
-                dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
-                reviewer_notes?: string | undefined;
-                pre_filled?: boolean | undefined;
-                pre_fill_confidence?: number | undefined;
-            } | null;
-        }>, "many">;
-    }, "strip", z.ZodTypeAny, {
-        task_id: string;
-        step_results: {
-            step_n: number;
-            agent_tool_calls: {
-                tool: string;
-                args?: unknown;
-                result?: unknown;
-            }[];
-            agent_final_output: string;
-            latency_ms: number;
-            auto_score: {
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-            };
-            score: {
-                step_n: number;
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-                golden_truth: 0 | 1 | 2 | 3 | null;
-                dimensions: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>>;
-                reviewer_notes: string;
-                reviewer_id: string;
-                reviewed_at: string;
-                pre_filled: boolean;
-                pre_fill_confidence?: number | undefined;
-            } | null;
-        }[];
-    }, {
-        task_id: string;
-        step_results: {
-            step_n: number;
-            agent_tool_calls: {
-                tool: string;
-                args?: unknown;
-                result?: unknown;
-            }[];
-            agent_final_output: string;
-            latency_ms: number;
-            auto_score: {
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-            };
-            score: {
-                step_n: number;
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-                golden_truth: 0 | 1 | 2 | 3 | null;
-                reviewer_id: string;
-                reviewed_at: string;
-                dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
-                reviewer_notes?: string | undefined;
-                pre_filled?: boolean | undefined;
-                pre_fill_confidence?: number | undefined;
-            } | null;
-        }[];
-    }>, "many">;
-}, "strip", z.ZodTypeAny, {
-    suite_id: string;
-    suite_version: string;
-    run_id: string;
-    started_at: string;
-    ended_at: string;
-    adapter: {
-        name: string;
-        model: string;
-        config: Record<string, unknown>;
-    };
-    task_results: {
-        task_id: string;
-        step_results: {
-            step_n: number;
-            agent_tool_calls: {
-                tool: string;
-                args?: unknown;
-                result?: unknown;
-            }[];
-            agent_final_output: string;
-            latency_ms: number;
-            auto_score: {
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-            };
-            score: {
-                step_n: number;
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-                golden_truth: 0 | 1 | 2 | 3 | null;
-                dimensions: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>>;
-                reviewer_notes: string;
-                reviewer_id: string;
-                reviewed_at: string;
-                pre_filled: boolean;
-                pre_fill_confidence?: number | undefined;
-            } | null;
-        }[];
-    }[];
-}, {
-    suite_id: string;
-    suite_version: string;
-    run_id: string;
-    started_at: string;
-    ended_at: string;
-    adapter: {
-        name: string;
-        model: string;
-        config?: Record<string, unknown> | undefined;
-    };
-    task_results: {
-        task_id: string;
-        step_results: {
-            step_n: number;
-            agent_tool_calls: {
-                tool: string;
-                args?: unknown;
-                result?: unknown;
-            }[];
-            agent_final_output: string;
-            latency_ms: number;
-            auto_score: {
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-            };
-            score: {
-                step_n: number;
-                tool_match: boolean | "partial";
-                distraction_caught: boolean | null;
-                golden_truth: 0 | 1 | 2 | 3 | null;
-                reviewer_id: string;
-                reviewed_at: string;
-                dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
-                reviewer_notes?: string | undefined;
-                pre_filled?: boolean | undefined;
-                pre_fill_confidence?: number | undefined;
-            } | null;
-        }[];
-    }[];
-}>;
-type ScoredRun = z.infer<typeof ScoredRun>;
-declare function parseSuite(input: unknown): EvalSuite;
+declare const ScoredStepResult: z.ZodObject<{
+declare const ScoredTaskResult: z.ZodObject<{
+declare const ScoringHints: z.ZodDefault<z.ZodObject<{
+declare const StepResult: z.ZodObject<{
+declare const StepScore: z.ZodObject<{
+declare const TaskResult: z.ZodObject<{
+declare const ToolCall: z.ZodObject<{
 declare function parseRun(input: unknown): Run;
 declare function parseScoredRun(input: unknown): ScoredRun;
-
+declare function parseSuite(input: unknown): EvalSuite;
+description: string;
+description: string;
+description: string;
+description: string;
+description: z.ZodString;
+dimensions_in_scope: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
+dimensions_in_scope: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
+dimensions_in_scope: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
+dimensions_in_scope: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
+dimensions_in_scope: z.ZodArray<z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>, "many">;
+dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
+dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
+dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
+dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
+dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
+dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
+dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
+dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
+dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
+dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
+dimensions: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
+dimensions: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>>;
+dimensions: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>>;
+dimensions: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>>;
+dimensions: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>>;
+dimensions: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>>;
+dimensions: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>>;
+dimensions: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>>;
+dimensions: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>>;
+dimensions: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>>;
+dimensions: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>>;
+dimensions: z.ZodDefault<z.ZodArray<z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>, "many">>;
+dimensions: z.ZodDefault<z.ZodArray<z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>, "many">>;
+dimensions: z.ZodDefault<z.ZodArray<z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>, "many">>;
+dimensions: z.ZodDefault<z.ZodArray<z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>, "many">>;
+dimensions: z.ZodDefault<z.ZodRecord<z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>, z.ZodUnion<[z.ZodLiteral<0>, z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>]>>>;
+dimensions: z.ZodDefault<z.ZodRecord<z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>, z.ZodUnion<[z.ZodLiteral<0>, z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>]>>>;
+dimensions: z.ZodDefault<z.ZodRecord<z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>, z.ZodUnion<[z.ZodLiteral<0>, z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>]>>>;
+dimensions: z.ZodDefault<z.ZodRecord<z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>, z.ZodUnion<[z.ZodLiteral<0>, z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>]>>>;
+dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
+dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
+dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
+dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
+dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
+dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
+dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
+dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
+dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
+dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
+dimensions?: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[] | undefined;
+dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
+dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
+dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
+dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
+dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
+dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
+dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
+dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
+dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
+dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: boolean | null;
+distraction_caught: z.ZodNullable<z.ZodBoolean>;
+distraction_caught: z.ZodNullable<z.ZodBoolean>;
+distraction_caught: z.ZodNullable<z.ZodBoolean>;
+distraction_caught: z.ZodNullable<z.ZodBoolean>;
+distraction_caught: z.ZodNullable<z.ZodBoolean>;
+distraction_caught: z.ZodNullable<z.ZodBoolean>;
+distraction_caught: z.ZodNullable<z.ZodBoolean>;
+distraction_caught: z.ZodNullable<z.ZodBoolean>;
+distraction_caught: z.ZodNullable<z.ZodBoolean>;
+distraction_caught: z.ZodNullable<z.ZodBoolean>;
+distraction_caught: z.ZodNullable<z.ZodBoolean>;
+ended_at: string;
+ended_at: string;
+ended_at: string;
+ended_at: string;
+ended_at: z.ZodString;
+ended_at: z.ZodString;
+expected_tools: string[];
+expected_tools: string[];
+expected_tools: string[];
+expected_tools: string[];
+expected_tools: string[];
+expected_tools: string[];
+expected_tools: string[];
+expected_tools: z.ZodDefault<z.ZodArray<z.ZodString, "many">>;
+expected_tools: z.ZodDefault<z.ZodArray<z.ZodString, "many">>;
+expected_tools: z.ZodDefault<z.ZodArray<z.ZodString, "many">>;
+expected_tools?: string[] | undefined;
+expected_tools?: string[] | undefined;
+expected_tools?: string[] | undefined;
+expected_tools?: string[] | undefined;
+expected_tools?: string[] | undefined;
+expected_tools?: string[] | undefined;
+expected_tools?: string[] | undefined;
 export { AdapterInfo, AutoScore, ContextItem, Dimension, EvalStep, EvalSuite, EvalTask, RubricScore, Run, ScoredRun, ScoredStepResult, ScoredTaskResult, ScoringHints, StepResult, StepScore, TaskResult, ToolCall, parseRun, parseScoredRun, parseSuite };
+golden_truth_rubric: "pass_fail" | "0-3";
+golden_truth_rubric: "pass_fail" | "0-3";
+golden_truth_rubric: "pass_fail" | "0-3";
+golden_truth_rubric: "pass_fail" | "0-3";
+golden_truth_rubric: "pass_fail" | "0-3";
+golden_truth_rubric: "pass_fail" | "0-3";
+golden_truth_rubric: "pass_fail" | "0-3";
+golden_truth_rubric: "pass_fail" | "0-3";
+golden_truth_rubric: "pass_fail" | "0-3";
+golden_truth_rubric: "pass_fail" | "0-3";
+golden_truth_rubric: "pass_fail" | "0-3";
+golden_truth_rubric: z.ZodDefault<z.ZodEnum<["pass_fail", "0-3"]>>;
+golden_truth_rubric: z.ZodDefault<z.ZodEnum<["pass_fail", "0-3"]>>;
+golden_truth_rubric: z.ZodDefault<z.ZodEnum<["pass_fail", "0-3"]>>;
+golden_truth_rubric: z.ZodDefault<z.ZodEnum<["pass_fail", "0-3"]>>;
+golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
+golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
+golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
+golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
+golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
+golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
+golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
+golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
+golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
+golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
+golden_truth_rubric?: "pass_fail" | "0-3" | undefined;
+golden_truth: 0 | 1 | 2 | 3 | null;
+golden_truth: 0 | 1 | 2 | 3 | null;
+golden_truth: 0 | 1 | 2 | 3 | null;
+golden_truth: 0 | 1 | 2 | 3 | null;
+golden_truth: 0 | 1 | 2 | 3 | null;
+golden_truth: 0 | 1 | 2 | 3 | null;
+golden_truth: 0 | 1 | 2 | 3 | null;
+golden_truth: 0 | 1 | 2 | 3 | null;
+golden_truth: 0 | 1 | 2 | 3 | null;
+golden_truth: 0 | 1 | 2 | 3 | null;
+golden_truth: 0 | 1 | 2 | 3 | null;
+golden_truth: 0 | 1 | 2 | 3 | null;
+golden_truth: 0 | 1 | 2 | 3 | null;
+golden_truth: 0 | 1 | 2 | 3 | null;
+golden_truth: 0 | 1 | 2 | 3 | null;
+golden_truth: 0 | 1 | 2 | 3 | null;
+golden_truth: 0 | 1 | 2 | 3 | null;
+golden_truth: 0 | 1 | 2 | 3 | null;
+golden_truth: 0 | 1 | 2 | 3 | null;
+golden_truth: 0 | 1 | 2 | 3 | null;
+golden_truth: string;
+golden_truth: string;
+golden_truth: string;
+golden_truth: string;
+golden_truth: string;
+golden_truth: string;
+golden_truth: string;
+golden_truth: string;
+golden_truth: string;
+golden_truth: string;
+golden_truth: string;
+golden_truth: string;
+golden_truth: string;
+golden_truth: string;
+golden_truth: z.ZodNullable<z.ZodUnion<[z.ZodLiteral<0>, z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>]>>;
+golden_truth: z.ZodNullable<z.ZodUnion<[z.ZodLiteral<0>, z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>]>>;
+golden_truth: z.ZodNullable<z.ZodUnion<[z.ZodLiteral<0>, z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>]>>;
+golden_truth: z.ZodNullable<z.ZodUnion<[z.ZodLiteral<0>, z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>]>>;
+golden_truth: z.ZodString;
+golden_truth: z.ZodString;
+golden_truth: z.ZodString;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: z.ZodString;
+id: z.ZodString;
+id: z.ZodString;
+import { z } from 'zod';
+initial_purpose: string;
+initial_purpose: string;
+initial_purpose: string;
+initial_purpose: string;
+initial_purpose: string;
+initial_purpose: string;
+initial_purpose: string;
+initial_purpose: string;
+initial_purpose: z.ZodString;
+initial_purpose: z.ZodString;
+is_distraction: boolean;
+is_distraction: boolean;
+is_distraction: boolean;
+is_distraction: boolean;
+is_distraction: z.ZodDefault<z.ZodBoolean>;
+is_distraction: z.ZodDefault<z.ZodBoolean>;
+is_distraction?: boolean | undefined;
+is_distraction?: boolean | undefined;
+is_distraction?: boolean | undefined;
+is_distraction?: boolean | undefined;
+label: string;
+label: string;
+label: string;
+label: string;
+label: string;
+label: string;
+label: string;
+label: string;
+label: string;
+label: string;
+label: string;
+label: string;
+label: string;
+label: string;
+label: z.ZodString;
+label: z.ZodString;
+label: z.ZodString;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: number;
+latency_ms: z.ZodNumber;
+latency_ms: z.ZodNumber;
+latency_ms: z.ZodNumber;
+latency_ms: z.ZodNumber;
+latency_ms: z.ZodNumber;
+latency_ms: z.ZodNumber;
+model: string;
+model: string;
+model: string;
+model: string;
+model: string;
+model: string;
+model: string;
+model: string;
+model: string;
+model: string;
+model: z.ZodString;
+model: z.ZodString;
+model: z.ZodString;
+n: number;
+n: number;
+n: number;
+n: number;
+n: number;
+n: number;
+n: number;
+n: number;
+n: number;
+n: number;
+n: number;
+n: number;
+n: number;
+n: number;
+n: z.ZodNumber;
+n: z.ZodNumber;
+n: z.ZodNumber;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: z.ZodString;
+name: z.ZodString;
+name: z.ZodString;
+notes_on_observed_runs: z.ZodOptional<z.ZodString>;
+notes_on_observed_runs: z.ZodOptional<z.ZodString>;
+notes_on_observed_runs?: string | undefined;
+notes_on_observed_runs?: string | undefined;
+notes_on_observed_runs?: string | undefined;
+notes_on_observed_runs?: string | undefined;
+notes_on_observed_runs?: string | undefined;
+notes_on_observed_runs?: string | undefined;
+notes_on_observed_runs?: string | undefined;
+notes_on_observed_runs?: string | undefined;
+overall_goal: string;
+overall_goal: string;
+overall_goal: string;
+overall_goal: string;
+overall_goal: string;
+overall_goal: string;
+overall_goal: string;
+overall_goal: string;
+overall_goal: z.ZodString;
+overall_goal: z.ZodString;
+pre_fill_confidence: z.ZodOptional<z.ZodNumber>;
+pre_fill_confidence: z.ZodOptional<z.ZodNumber>;
+pre_fill_confidence: z.ZodOptional<z.ZodNumber>;
+pre_fill_confidence: z.ZodOptional<z.ZodNumber>;
+pre_fill_confidence?: number | undefined;
+pre_fill_confidence?: number | undefined;
+pre_fill_confidence?: number | undefined;
+pre_fill_confidence?: number | undefined;
+pre_fill_confidence?: number | undefined;
+pre_fill_confidence?: number | undefined;
+pre_fill_confidence?: number | undefined;
+pre_fill_confidence?: number | undefined;
+pre_fill_confidence?: number | undefined;
+pre_fill_confidence?: number | undefined;
+pre_fill_confidence?: number | undefined;
+pre_fill_confidence?: number | undefined;
+pre_fill_confidence?: number | undefined;
+pre_fill_confidence?: number | undefined;
+pre_fill_confidence?: number | undefined;
+pre_fill_confidence?: number | undefined;
+pre_fill_confidence?: number | undefined;
+pre_fill_confidence?: number | undefined;
+pre_fill_confidence?: number | undefined;
+pre_fill_confidence?: number | undefined;
+pre_filled: boolean;
+pre_filled: boolean;
+pre_filled: boolean;
+pre_filled: boolean;
+pre_filled: boolean;
+pre_filled: boolean;
+pre_filled: boolean;
+pre_filled: boolean;
+pre_filled: boolean;
+pre_filled: boolean;
+pre_filled: z.ZodDefault<z.ZodBoolean>;
+pre_filled: z.ZodDefault<z.ZodBoolean>;
+pre_filled: z.ZodDefault<z.ZodBoolean>;
+pre_filled: z.ZodDefault<z.ZodBoolean>;
+pre_filled?: boolean | undefined;
+pre_filled?: boolean | undefined;
+pre_filled?: boolean | undefined;
+pre_filled?: boolean | undefined;
+pre_filled?: boolean | undefined;
+pre_filled?: boolean | undefined;
+pre_filled?: boolean | undefined;
+pre_filled?: boolean | undefined;
+pre_filled?: boolean | undefined;
+pre_filled?: boolean | undefined;
+prompt: string;
+prompt: string;
+prompt: string;
+prompt: string;
+prompt: string;
+prompt: string;
+prompt: string;
+prompt: string;
+prompt: string;
+prompt: string;
+prompt: string;
+prompt: string;
+prompt: string;
+prompt: string;
+prompt: z.ZodString;
+prompt: z.ZodString;
+prompt: z.ZodString;
+ref: string;
+ref: string;
+ref: string;
+ref: string;
+ref: string;
+ref: string;
+ref: string;
+ref: string;
+ref: string;
+ref: string;
+ref: string;
+ref: string;
+ref: string;
+ref: string;
+ref: z.ZodString;
+ref: z.ZodString;
+ref: z.ZodString;
+result: z.ZodUnknown;
+result: z.ZodUnknown;
+result: z.ZodUnknown;
+result: z.ZodUnknown;
+result: z.ZodUnknown;
+result: z.ZodUnknown;
+result: z.ZodUnknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+result?: unknown;
+reviewed_at: string;
+reviewed_at: string;
+reviewed_at: string;
+reviewed_at: string;
+reviewed_at: string;
+reviewed_at: string;
+reviewed_at: string;
+reviewed_at: string;
+reviewed_at: string;
+reviewed_at: string;
+reviewed_at: string;
+reviewed_at: string;
+reviewed_at: string;
+reviewed_at: string;
+reviewed_at: string;
+reviewed_at: string;
+reviewed_at: string;
+reviewed_at: string;
+reviewed_at: string;
+reviewed_at: string;
+reviewed_at: z.ZodString;
+reviewed_at: z.ZodString;
+reviewed_at: z.ZodString;
+reviewed_at: z.ZodString;
+reviewer_id: string;
+reviewer_id: string;
+reviewer_id: string;
+reviewer_id: string;
+reviewer_id: string;
+reviewer_id: string;
+reviewer_id: string;
+reviewer_id: string;
+reviewer_id: string;
+reviewer_id: string;
+reviewer_id: string;
+reviewer_id: string;
+reviewer_id: string;
+reviewer_id: string;
+reviewer_id: string;
+reviewer_id: string;
+reviewer_id: string;
+reviewer_id: string;
+reviewer_id: string;
+reviewer_id: string;
+reviewer_id: z.ZodString;
+reviewer_id: z.ZodString;
+reviewer_id: z.ZodString;
+reviewer_id: z.ZodString;
+reviewer_notes: string;
+reviewer_notes: string;
+reviewer_notes: string;
+reviewer_notes: string;
+reviewer_notes: string;
+reviewer_notes: string;
+reviewer_notes: string;
+reviewer_notes: string;
+reviewer_notes: string;
+reviewer_notes: string;
+reviewer_notes: z.ZodDefault<z.ZodString>;
+reviewer_notes: z.ZodDefault<z.ZodString>;
+reviewer_notes: z.ZodDefault<z.ZodString>;
+reviewer_notes: z.ZodDefault<z.ZodString>;
+reviewer_notes?: string | undefined;
+reviewer_notes?: string | undefined;
+reviewer_notes?: string | undefined;
+reviewer_notes?: string | undefined;
+reviewer_notes?: string | undefined;
+reviewer_notes?: string | undefined;
+reviewer_notes?: string | undefined;
+reviewer_notes?: string | undefined;
+reviewer_notes?: string | undefined;
+reviewer_notes?: string | undefined;
+run_id: string;
+run_id: string;
+run_id: string;
+run_id: string;
+run_id: z.ZodString;
+run_id: z.ZodString;
+score: {
+score: {
+score: {
+score: {
+score: {
+score: {
+score: {
+score: {
+score: {
+score: {
+score: {
+score: {
+score: z.ZodNullable<z.ZodObject<{
+score: z.ZodNullable<z.ZodObject<{
+score: z.ZodNullable<z.ZodObject<{
+scoring_hints: {
+scoring_hints: {
+scoring_hints: {
+scoring_hints: {
+scoring_hints: {
+scoring_hints: {
+scoring_hints: {
+scoring_hints: z.ZodDefault<z.ZodObject<{
+scoring_hints: z.ZodDefault<z.ZodObject<{
+scoring_hints: z.ZodDefault<z.ZodObject<{
+scoring_hints?: {
+scoring_hints?: {
+scoring_hints?: {
+scoring_hints?: {
+scoring_hints?: {
+scoring_hints?: {
+scoring_hints?: {
+started_at: string;
+started_at: string;
+started_at: string;
+started_at: string;
+started_at: z.ZodString;
+started_at: z.ZodString;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: z.ZodNumber;
+step_n: z.ZodNumber;
+step_n: z.ZodNumber;
+step_n: z.ZodNumber;
+step_n: z.ZodNumber;
+step_n: z.ZodNumber;
+step_n: z.ZodNumber;
+step_n: z.ZodNumber;
+step_n: z.ZodNumber;
+step_n: z.ZodNumber;
+step_results: {
+step_results: {
+step_results: {
+step_results: {
+step_results: {
+step_results: {
+step_results: {
+step_results: {
+step_results: {
+step_results: {
+step_results: {
+step_results: {
+step_results: z.ZodArray<z.ZodObject<{
+step_results: z.ZodArray<z.ZodObject<{
+step_results: z.ZodArray<z.ZodObject<{
+step_results: z.ZodArray<z.ZodObject<{
+steps: {
+steps: {
+steps: {
+steps: {
+steps: {
+steps: {
+steps: {
+steps: {
+steps: z.ZodArray<z.ZodObject<{
+steps: z.ZodArray<z.ZodObject<{
+suite_id: string;
+suite_id: string;
+suite_id: string;
+suite_id: string;
+suite_id: z.ZodString;
+suite_id: z.ZodString;
+suite_version: string;
+suite_version: string;
+suite_version: string;
+suite_version: string;
+suite_version: z.ZodString;
+suite_version: z.ZodString;
+suite: {
+suite: {
+suite: z.ZodObject<{
+target_agent_type: string;
+target_agent_type: string;
+target_agent_type: string;
+target_agent_type: string;
+target_agent_type: z.ZodString;
+task_id: string;
+task_id: string;
+task_id: string;
+task_id: string;
+task_id: string;
+task_id: string;
+task_id: string;
+task_id: string;
+task_id: string;
+task_id: string;
+task_id: string;
+task_id: string;
+task_id: z.ZodString;
+task_id: z.ZodString;
+task_id: z.ZodString;
+task_id: z.ZodString;
+task_results: {
+task_results: {
+task_results: {
+task_results: {
+task_results: z.ZodArray<z.ZodObject<{
+task_results: z.ZodArray<z.ZodObject<{
+tasks: {
+tasks: {
+tasks: {
+tasks: {
+tasks: z.ZodArray<z.ZodObject<{
+tool_match: "strict" | "subset" | "any";
+tool_match: "strict" | "subset" | "any";
+tool_match: "strict" | "subset" | "any";
+tool_match: "strict" | "subset" | "any";
+tool_match: "strict" | "subset" | "any";
+tool_match: "strict" | "subset" | "any";
+tool_match: "strict" | "subset" | "any";
+tool_match: "strict" | "subset" | "any";
+tool_match: "strict" | "subset" | "any";
+tool_match: "strict" | "subset" | "any";
+tool_match: "strict" | "subset" | "any";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: boolean | "partial";
+tool_match: z.ZodDefault<z.ZodEnum<["strict", "subset", "any"]>>;
+tool_match: z.ZodDefault<z.ZodEnum<["strict", "subset", "any"]>>;
+tool_match: z.ZodDefault<z.ZodEnum<["strict", "subset", "any"]>>;
+tool_match: z.ZodDefault<z.ZodEnum<["strict", "subset", "any"]>>;
+tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
+tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
+tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
+tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
+tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
+tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
+tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
+tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
+tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
+tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
+tool_match: z.ZodUnion<[z.ZodBoolean, z.ZodLiteral<"partial">]>;
+tool_match?: "strict" | "subset" | "any" | undefined;
+tool_match?: "strict" | "subset" | "any" | undefined;
+tool_match?: "strict" | "subset" | "any" | undefined;
+tool_match?: "strict" | "subset" | "any" | undefined;
+tool_match?: "strict" | "subset" | "any" | undefined;
+tool_match?: "strict" | "subset" | "any" | undefined;
+tool_match?: "strict" | "subset" | "any" | undefined;
+tool_match?: "strict" | "subset" | "any" | undefined;
+tool_match?: "strict" | "subset" | "any" | undefined;
+tool_match?: "strict" | "subset" | "any" | undefined;
+tool_match?: "strict" | "subset" | "any" | undefined;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: string;
+tool: z.ZodString;
+tool: z.ZodString;
+tool: z.ZodString;
+tool: z.ZodString;
+tool: z.ZodString;
+tool: z.ZodString;
+tool: z.ZodString;
+type AdapterInfo = z.infer<typeof AdapterInfo>;
+type AutoScore = z.infer<typeof AutoScore>;
+type ContextItem = z.infer<typeof ContextItem>;
+type Dimension = z.infer<typeof Dimension>;
+type EvalStep = z.infer<typeof EvalStep>;
+type EvalSuite = z.infer<typeof EvalSuite>;
+type EvalTask = z.infer<typeof EvalTask>;
+type RubricScore = z.infer<typeof RubricScore>;
+type Run = z.infer<typeof Run>;
+type ScoredRun = z.infer<typeof ScoredRun>;
+type ScoredStepResult = z.infer<typeof ScoredStepResult>;
+type ScoredTaskResult = z.infer<typeof ScoredTaskResult>;
+type ScoringHints = z.infer<typeof ScoringHints>;
+type StepResult = z.infer<typeof StepResult>;
+type StepScore = z.infer<typeof StepScore>;
+type TaskResult = z.infer<typeof TaskResult>;
+type ToolCall = z.infer<typeof ToolCall>;
+type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
+type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
+type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
+type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
+type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
+type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
+type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
+type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
+type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
+type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
+type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
+type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
+type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
+type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
+type: z.ZodEnum<["pdf", "url", "text", "image", "canvas", "other"]>;
+type: z.ZodEnum<["pdf", "url", "text", "image", "canvas", "other"]>;
+type: z.ZodEnum<["pdf", "url", "text", "image", "canvas", "other"]>;
+version: string;
+version: string;
+version: string;
+version: string;
+version: z.ZodString;
 
-// ===== dist/scoring.d.ts =====
-import { ScoredRun, EvalStep, EvalTask, AutoScore, Run, StepScore } from './schema.js';
-import 'zod';
-
-declare function autoScoreStep(opts: {
-    step: EvalStep;
-    task: EvalTask;
-    toolsCalled: string[];
-    finalOutput: string;
+// ===== dist/scoring.d.ts (sorted line inventory) =====
 }): AutoScore;
-interface SuiteAggregate {
-    suite_id: string;
-    total_steps: number;
-    reviewed_steps: number;
-    tool_match_accuracy: number;
-    distraction_detection_rate: number | null;
-    golden_truth_pass_rate: number | null;
-    dimension_means: Partial<Record<string, number>>;
-}
 declare function aggregateScoredRun(run: ScoredRun): SuiteAggregate;
+declare function autoScoreStep(opts: {
 declare function mergeScores(run: Run, scores: Map<string, Map<number, StepScore>>): ScoredRun;
-
+dimension_means: Partial<Record<string, number>>;
+distraction_detection_rate: number | null;
 export { type SuiteAggregate, aggregateScoredRun, autoScoreStep, mergeScores };
+finalOutput: string;
+golden_truth_pass_rate: number | null;
+import 'zod';
+import { ScoredRun, EvalStep, EvalTask, AutoScore, Run, StepScore } from './schema.js';
+interface SuiteAggregate {
+reviewed_steps: number;
+step: EvalStep;
+suite_id: string;
+task: EvalTask;
+tool_match_accuracy: number;
+toolsCalled: string[];
+total_steps: number;
 
-// ===== dist/types.d.ts =====
-import { ContextItem, ToolCall } from './schema.js';
-
-interface AgentRunInput {
-    prompt: string;
-    context: ContextItem[];
-    expected_tools: string[];
-    prior_steps: Array<{
-        prompt: string;
-        tool_calls: ToolCall[];
-        final_output: string;
-    }>;
-}
-interface AgentRunOutput {
-    tool_calls: ToolCall[];
-    final_output: string;
-    latency_ms: number;
-}
-interface AgentAdapter {
-    name: string;
-    model: string;
-    config: Record<string, unknown>;
-    run(input: AgentRunInput): Promise<AgentRunOutput>;
-}
-
+// ===== dist/types.d.ts (sorted line inventory) =====
+config: Record<string, unknown>;
+context: ContextItem[];
+expected_tools: string[];
 export type { AgentAdapter as A, AgentRunInput as a, AgentRunOutput as b };
+final_output: string;
+final_output: string;
+import { ContextItem, ToolCall } from './schema.js';
+interface AgentAdapter {
+interface AgentRunInput {
+interface AgentRunOutput {
+latency_ms: number;
+model: string;
+name: string;
+prior_steps: Array<{
+prompt: string;
+prompt: string;
+run(input: AgentRunInput): Promise<AgentRunOutput>;
+tool_calls: ToolCall[];
+tool_calls: ToolCall[];
 

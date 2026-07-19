@@ -2,437 +2,345 @@
 // Public type surface of @eval-kit/ui. Regenerate with `pnpm api:check`.
 // A diff here is a public-API change: review it, then commit this file on purpose.
 
-// ===== dist/index.d.ts =====
-import * as react from 'react';
-import { ButtonHTMLAttributes, HTMLAttributes, InputHTMLAttributes, TextareaHTMLAttributes, ReactNode, ComponentPropsWithoutRef } from 'react';
-import * as class_variance_authority_types from 'class-variance-authority/types';
-import { VariantProps } from 'class-variance-authority';
-import * as SelectPrimitive from '@radix-ui/react-select';
-import * as TabsPrimitive from '@radix-ui/react-tabs';
-import * as react_jsx_runtime from 'react/jsx-runtime';
-import * as TooltipPrimitive from '@radix-ui/react-tooltip';
-import * as DialogPrimitive from '@radix-ui/react-dialog';
-import * as PopoverPrimitive from '@radix-ui/react-popover';
-import { ClassValue } from 'clsx';
-import { LucideIcon } from 'lucide-react';
-import { Dimension, Run, ScoredRun, StepDiff, RubricScore, EvalStep, StepResult, StepScore, EvalSuite } from '@eval-kit/core';
-export { DIMENSION_DESCRIPTIONS, DIMENSION_LABELS, DIMENSION_RUBRIC_EXAMPLES } from '@eval-kit/core';
-
-declare const buttonVariants: (props?: ({
-    variant?: "default" | "primary" | "ghost" | "outline" | "danger" | null | undefined;
-    size?: "sm" | "md" | "lg" | "icon" | "icon-sm" | null | undefined;
+// ===== dist/index.d.ts (sorted line inventory) =====
 } & class_variance_authority_types.ClassProp) | undefined) => string;
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
-    asChild?: boolean;
-}
+} & class_variance_authority_types.ClassProp) | undefined) => string;
+}) => Promise<void> | void;
+}) => void;
+}): react_jsx_runtime.JSX.Element | null;
+*   <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+* after a successful inline score / autosave to keep the tracker in sync.
+* flash of the default theme. Render this as:
+* Inline script to apply the stored theme before hydration, preventing a
+* inside <head>.
+* Public API: bump the session score counter. Other components call this
+/** Called when user clicks "Pre-fill" for a task. Returns the pre-filled scores. */
+/** If provided, wrap the whole row as a link to this URL (used for preview lists). */
+/** If set, values below this render red, above render green; else all accent */
+/** Ref for keyboard focus management */
+/** Values in the natural scale for the series (e.g. 0..3 for rubric scores) */
+/** Whether the prefill feature is available (e.g. env key set) */
+/** Whether to render a tiny numeric label in the center */
+a: ScoredRun;
+a: string[];
+action?: ReactNode;
+actions: CommandAction[];
+active?: boolean;
+active?: boolean;
+agent_output_preview: string;
+appVersion?: string;
+asChild?: boolean;
+autoFocusKeyboard?: boolean;
+b: ScoredRun;
+b: string[];
+badge?: ReactNode;
+breadcrumbs?: BreadcrumbItem[];
+children: ReactNode;
+children: ReactNode;
+children: ReactNode;
+className?: string;
+className?: string;
+className?: string;
+className?: string;
+className?: string;
+className?: string;
+className?: string;
+className?: string;
+className?: string;
+className?: string;
+className?: string;
+className?: string;
+className?: string;
+closePalette: () => void;
+compact?: boolean;
+confidence?: number;
+content: ReactNode;
+current_golden_truth: RubricScore | null;
+currentPath: string;
+declare const Badge: react.ForwardRefExoticComponent<BadgeProps & react.RefAttributes<HTMLSpanElement>>;
+declare const badgeVariants: (props?: ({
 declare const Button: react.ForwardRefExoticComponent<ButtonProps & react.RefAttributes<HTMLButtonElement>>;
-
+declare const buttonVariants: (props?: ({
 declare const Card: react.ForwardRefExoticComponent<HTMLAttributes<HTMLDivElement> & react.RefAttributes<HTMLDivElement>>;
+declare const CardContent: react.ForwardRefExoticComponent<HTMLAttributes<HTMLDivElement> & react.RefAttributes<HTMLDivElement>>;
+declare const CardDescription: react.ForwardRefExoticComponent<HTMLAttributes<HTMLParagraphElement> & react.RefAttributes<HTMLParagraphElement>>;
+declare const CardFooter: react.ForwardRefExoticComponent<HTMLAttributes<HTMLDivElement> & react.RefAttributes<HTMLDivElement>>;
 declare const CardHeader: react.ForwardRefExoticComponent<HTMLAttributes<HTMLDivElement> & react.RefAttributes<HTMLDivElement>>;
 declare const CardTitle: react.ForwardRefExoticComponent<HTMLAttributes<HTMLHeadingElement> & react.RefAttributes<HTMLHeadingElement>>;
-declare const CardDescription: react.ForwardRefExoticComponent<HTMLAttributes<HTMLParagraphElement> & react.RefAttributes<HTMLParagraphElement>>;
-declare const CardContent: react.ForwardRefExoticComponent<HTMLAttributes<HTMLDivElement> & react.RefAttributes<HTMLDivElement>>;
-declare const CardFooter: react.ForwardRefExoticComponent<HTMLAttributes<HTMLDivElement> & react.RefAttributes<HTMLDivElement>>;
-
-declare const badgeVariants: (props?: ({
-    variant?: "default" | "outline" | "danger" | "accent" | "good" | "warn" | "info" | null | undefined;
-} & class_variance_authority_types.ClassProp) | undefined) => string;
-interface BadgeProps extends HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeVariants> {
-}
-declare const Badge: react.ForwardRefExoticComponent<BadgeProps & react.RefAttributes<HTMLSpanElement>>;
-
-interface PillProps extends HTMLAttributes<HTMLSpanElement> {
-    dot?: "good" | "warn" | "danger" | "info" | "muted";
-}
-declare const Pill: react.ForwardRefExoticComponent<PillProps & react.RefAttributes<HTMLSpanElement>>;
-
-type InputProps = InputHTMLAttributes<HTMLInputElement>;
+declare const Dialog: react.FC<DialogPrimitive.DialogProps>;
+declare const DialogClose: react.ForwardRefExoticComponent<DialogPrimitive.DialogCloseProps & react.RefAttributes<HTMLButtonElement>>;
+declare const DialogContent: react.ForwardRefExoticComponent<DialogContentProps & react.RefAttributes<HTMLDivElement>>;
+declare const DialogDescription: react.ForwardRefExoticComponent<Omit<DialogPrimitive.DialogDescriptionProps & react.RefAttributes<HTMLParagraphElement>, "ref"> & react.RefAttributes<HTMLParagraphElement>>;
+declare const DialogOverlay: react.ForwardRefExoticComponent<Omit<DialogPrimitive.DialogOverlayProps & react.RefAttributes<HTMLDivElement>, "ref"> & react.RefAttributes<HTMLDivElement>>;
+declare const DialogPortal: react.FC<DialogPrimitive.DialogPortalProps>;
+declare const DialogTitle: react.ForwardRefExoticComponent<Omit<DialogPrimitive.DialogTitleProps & react.RefAttributes<HTMLHeadingElement>, "ref"> & react.RefAttributes<HTMLHeadingElement>>;
+declare const DialogTrigger: react.ForwardRefExoticComponent<DialogPrimitive.DialogTriggerProps & react.RefAttributes<HTMLButtonElement>>;
 declare const Input: react.ForwardRefExoticComponent<InputProps & react.RefAttributes<HTMLInputElement>>;
-
-type TextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement>;
-declare const Textarea: react.ForwardRefExoticComponent<TextareaProps & react.RefAttributes<HTMLTextAreaElement>>;
-
+declare const Kbd: react.ForwardRefExoticComponent<HTMLAttributes<HTMLElement> & react.RefAttributes<HTMLElement>>;
+declare const Pill: react.ForwardRefExoticComponent<PillProps & react.RefAttributes<HTMLSpanElement>>;
+declare const Popover: react.FC<PopoverPrimitive.PopoverProps>;
+declare const PopoverAnchor: react.ForwardRefExoticComponent<PopoverPrimitive.PopoverAnchorProps & react.RefAttributes<HTMLDivElement>>;
+declare const PopoverContent: react.ForwardRefExoticComponent<Omit<PopoverPrimitive.PopoverContentProps & react.RefAttributes<HTMLDivElement>, "ref"> & react.RefAttributes<HTMLDivElement>>;
+declare const PopoverTrigger: react.ForwardRefExoticComponent<PopoverPrimitive.PopoverTriggerProps & react.RefAttributes<HTMLButtonElement>>;
 declare const Select: react.FC<SelectPrimitive.SelectProps>;
-declare const SelectGroup: react.ForwardRefExoticComponent<SelectPrimitive.SelectGroupProps & react.RefAttributes<HTMLDivElement>>;
-declare const SelectValue: react.ForwardRefExoticComponent<SelectPrimitive.SelectValueProps & react.RefAttributes<HTMLSpanElement>>;
-declare const SelectTrigger: react.ForwardRefExoticComponent<Omit<SelectPrimitive.SelectTriggerProps & react.RefAttributes<HTMLButtonElement>, "ref"> & react.RefAttributes<HTMLButtonElement>>;
 declare const SelectContent: react.ForwardRefExoticComponent<Omit<SelectPrimitive.SelectContentProps & react.RefAttributes<HTMLDivElement>, "ref"> & react.RefAttributes<HTMLDivElement>>;
+declare const SelectGroup: react.ForwardRefExoticComponent<SelectPrimitive.SelectGroupProps & react.RefAttributes<HTMLDivElement>>;
 declare const SelectItem: react.ForwardRefExoticComponent<Omit<SelectPrimitive.SelectItemProps & react.RefAttributes<HTMLDivElement>, "ref"> & react.RefAttributes<HTMLDivElement>>;
-
+declare const SelectTrigger: react.ForwardRefExoticComponent<Omit<SelectPrimitive.SelectTriggerProps & react.RefAttributes<HTMLButtonElement>, "ref"> & react.RefAttributes<HTMLButtonElement>>;
+declare const SelectValue: react.ForwardRefExoticComponent<SelectPrimitive.SelectValueProps & react.RefAttributes<HTMLSpanElement>>;
 declare const Tabs: react.ForwardRefExoticComponent<TabsPrimitive.TabsProps & react.RefAttributes<HTMLDivElement>>;
+declare const TabsContent: react.ForwardRefExoticComponent<Omit<TabsPrimitive.TabsContentProps & react.RefAttributes<HTMLDivElement>, "ref"> & react.RefAttributes<HTMLDivElement>>;
 declare const TabsList: react.ForwardRefExoticComponent<Omit<TabsPrimitive.TabsListProps & react.RefAttributes<HTMLDivElement>, "ref"> & react.RefAttributes<HTMLDivElement>>;
 declare const TabsTrigger: react.ForwardRefExoticComponent<Omit<TabsPrimitive.TabsTriggerProps & react.RefAttributes<HTMLButtonElement>, "ref"> & react.RefAttributes<HTMLButtonElement>>;
-declare const TabsContent: react.ForwardRefExoticComponent<Omit<TabsPrimitive.TabsContentProps & react.RefAttributes<HTMLDivElement>, "ref"> & react.RefAttributes<HTMLDivElement>>;
-
+declare const Textarea: react.ForwardRefExoticComponent<TextareaProps & react.RefAttributes<HTMLTextAreaElement>>;
+declare const themeInitScript = "\n(function() {\n  try {\n    var t = localStorage.getItem(\"eval-kit:theme\");\n    if (t !== \"light\") document.documentElement.classList.add(\"dark\");\n  } catch (e) {\n    document.documentElement.classList.add(\"dark\");\n  }\n})();\n";
+declare const TooltipContent: react.ForwardRefExoticComponent<Omit<TooltipPrimitive.TooltipContentProps & react.RefAttributes<HTMLDivElement>, "ref"> & react.RefAttributes<HTMLDivElement>>;
 declare const TooltipProvider: react.FC<TooltipPrimitive.TooltipProviderProps>;
 declare const TooltipRoot: react.FC<TooltipPrimitive.TooltipProps>;
 declare const TooltipTrigger: react.ForwardRefExoticComponent<TooltipPrimitive.TooltipTriggerProps & react.RefAttributes<HTMLButtonElement>>;
-declare const TooltipContent: react.ForwardRefExoticComponent<Omit<TooltipPrimitive.TooltipContentProps & react.RefAttributes<HTMLDivElement>, "ref"> & react.RefAttributes<HTMLDivElement>>;
-interface TooltipProps {
-    content: ReactNode;
-    children: ReactNode;
-    side?: "top" | "right" | "bottom" | "left";
-    delayDuration?: number;
-}
-declare function Tooltip({ content, children, side, delayDuration, }: TooltipProps): react_jsx_runtime.JSX.Element;
-
-declare const Dialog: react.FC<DialogPrimitive.DialogProps>;
-declare const DialogTrigger: react.ForwardRefExoticComponent<DialogPrimitive.DialogTriggerProps & react.RefAttributes<HTMLButtonElement>>;
-declare const DialogPortal: react.FC<DialogPrimitive.DialogPortalProps>;
-declare const DialogClose: react.ForwardRefExoticComponent<DialogPrimitive.DialogCloseProps & react.RefAttributes<HTMLButtonElement>>;
-declare const DialogOverlay: react.ForwardRefExoticComponent<Omit<DialogPrimitive.DialogOverlayProps & react.RefAttributes<HTMLDivElement>, "ref"> & react.RefAttributes<HTMLDivElement>>;
-interface DialogContentProps extends ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
-    hideClose?: boolean;
-}
-declare const DialogContent: react.ForwardRefExoticComponent<DialogContentProps & react.RefAttributes<HTMLDivElement>>;
-declare function DialogHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>): react_jsx_runtime.JSX.Element;
-declare const DialogTitle: react.ForwardRefExoticComponent<Omit<DialogPrimitive.DialogTitleProps & react.RefAttributes<HTMLHeadingElement>, "ref"> & react.RefAttributes<HTMLHeadingElement>>;
-declare const DialogDescription: react.ForwardRefExoticComponent<Omit<DialogPrimitive.DialogDescriptionProps & react.RefAttributes<HTMLParagraphElement>, "ref"> & react.RefAttributes<HTMLParagraphElement>>;
-
-declare const Popover: react.FC<PopoverPrimitive.PopoverProps>;
-declare const PopoverTrigger: react.ForwardRefExoticComponent<PopoverPrimitive.PopoverTriggerProps & react.RefAttributes<HTMLButtonElement>>;
-declare const PopoverAnchor: react.ForwardRefExoticComponent<PopoverPrimitive.PopoverAnchorProps & react.RefAttributes<HTMLDivElement>>;
-declare const PopoverContent: react.ForwardRefExoticComponent<Omit<PopoverPrimitive.PopoverContentProps & react.RefAttributes<HTMLDivElement>, "ref"> & react.RefAttributes<HTMLDivElement>>;
-
-declare const Kbd: react.ForwardRefExoticComponent<HTMLAttributes<HTMLElement> & react.RefAttributes<HTMLElement>>;
-
-interface EmptyStateProps {
-    icon?: ReactNode;
-    title: string;
-    description?: ReactNode;
-    action?: ReactNode;
-    className?: string;
-}
-declare function EmptyState({ icon, title, description, action, className, }: EmptyStateProps): react_jsx_runtime.JSX.Element;
-
-interface InlineHelpProps {
-    id?: string;
-    title?: string;
-    children: ReactNode;
-    dismissible?: boolean;
-    variant?: "info" | "accent" | "warn";
-    className?: string;
-}
-declare function InlineHelp({ id, title, children, dismissible, variant, className, }: InlineHelpProps): react_jsx_runtime.JSX.Element | null;
-
-interface ProgressRingProps {
-    value: number;
-    size?: number;
-    strokeWidth?: number;
-    className?: string;
-    label?: string;
-    /** Whether to render a tiny numeric label in the center */
-    showLabel?: boolean;
-}
-declare function ProgressRing({ value, size, strokeWidth, className, label, showLabel, }: ProgressRingProps): react_jsx_runtime.JSX.Element;
-
-interface SparklineProps {
-    /** Values in the natural scale for the series (e.g. 0..3 for rubric scores) */
-    values: number[];
-    min?: number;
-    max?: number;
-    width?: number;
-    height?: number;
-    className?: string;
-    /** If set, values below this render red, above render green; else all accent */
-    threshold?: number;
-    strokeWidth?: number;
-    showDots?: boolean;
-}
-declare function Sparkline({ values, min, max, width, height, className, threshold, strokeWidth, showDots, }: SparklineProps): react_jsx_runtime.JSX.Element;
-
-interface StatCardProps {
-    label: string;
-    value: ReactNode;
-    sublabel?: ReactNode;
-    delta?: {
-        value: number;
-        suffix?: string;
-    };
-    sparkline?: number[];
-    sparklineMax?: number;
-    className?: string;
-}
-declare function StatCard({ label, value, sublabel, delta, sparkline, sparklineMax, className, }: StatCardProps): react_jsx_runtime.JSX.Element;
-
+declare function applyTheme(theme: Theme): void;
+declare function AppShell({ sidebar, topbar, breadcrumbs, children, className, }: AppShellProps): react_jsx_runtime.JSX.Element;
+declare function AutosaveBadge({ status, savedAt, errorMessage, className, }: AutosaveBadgeProps): react_jsx_runtime.JSX.Element;
 declare function cn(...inputs: ClassValue[]): string;
-
+declare function CommandPalette({ open, onOpenChange, actions, router, }: CommandPaletteProps): react_jsx_runtime.JSX.Element;
+declare function DashboardPage({ scoredRuns, unscoredRuns, unreviewedStepCount, }: DashboardPageProps): react_jsx_runtime.JSX.Element;
+declare function DialogHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>): react_jsx_runtime.JSX.Element;
+declare function DiffPage({ a, b }: DiffPageProps): react_jsx_runtime.JSX.Element;
+declare function DiffRow({ diff, className }: DiffRowProps): react_jsx_runtime.JSX.Element | null;
+declare function DimensionExplainer({ dimension }: DimensionExplainerProps): react_jsx_runtime.JSX.Element;
+declare function EmptyState({ icon, title, description, action, className, }: EmptyStateProps): react_jsx_runtime.JSX.Element;
+declare function HelpMenu({ onShowShortcuts, docsHref, appVersion, }: HelpMenuProps): react_jsx_runtime.JSX.Element;
+declare function InboxRow({ item, active, onFocus, onOpen, onScore, onAcceptPrefill, onSkip, saving, href, }: InboxRowProps): react_jsx_runtime.JSX.Element;
+declare function InboxView({ items, onScoreStep, onOpenFull, saving, emptyTitle, emptyDescription, }: InboxViewProps): react_jsx_runtime.JSX.Element;
+declare function InlineHelp({ id, title, children, dismissible, variant, className, }: InlineHelpProps): react_jsx_runtime.JSX.Element | null;
 declare function isMac(): boolean;
 declare function modLabel(): string;
-declare function shortcutLabel(keys: string[]): string;
-
-type NavItem = {
-    id: string;
-    label: string;
-    href: string;
-    shortcut?: string;
-};
-type BreadcrumbItem = {
-    label: string;
-    href?: string;
-};
-interface AppShellProps {
-    sidebar: ReactNode;
-    topbar?: ReactNode;
-    breadcrumbs?: BreadcrumbItem[];
-    children: ReactNode;
-    className?: string;
-}
-declare function AppShell({ sidebar, topbar, breadcrumbs, children, className, }: AppShellProps): react_jsx_runtime.JSX.Element;
-
-interface SidebarNavItem {
-    id: string;
-    label: string;
-    href: string;
-    icon: LucideIcon;
-    shortcut?: string;
-    badge?: ReactNode;
-    external?: boolean;
-}
-interface SidebarNavGroup {
-    label?: string;
-    items: SidebarNavItem[];
-}
-interface SidebarNavProps {
-    groups: SidebarNavGroup[];
-    currentPath: string;
-    header?: ReactNode;
-    footer?: ReactNode;
-}
-declare function SidebarNav({ groups, currentPath, header, footer, }: SidebarNavProps): react_jsx_runtime.JSX.Element;
-
-interface CommandContext {
-    router: {
-        push: (href: string) => void;
-    };
-    closePalette: () => void;
-}
-interface CommandAction {
-    id: string;
-    label: string;
-    hint?: string;
-    shortcut?: string[];
-    group?: "Navigate" | "Actions" | "Learn";
-    perform: (ctx: CommandContext) => void;
-}
-interface CommandPaletteProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    actions: CommandAction[];
-    router: {
-        push: (href: string) => void;
-    };
-    triggerLabel?: ReactNode;
-}
-declare function CommandPalette({ open, onOpenChange, actions, router, }: CommandPaletteProps): react_jsx_runtime.JSX.Element;
-
-interface HelpMenuProps {
-    onShowShortcuts: () => void;
-    docsHref?: string;
-    appVersion?: string;
-}
-declare function HelpMenu({ onShowShortcuts, docsHref, appVersion, }: HelpMenuProps): react_jsx_runtime.JSX.Element;
-
-type Theme = "light" | "dark";
+declare function ProgressRing({ value, size, strokeWidth, className, label, showLabel, }: ProgressRingProps): react_jsx_runtime.JSX.Element;
 declare function readTheme(): Theme;
-declare function applyTheme(theme: Theme): void;
-interface ThemeToggleProps {
-    className?: string;
-}
-declare function ThemeToggle({ className }: ThemeToggleProps): react_jsx_runtime.JSX.Element;
-/**
- * Inline script to apply the stored theme before hydration, preventing a
- * flash of the default theme. Render this as:
- *   <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
- * inside <head>.
- */
-declare const themeInitScript = "\n(function() {\n  try {\n    var t = localStorage.getItem(\"eval-kit:theme\");\n    if (t !== \"light\") document.documentElement.classList.add(\"dark\");\n  } catch (e) {\n    document.documentElement.classList.add(\"dark\");\n  }\n})();\n";
-
-/**
- * Public API: bump the session score counter. Other components call this
- * after a successful inline score / autosave to keep the tracker in sync.
- */
 declare function recordScoreInSession(): void;
-interface SessionTrackerProps {
-    className?: string;
-}
-declare function SessionTracker({ className }: SessionTrackerProps): react_jsx_runtime.JSX.Element | null;
-
-interface DimensionExplainerProps {
-    dimension: Dimension;
-}
-declare function DimensionExplainer({ dimension }: DimensionExplainerProps): react_jsx_runtime.JSX.Element;
-
-interface TaskProgressItemProps {
-    taskId: string;
-    title: string;
-    stepsScored: number;
-    stepsTotal: number;
-    isDistraction?: boolean;
-    active?: boolean;
-    onClick?: () => void;
-}
-declare function TaskProgressItem({ taskId, title, stepsScored, stepsTotal, isDistraction, active, onClick, }: TaskProgressItemProps): react_jsx_runtime.JSX.Element;
-
-type AutosaveStatus = "idle" | "saving" | "saved" | "error";
-interface AutosaveBadgeProps {
-    status: AutosaveStatus;
-    savedAt?: Date | null;
-    errorMessage?: string;
-    className?: string;
-}
-declare function AutosaveBadge({ status, savedAt, errorMessage, className, }: AutosaveBadgeProps): react_jsx_runtime.JSX.Element;
-
-declare function WelcomePanel({ className }: {
-    className?: string;
-}): react_jsx_runtime.JSX.Element | null;
-
-interface RunTableRowProps {
-    run: Run | ScoredRun;
-    scored?: boolean;
-    href?: string;
-}
-declare function RunTableRow({ run, scored, href }: RunTableRowProps): react_jsx_runtime.JSX.Element;
-
-interface StatCardGroupProps {
-    scoredRuns: ScoredRun[];
-    unreviewedStepCount: number;
-}
-declare function StatCardGroup({ scoredRuns, unreviewedStepCount, }: StatCardGroupProps): react_jsx_runtime.JSX.Element;
-
-interface RegressionSummaryProps {
-    diffs: StepDiff[];
-    className?: string;
-}
 declare function RegressionSummary({ diffs, className }: RegressionSummaryProps): react_jsx_runtime.JSX.Element;
-
-interface DiffRowProps {
-    diff: StepDiff;
-    className?: string;
-}
-declare function DiffRow({ diff, className }: DiffRowProps): react_jsx_runtime.JSX.Element | null;
-
-interface ToolCallDeltaProps {
-    a: string[];
-    b: string[];
-    className?: string;
-}
-declare function ToolCallDelta({ a, b, className }: ToolCallDeltaProps): react_jsx_runtime.JSX.Element;
-
-interface InboxItemLite {
-    id: string;
-    run_id: string;
-    suite_id: string;
-    task_id: string;
-    task_title: string;
-    is_distraction: boolean;
-    step_n: number;
-    step_prompt: string;
-    agent_output_preview: string;
-    status: "unscored" | "pre_filled" | "reviewed";
-    signals: string[];
-    priority: number;
-    current_golden_truth: RubricScore | null;
-}
-interface InboxRowProps {
-    item: InboxItemLite;
-    active?: boolean;
-    onFocus?: () => void;
-    onOpen?: () => void;
-    onScore?: (score: RubricScore) => void;
-    onAcceptPrefill?: () => void;
-    onSkip?: () => void;
-    saving?: boolean;
-    /** If provided, wrap the whole row as a link to this URL (used for preview lists). */
-    href?: string;
-}
-declare function InboxRow({ item, active, onFocus, onOpen, onScore, onAcceptPrefill, onSkip, saving, href, }: InboxRowProps): react_jsx_runtime.JSX.Element;
-
-interface InboxViewProps {
-    items: InboxItemLite[];
-    onScoreStep: (item: InboxItemLite, action: {
-        kind: "golden_truth";
-        value: RubricScore;
-    } | {
-        kind: "accept_prefill";
-    } | {
-        kind: "skip";
-    }) => Promise<void> | void;
-    onOpenFull: (item: InboxItemLite) => void;
-    saving?: boolean;
-    emptyTitle?: string;
-    emptyDescription?: string;
-}
-declare function InboxView({ items, onScoreStep, onOpenFull, saving, emptyTitle, emptyDescription, }: InboxViewProps): react_jsx_runtime.JSX.Element;
-
-interface ScoreSliderProps {
-    label: string;
-    value: RubricScore | null;
-    onChange: (next: RubricScore) => void;
-    disabled?: boolean;
-    dimension?: Dimension;
-    compact?: boolean;
-}
-declare function ScoreSlider({ label, value, onChange, disabled, dimension, compact, }: ScoreSliderProps): react_jsx_runtime.JSX.Element;
-
-interface StepReviewCardProps {
-    step: EvalStep;
-    result: StepResult;
-    dimensions: Dimension[];
-    isDistraction: boolean;
-    score: StepScore | null;
-    reviewerId: string;
-    onChange: (partial: Partial<StepScore> & {
-        step_n: number;
-    }) => void;
-    /** Ref for keyboard focus management */
-    focused?: boolean;
-    autoFocusKeyboard?: boolean;
-}
-declare function StepReviewCard({ step, result, dimensions, isDistraction, score, reviewerId, onChange, focused, autoFocusKeyboard, }: StepReviewCardProps): react_jsx_runtime.JSX.Element;
-
-interface InitialScoreEntry {
-    task_id: string;
-    score: StepScore;
-}
-type PrefillResult = {
-    step_n: number;
-    ok: true;
-    score: StepScore;
-    confidence?: number;
-} | {
-    step_n: number;
-    ok: false;
-    error: string;
-};
-interface RunReviewPageProps {
-    suite: EvalSuite;
-    run: Run;
-    reviewerId: string;
-    initialScores?: InitialScoreEntry[];
-    onScoreChange?: (scored: ScoredRun) => Promise<void> | void;
-    /** Called when user clicks "Pre-fill" for a task. Returns the pre-filled scores. */
-    onPrefillTask?: (taskId: string) => Promise<PrefillResult[]>;
-    saving?: boolean;
-    savedAt?: Date | null;
-    saveError?: string | null;
-    /** Whether the prefill feature is available (e.g. env key set) */
-    prefillAvailable?: boolean;
-}
 declare function RunReviewPage({ suite, run, reviewerId, initialScores, onScoreChange, onPrefillTask, saving, savedAt, saveError, prefillAvailable, }: RunReviewPageProps): react_jsx_runtime.JSX.Element;
-
-interface DashboardPageProps {
-    scoredRuns: ScoredRun[];
-    unscoredRuns: Run[];
-    unreviewedStepCount: number;
-}
-declare function DashboardPage({ scoredRuns, unscoredRuns, unreviewedStepCount, }: DashboardPageProps): react_jsx_runtime.JSX.Element;
-
-interface DiffPageProps {
-    a: ScoredRun;
-    b: ScoredRun;
-}
-declare function DiffPage({ a, b }: DiffPageProps): react_jsx_runtime.JSX.Element;
-
+declare function RunTableRow({ run, scored, href }: RunTableRowProps): react_jsx_runtime.JSX.Element;
+declare function ScoreSlider({ label, value, onChange, disabled, dimension, compact, }: ScoreSliderProps): react_jsx_runtime.JSX.Element;
+declare function SessionTracker({ className }: SessionTrackerProps): react_jsx_runtime.JSX.Element | null;
+declare function shortcutLabel(keys: string[]): string;
+declare function SidebarNav({ groups, currentPath, header, footer, }: SidebarNavProps): react_jsx_runtime.JSX.Element;
+declare function Sparkline({ values, min, max, width, height, className, threshold, strokeWidth, showDots, }: SparklineProps): react_jsx_runtime.JSX.Element;
+declare function StatCard({ label, value, sublabel, delta, sparkline, sparklineMax, className, }: StatCardProps): react_jsx_runtime.JSX.Element;
+declare function StatCardGroup({ scoredRuns, unreviewedStepCount, }: StatCardGroupProps): react_jsx_runtime.JSX.Element;
+declare function StepReviewCard({ step, result, dimensions, isDistraction, score, reviewerId, onChange, focused, autoFocusKeyboard, }: StepReviewCardProps): react_jsx_runtime.JSX.Element;
+declare function TaskProgressItem({ taskId, title, stepsScored, stepsTotal, isDistraction, active, onClick, }: TaskProgressItemProps): react_jsx_runtime.JSX.Element;
+declare function ThemeToggle({ className }: ThemeToggleProps): react_jsx_runtime.JSX.Element;
+declare function ToolCallDelta({ a, b, className }: ToolCallDeltaProps): react_jsx_runtime.JSX.Element;
+declare function Tooltip({ content, children, side, delayDuration, }: TooltipProps): react_jsx_runtime.JSX.Element;
+declare function WelcomePanel({ className }: {
+delayDuration?: number;
+delta?: {
+description?: ReactNode;
+diff: StepDiff;
+diffs: StepDiff[];
+dimension: Dimension;
+dimension?: Dimension;
+dimensions: Dimension[];
+disabled?: boolean;
+dismissible?: boolean;
+docsHref?: string;
+dot?: "good" | "warn" | "danger" | "info" | "muted";
+emptyDescription?: string;
+emptyTitle?: string;
+error: string;
+errorMessage?: string;
 export { AppShell, type AppShellProps, AutosaveBadge, Badge, type BadgeProps, type BreadcrumbItem, Button, type ButtonProps, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, type CommandAction, type CommandContext, CommandPalette, DashboardPage, Dialog, DialogClose, DialogContent, type DialogContentProps, DialogDescription, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, DiffPage, DiffRow, DimensionExplainer, EmptyState, type EmptyStateProps, HelpMenu, type InboxItemLite, InboxRow, type InboxRowProps, InboxView, type InboxViewProps, type InitialScoreEntry, InlineHelp, type InlineHelpProps, Input, type InputProps, Kbd, type NavItem, Pill, type PillProps, Popover, PopoverAnchor, PopoverContent, PopoverTrigger, type PrefillResult, ProgressRing, type ProgressRingProps, RegressionSummary, RunReviewPage, type RunReviewPageProps, RunTableRow, ScoreSlider, Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, SessionTracker, type SessionTrackerProps, SidebarNav, Sparkline, type SparklineProps, StatCard, StatCardGroup, type StatCardProps, StepReviewCard, Tabs, TabsContent, TabsList, TabsTrigger, TaskProgressItem, Textarea, type TextareaProps, type Theme, ThemeToggle, ToolCallDelta, Tooltip, TooltipContent, type TooltipProps, TooltipProvider, TooltipRoot, TooltipTrigger, WelcomePanel, applyTheme, badgeVariants, buttonVariants, cn, isMac, modLabel, readTheme, recordScoreInSession, shortcutLabel, themeInitScript };
+export { DIMENSION_DESCRIPTIONS, DIMENSION_LABELS, DIMENSION_RUBRIC_EXAMPLES } from '@eval-kit/core';
+external?: boolean;
+focused?: boolean;
+footer?: ReactNode;
+group?: "Navigate" | "Actions" | "Learn";
+groups: SidebarNavGroup[];
+header?: ReactNode;
+height?: number;
+hideClose?: boolean;
+hint?: string;
+href: string;
+href: string;
+href?: string;
+href?: string;
+href?: string;
+icon: LucideIcon;
+icon?: ReactNode;
+id: string;
+id: string;
+id: string;
+id: string;
+id?: string;
+import { ButtonHTMLAttributes, HTMLAttributes, InputHTMLAttributes, TextareaHTMLAttributes, ReactNode, ComponentPropsWithoutRef } from 'react';
+import { ClassValue } from 'clsx';
+import { Dimension, Run, ScoredRun, StepDiff, RubricScore, EvalStep, StepResult, StepScore, EvalSuite } from '@eval-kit/core';
+import { LucideIcon } from 'lucide-react';
+import { VariantProps } from 'class-variance-authority';
+import * as class_variance_authority_types from 'class-variance-authority/types';
+import * as DialogPrimitive from '@radix-ui/react-dialog';
+import * as PopoverPrimitive from '@radix-ui/react-popover';
+import * as react from 'react';
+import * as react_jsx_runtime from 'react/jsx-runtime';
+import * as SelectPrimitive from '@radix-ui/react-select';
+import * as TabsPrimitive from '@radix-ui/react-tabs';
+import * as TooltipPrimitive from '@radix-ui/react-tooltip';
+initialScores?: InitialScoreEntry[];
+interface AppShellProps {
+interface AutosaveBadgeProps {
+interface BadgeProps extends HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeVariants> {
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
+interface CommandAction {
+interface CommandContext {
+interface CommandPaletteProps {
+interface DashboardPageProps {
+interface DialogContentProps extends ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
+interface DiffPageProps {
+interface DiffRowProps {
+interface DimensionExplainerProps {
+interface EmptyStateProps {
+interface HelpMenuProps {
+interface InboxItemLite {
+interface InboxRowProps {
+interface InboxViewProps {
+interface InitialScoreEntry {
+interface InlineHelpProps {
+interface PillProps extends HTMLAttributes<HTMLSpanElement> {
+interface ProgressRingProps {
+interface RegressionSummaryProps {
+interface RunReviewPageProps {
+interface RunTableRowProps {
+interface ScoreSliderProps {
+interface SessionTrackerProps {
+interface SidebarNavGroup {
+interface SidebarNavItem {
+interface SidebarNavProps {
+interface SparklineProps {
+interface StatCardGroupProps {
+interface StatCardProps {
+interface StepReviewCardProps {
+interface TaskProgressItemProps {
+interface ThemeToggleProps {
+interface ToolCallDeltaProps {
+interface TooltipProps {
+is_distraction: boolean;
+isDistraction: boolean;
+isDistraction?: boolean;
+item: InboxItemLite;
+items: InboxItemLite[];
+items: SidebarNavItem[];
+kind: "accept_prefill";
+kind: "golden_truth";
+kind: "skip";
+label: string;
+label: string;
+label: string;
+label: string;
+label: string;
+label: string;
+label?: string;
+label?: string;
+max?: number;
+min?: number;
+ok: false;
+ok: true;
+onAcceptPrefill?: () => void;
+onChange: (next: RubricScore) => void;
+onChange: (partial: Partial<StepScore> & {
+onClick?: () => void;
+onFocus?: () => void;
+onOpen?: () => void;
+onOpenChange: (open: boolean) => void;
+onOpenFull: (item: InboxItemLite) => void;
+onPrefillTask?: (taskId: string) => Promise<PrefillResult[]>;
+onScore?: (score: RubricScore) => void;
+onScoreChange?: (scored: ScoredRun) => Promise<void> | void;
+onScoreStep: (item: InboxItemLite, action: {
+onShowShortcuts: () => void;
+onSkip?: () => void;
+open: boolean;
+perform: (ctx: CommandContext) => void;
+prefillAvailable?: boolean;
+priority: number;
+push: (href: string) => void;
+push: (href: string) => void;
+result: StepResult;
+reviewerId: string;
+reviewerId: string;
+router: {
+router: {
+run_id: string;
+run: Run | ScoredRun;
+run: Run;
+savedAt?: Date | null;
+savedAt?: Date | null;
+saveError?: string | null;
+saving?: boolean;
+saving?: boolean;
+saving?: boolean;
+score: StepScore | null;
+score: StepScore;
+score: StepScore;
+scored?: boolean;
+scoredRuns: ScoredRun[];
+scoredRuns: ScoredRun[];
+shortcut?: string;
+shortcut?: string;
+shortcut?: string[];
+showDots?: boolean;
+showLabel?: boolean;
+side?: "top" | "right" | "bottom" | "left";
+sidebar: ReactNode;
+signals: string[];
+size?: "sm" | "md" | "lg" | "icon" | "icon-sm" | null | undefined;
+size?: number;
+sparkline?: number[];
+sparklineMax?: number;
+status: "unscored" | "pre_filled" | "reviewed";
+status: AutosaveStatus;
+step_n: number;
+step_n: number;
+step_n: number;
+step_n: number;
+step_prompt: string;
+step: EvalStep;
+stepsScored: number;
+stepsTotal: number;
+strokeWidth?: number;
+strokeWidth?: number;
+sublabel?: ReactNode;
+suffix?: string;
+suite_id: string;
+suite: EvalSuite;
+task_id: string;
+task_id: string;
+task_title: string;
+taskId: string;
+threshold?: number;
+title: string;
+title: string;
+title?: string;
+topbar?: ReactNode;
+triggerLabel?: ReactNode;
+type AutosaveStatus = "idle" | "saving" | "saved" | "error";
+type BreadcrumbItem = {
+type InputProps = InputHTMLAttributes<HTMLInputElement>;
+type NavItem = {
+type PrefillResult = {
+type TextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement>;
+type Theme = "light" | "dark";
+unreviewedStepCount: number;
+unreviewedStepCount: number;
+unscoredRuns: Run[];
+value: number;
+value: number;
+value: ReactNode;
+value: RubricScore | null;
+value: RubricScore;
+values: number[];
+variant?: "default" | "outline" | "danger" | "accent" | "good" | "warn" | "info" | null | undefined;
+variant?: "default" | "primary" | "ghost" | "outline" | "danger" | null | undefined;
+variant?: "info" | "accent" | "warn";
+width?: number;
 

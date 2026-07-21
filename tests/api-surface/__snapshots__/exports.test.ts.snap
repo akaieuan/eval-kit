@@ -42,12 +42,14 @@ exports[`@eval-kit/core runtime exports 1`] = `
   "createHttpAdapter",
   "createMockAdapter",
   "createOpenAIAdapter",
+  "createScriptedAdapter",
   "diffRuns",
   "evaluateCi",
   "exportDpo",
   "exportRaw",
   "exportSft",
   "formatJsonVerifier",
+  "gateCallsFromEvents",
   "getVerifier",
   "isGateTool",
   "listVerifiers",
@@ -61,6 +63,7 @@ exports[`@eval-kit/core runtime exports 1`] = `
   "resolveToolbox",
   "runStepVerifiers",
   "runSuite",
+  "scoreStep",
   "toJsonl",
 ]
 `;

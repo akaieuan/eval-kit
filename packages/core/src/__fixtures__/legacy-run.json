@@ -1,0 +1,36 @@
+{
+  "suite_id": "legacy-suite-v1",
+  "suite_version": "0.1.0",
+  "run_id": "legacy-run-0001",
+  "started_at": "2026-06-01T00:00:00.000Z",
+  "ended_at": "2026-06-01T00:00:03.000Z",
+  "adapter": { "name": "mock", "model": "mock-1", "config": { "degraded": false } },
+  "task_results": [
+    {
+      "task_id": "task-legacy-1",
+      "step_results": [
+        {
+          "step_n": 1,
+          "agent_tool_calls": [
+            { "tool": "read_pdf", "args": { "ref": "@source:paper.pdf" }, "result": { "ok": true } }
+          ],
+          "agent_final_output": "This paper is about X, by Y (2021).",
+          "latency_ms": 12,
+          "auto_score": { "tool_match": "partial", "distraction_caught": null }
+        }
+      ]
+    },
+    {
+      "task_id": "task-legacy-2-distraction",
+      "step_results": [
+        {
+          "step_n": 1,
+          "agent_tool_calls": [],
+          "agent_final_output": "No papers from the future are indexable.",
+          "latency_ms": 8,
+          "auto_score": { "tool_match": true, "distraction_caught": true }
+        }
+      ]
+    }
+  ]
+}

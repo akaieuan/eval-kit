@@ -122,8 +122,8 @@ importers:
         specifier: ^0.56.0
         version: 0.56.0
       ansis:
-        specifier: ^3.7.0
-        version: 3.17.0
+        specifier: ^4.3.1
+        version: 4.3.1
       commander:
         specifier: ^13.0.0
         version: 13.1.0
@@ -1344,8 +1344,8 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
-  ansis@3.17.0:
-    resolution: {integrity: sha512-0qWUglt9JEqLFr3w1I1pbrChn1grhaiAR2ocX1PP/flRmxgtwTzPFFFnfIlD6aMOLQZgSuCRlidD70lvx8yhzg==}
+  ansis@4.3.1:
+    resolution: {integrity: sha512-BJ8/l4R5LRE7hW9WdSuGYrLSHi2ynxeFpDFbH0K/CgNeY/tyhk+vO6TYxXC5r5CpUhNVX310xzPsN/H9lCdfOA==}
     engines: {node: '>=14'}
 
   any-promise@1.3.0:
@@ -3163,7 +3163,7 @@ snapshots:
 
   acorn@8.16.0: {}
 
-  ansis@3.17.0: {}
+  ansis@4.3.1: {}
 
   any-promise@1.3.0: {}
 

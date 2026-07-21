@@ -101,7 +101,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.56.0",
-    "ansis": "^3.7.0",
+    "ansis": "^4.3.1",
     "commander": "^13.0.0",
     "yaml": "^2.7.0",
     "zod": "^3.24.1",

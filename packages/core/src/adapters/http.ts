@@ -28,7 +28,7 @@ export interface HttpAdapterOptions {
  * eval-kit. No SDK required.
  *
  * The endpoint receives JSON like:
- *   { prompt, context, expected_tools, prior_steps }
+ *   { prompt, context, toolbox, prior_steps }
  *
  * And is expected to return:
  *   { tool_calls: [...], final_output: "...", latency_ms: 1234 }
@@ -43,7 +43,7 @@ export function createHttpAdapter(opts: HttpAdapterOptions): AgentAdapter {
     ((input: AgentRunInput) => ({
       prompt: input.prompt,
       context: input.context,
-      expected_tools: input.expected_tools,
+      toolbox: input.toolbox,
       prior_steps: input.prior_steps,
     }));
   const parse =

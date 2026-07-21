@@ -292,12 +292,12 @@ Two seed profiles ship for reference: [`agents/claude-research-v1.yaml`](agents/
 When YAML isn't enough (you've got a custom orchestration layer, a graph runtime, an agent SDK eval-kit hasn't shipped a built-in for), implement the adapter contract. The full type lives in [`packages/core/src/adapters/types.ts`](packages/core/src/adapters/types.ts):
 
 ```ts check
-import type { ContextItem, ToolCall } from "@eval-kit/core";
+import type { ContextItem, ToolCall, ToolDecl } from "@eval-kit/core";
 
 export interface AgentRunInput {
   prompt: string;
   context: ContextItem[];
-  expected_tools: string[];
+  toolbox: ToolDecl[]; // the suite-level tool universe (+ runner-injected gate tools)
   prior_steps: Array<{
     prompt: string;
     tool_calls: ToolCall[];

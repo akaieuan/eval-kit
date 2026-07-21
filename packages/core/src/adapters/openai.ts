@@ -52,11 +52,13 @@ export function createOpenAIAdapter(
       // tool-use patterns copy this file and specialize. eval-kit's value is
       // the schema + runner + scoring, not the tool-call glue.
       const started = Date.now();
-      const tools = input.expected_tools.map((name) => ({
+      const tools = input.toolbox.map((decl) => ({
         type: "function" as const,
         function: {
-          name,
-          description: `Tool "${name}" expected by eval-kit for this step.`,
+          name: decl.name,
+          description:
+            decl.description ??
+            `Tool "${decl.name}" available in this suite for this step.`,
           parameters: { type: "object", additionalProperties: true },
         },
       }));

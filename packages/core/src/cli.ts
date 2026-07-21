@@ -21,7 +21,7 @@ import {
 } from "./export.js";
 import { runInit } from "./init/index.js";
 import { loadRun, loadScoredRun, loadSuite } from "./loader.js";
-import { runSuite } from "./runner.js";
+import { resolveToolbox, runSuite } from "./runner.js";
 import { aggregateScoredRun } from "./scoring.js";
 
 const program = new Command();
@@ -254,7 +254,7 @@ program
       const out = await adapter.run({
         prompt: firstStep.prompt,
         context: firstTask.context_items,
-        expected_tools: firstStep.expected_tools,
+        toolbox: resolveToolbox(suite),
         prior_steps: [],
       });
       console.log(ansis.green(`✓ adapter returned in ${out.latency_ms}ms`));

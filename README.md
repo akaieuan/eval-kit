@@ -295,6 +295,8 @@ When YAML isn't enough (you've got a custom orchestration layer, a graph runtime
 import type { ContextItem, ToolCall, ToolDecl } from "@eval-kit/core";
 
 export interface AgentRunInput {
+  task_id: string; // which task this call belongs to…
+  step_n: number; // …and which step within it
   prompt: string;
   context: ContextItem[];
   toolbox: ToolDecl[]; // the suite-level tool universe (+ runner-injected gate tools)

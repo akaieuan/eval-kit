@@ -9,13 +9,25 @@
 *   const adapter = createOpenAIAdapter({ client: new OpenAI(), model: "gpt-5" });
 *   import { createOpenAIAdapter } from "@eval-kit/core/adapters";
 *   import OpenAI from "openai";
+* (default) turns a typo in a test fixture into a loud failure instead of a
 * `expected_tools` (which it no longer sees).
+* A deterministic adapter whose behaviour — including GATE behaviour — is
+* A scripted action. The agent's output is a LINEAR sequence of tool calls, and
 * And is expected to return:
 * as JSON. Use this to reshape for your backend (e.g. OpenAI-compatible,
 * back as JSON. Use this when your endpoint returns a different shape.
+* contract is "a naive agent that calls every task tool it is offered, and never
+* declared per (task, step).
 * Deterministic reference adapter. A naive agent that calls every TASK tool
 * eval-kit. No SDK required.
+* factory two unrelated behaviours and make "default behaviour unchanged" a
+* gate scoring is ordering-sensitive (an approval only honors a mandated gate if
+* gates". It backs the README quickstart and the diff demo, and its output is
 * Generic HTTP adapter — point it at any endpoint that runs your agent.
+* instrument for exercising the runner, not a reference agent.
+* it precedes the gated call). So the script is an ordered list of actions, not
+* load-bearing for those. Bolting a script onto it would give one exported
+* matter of reading carefully rather than a structural fact. This adapter is an
 * never gates). `degraded: true` calls nothing, to simulate a regression for
 * offered in the toolbox (it filters out runner-injected gate tools — the mock
 * OpenAI adapter. Stubs against the OpenAI SDK shape but does NOT bundle the
@@ -24,20 +36,31 @@
 * Override `requestBody` / `parseResponse` for any other shape.
 * proxies credentials. The stub below documents the expected shape.
 * SDK — the consumer installs `openai` themselves so eval-kit stays slim.
+* silently empty step that still produces a plausible-looking artifact.
 * The actual API calls are the consumer's responsibility — eval-kit never
 * the diff demo. It builds its "tool defs" from `input.toolbox`, never
 * The endpoint receives JSON like:
 * This is the simplest path to integrating a custom / internal agent with
+* two separate buckets — interleaving is the thing under test.
 * Usage:
+* What to do when the script has no entry for a (task, step). `"throw"`
+* Why a sibling of `createMockAdapter` rather than an option on it: the mock's
 * your own routes).
+/** `{ [task_id]: { [step_n]: ScriptedStep } }` — addressed exactly as authored. */
+/** Final text. Default: `Scripted response to: <prompt>`. */
 /** Human-readable name shown in the dashboard */
 /** Model identifier (for display + export metadata) */
 /** Optional static headers (e.g. auth) */
+/** Ordered actions the agent emits on this step. Default: none. */
+/** Reported latency. Default: the adapter-level `latency_ms`. */
 /** Return value when this tool is called. If omitted, a generic mock result is used. */
 /** URL of the POST endpoint that runs your agent */
+actions?: ScriptedAction[];
 apiKey?: string;
 apiKey?: string;
+args?: unknown;
 baseURL?: string;
+call: string;
 chat: {
 client?: {
 completions: {
@@ -46,9 +69,13 @@ declare function createAnthropicAdapter(opts?: AnthropicAdapterOptions): AgentAd
 declare function createHttpAdapter(opts: HttpAdapterOptions): AgentAdapter;
 declare function createMockAdapter(opts?: MockAdapterOptions): AgentAdapter;
 declare function createOpenAIAdapter(opts?: OpenAIAdapterOptions & {
+declare function createScriptedAdapter(opts: ScriptedAdapterOptions): AgentAdapter;
 degraded?: boolean;
 description: string;
-export { AgentAdapter, AgentRunInput, AgentRunOutput, type AnthropicAdapterOptions, type HttpAdapterOptions, type MockAdapterOptions, type OpenAIAdapterOptions, type ToolDefinition, createAnthropicAdapter, createHttpAdapter, createMockAdapter, createOpenAIAdapter };
+export { AgentAdapter, AgentRunInput, AgentRunOutput, type AnthropicAdapterOptions, type HttpAdapterOptions, type MockAdapterOptions, type OpenAIAdapterOptions, type Script, type ScriptedAction, type ScriptedAdapterOptions, type ScriptedStep, type ToolDefinition, createAnthropicAdapter, createHttpAdapter, createMockAdapter, createOpenAIAdapter, createScriptedAdapter };
+final_output?: string;
+gate: "ask_user";
+gate: "request_approval";
 headers?: Record<string, string>;
 import '../schema.js';
 import 'zod';
@@ -58,7 +85,11 @@ interface AnthropicAdapterOptions {
 interface HttpAdapterOptions {
 interface MockAdapterOptions {
 interface OpenAIAdapterOptions {
+interface ScriptedAdapterOptions {
+interface ScriptedStep {
 interface ToolDefinition {
+latency_ms?: number;
+latency_ms?: number;
 latency_ms?: number;
 maxTokens?: number;
 maxToolIterations?: number;
@@ -67,13 +98,24 @@ model?: string;
 model?: string;
 model?: string;
 model?: string;
+model?: string;
 name?: string;
+on_unscripted?: "throw" | "silent";
 parseResponse?: (body: unknown) => AgentRunOutput;
+question: string;
+reason: string;
+reason: string;
 requestBody?: (input: AgentRunInput) => unknown;
+result?: unknown;
+script: Script;
 simulate?: (args: unknown) => unknown;
+summary: string;
 systemPrompt?: string;
 systemPrompt?: string;
+target_tool?: string;
 toolDefinitions?: Record<string, ToolDefinition>;
+type Script = Record<string, Record<number, ScriptedStep>>;
+type ScriptedAction = {
 url: string;
 
 // ===== dist/agents/index.d.ts (sorted line inventory) =====
@@ -588,14 +630,14 @@ import { ToolDecl } from './schema.js';
 // ===== dist/index.d.ts (sorted line inventory) =====
 export { A as AgentAdapter, a as AgentRunInput, b as AgentRunOutput } from './types.js';
 export { AdapterInfo, AutoScore, Blocker, ContextItem, Dimension, DiscretionaryScore, EvalStep, EvalSuite, EvalTask, Finding, GateEvent, MandatedGate, MandatedGateScore, RubricScore, Run, ScoredRun, ScoredStepResult, ScoredTaskResult, ScoringHints, StepResult, StepScore, TaskResult, ToolCall, ToolDecl, VerifierRef, parseRun, parseScoredRun, parseSuite } from './schema.js';
-export { AnthropicAdapterOptions, HttpAdapterOptions, MockAdapterOptions, OpenAIAdapterOptions, ToolDefinition, createAnthropicAdapter, createHttpAdapter, createMockAdapter, createOpenAIAdapter } from './adapters/index.js';
+export { AnthropicAdapterOptions, HttpAdapterOptions, MockAdapterOptions, OpenAIAdapterOptions, Script, ScriptedAction, ScriptedAdapterOptions, ScriptedStep, ToolDefinition, createAnthropicAdapter, createHttpAdapter, createMockAdapter, createOpenAIAdapter, createScriptedAdapter } from './adapters/index.js';
 export { ASK_USER_TOOL, GATE_TOOLBOX, GATE_TOOL_NAMES, REQUEST_APPROVAL_TOOL, isGateTool } from './gates.js';
 export { BUILT_IN_VERIFIERS, ResolvedContext, Verifier, VerifierInput, formatJsonVerifier, getVerifier, listVerifiers, quoteGroundingVerifier, registerVerifier, requiredSectionsVerifier, runStepVerifiers } from './verifiers/index.js';
 export { C as CiOutcome, a as CiThresholds, S as StepDiff, d as diffRuns, e as evaluateCi } from './ci.js';
 export { DIMENSION_DESCRIPTIONS, DIMENSION_LABELS, DIMENSION_ORDER, DIMENSION_RUBRIC_EXAMPLES } from './rubric.js';
 export { DpoRecord, ExportFormat, ExportOptions, SftRecord, exportDpo, exportRaw, exportSft, toJsonl } from './export.js';
-export { GateCall, SuiteAggregate, aggregateScoredRun, autoScoreStep, mergeScores } from './scoring.js';
-export { GateResolution, GatingOptions, RunnerOptions, resolveToolbox, runSuite } from './runner.js';
+export { GateCall, SuiteAggregate, aggregateScoredRun, autoScoreStep, gateCallsFromEvents, mergeScores } from './scoring.js';
+export { GateResolution, GatingOptions, RunnerOptions, resolveToolbox, runSuite, scoreStep } from './runner.js';
 import 'zod';
 
 // ===== dist/loader.d.ts (sorted line inventory) =====
@@ -617,10 +659,15 @@ import { Dimension } from './schema.js';
 
 // ===== dist/runner.d.ts (sorted line inventory) =====
 }) => GateResolution;
+}): AutoScore;
+* *parallel* implementation would only prove that two implementations agree —
 * approval request; answer every question with `step.gate_response ?? ""`.
+* Exported because replay needs it. Re-scoring a recorded run through a
 * Scripted resolutions for deterministic replay. Default: approve every
 * step's `expected_tools` — preserving old suites while still killing per-step
 * suite-level toolbox if present, otherwise (legacy suites) the union of every
+* The complete auto-scoring pass for one step: rubric scoring plus verifiers.
+* the golden harness has to enter the same door the live runner does.
 * The tool universe offered to the agent. Computed once per suite: the explicit
 * tool leakage. Gate tools are injected separately, per run.
 /** The answer returned to an `ask_user` gate (recorded as `answered`). */
@@ -629,11 +676,15 @@ adapter: AgentAdapter;
 answer?: string;
 declare function resolveToolbox(suite: EvalSuite): ToolDecl[];
 declare function runSuite(suite: EvalSuite, opts: RunnerOptions): Promise<Run>;
-export { type GateResolution, type GatingOptions, type RunnerOptions, resolveToolbox, runSuite };
+declare function scoreStep(opts: {
+export { type GateResolution, type GatingOptions, type RunnerOptions, resolveToolbox, runSuite, scoreStep };
+finalOutput: string;
+gateCalls: GateCall[];
 gating?: GatingOptions;
 import 'zod';
 import { A as AgentAdapter } from './types.js';
-import { GateEvent, EvalTask, EvalStep, StepResult, EvalSuite, ToolDecl, Run } from './schema.js';
+import { GateCall } from './scoring.js';
+import { GateEvent, EvalTask, EvalStep, StepResult, EvalSuite, ToolDecl, Run, AutoScore } from './schema.js';
 interface GateResolution {
 interface GatingOptions {
 interface RunnerOptions {
@@ -643,7 +694,10 @@ onStepStart?: (task: EvalTask, stepN: number) => void;
 resolution: GateEvent["resolution"];
 respond?: (ev: GateEvent, ctx: {
 step: EvalStep;
+step: EvalStep;
 task: EvalTask;
+task: EvalTask;
+toolsCalled: string[];
 
 // ===== dist/schema.d.ts (sorted line inventory) =====
 } | null | undefined;
@@ -1093,6 +1147,20 @@ task: EvalTask;
 * A task-level mandated gate: a policy that calling any tool in `before_tools`
 * A tool offered to the agent. The suite-level toolbox is the universe of
 * and never see `expected_tools` (which is answer-key only).
+* artifact cannot be re-scored, which makes a recorded run useless as a
+* artifact cannot be re-scored, which makes a recorded run useless as a
+* artifact cannot be re-scored, which makes a recorded run useless as a
+* artifact cannot be re-scored, which makes a recorded run useless as a
+* artifact cannot be re-scored, which makes a recorded run useless as a
+* artifact cannot be re-scored, which makes a recorded run useless as a
+* artifact cannot be re-scored, which makes a recorded run useless as a
+* before everything" and manufacture compliance that was never observed.
+* before everything" and manufacture compliance that was never observed.
+* before everything" and manufacture compliance that was never observed.
+* before everything" and manufacture compliance that was never observed.
+* before everything" and manufacture compliance that was never observed.
+* before everything" and manufacture compliance that was never observed.
+* before everything" and manufacture compliance that was never observed.
 * Confidence (0..1) the LLM pre-fill assigned when drafting this score.
 * Confidence (0..1) the LLM pre-fill assigned when drafting this score.
 * Confidence (0..1) the LLM pre-fill assigned when drafting this score.
@@ -1101,6 +1169,13 @@ task: EvalTask;
 * content-grounded verifiers (e.g. quote-grounding) can check the agent's
 * content-grounded verifiers (e.g. quote-grounding) can check the agent's
 * content-grounded verifiers (e.g. quote-grounding) can check the agent's
+* How many TASK tool calls preceded this gate call in the agent's action
+* How many TASK tool calls preceded this gate call in the agent's action
+* How many TASK tool calls preceded this gate call in the agent's action
+* How many TASK tool calls preceded this gate call in the agent's action
+* How many TASK tool calls preceded this gate call in the agent's action
+* How many TASK tool calls preceded this gate call in the agent's action
+* How many TASK tool calls preceded this gate call in the agent's action
 * Inline source text. When present the item is a `ResolvedContext` and
 * Inline source text. When present the item is a `ResolvedContext` and
 * Inline source text. When present the item is a `ResolvedContext` and
@@ -1108,17 +1183,52 @@ task: EvalTask;
 * Only populated when pre_filled=true. Used by the review-queue triage
 * Only populated when pre_filled=true. Used by the review-queue triage
 * Only populated when pre_filled=true. Used by the review-queue triage
+* ordering unknown, so mandated-gate compliance is NOT re-derivable. Defaulting
+* ordering unknown, so mandated-gate compliance is NOT re-derivable. Defaulting
+* ordering unknown, so mandated-gate compliance is NOT re-derivable. Defaulting
+* ordering unknown, so mandated-gate compliance is NOT re-derivable. Defaulting
+* ordering unknown, so mandated-gate compliance is NOT re-derivable. Defaulting
+* ordering unknown, so mandated-gate compliance is NOT re-derivable. Defaulting
+* ordering unknown, so mandated-gate compliance is NOT re-derivable. Defaulting
 * output against it. Absent for reference-only items — the dataset seam
 * output against it. Absent for reference-only items — the dataset seam
 * output against it. Absent for reference-only items — the dataset seam
 * paper over. Scored on precision/recall — judgment, never compliance.
 * Reference to a verifier to run against a step's output. `params` is passed
+* replayable golden. `null` on artifacts written before this field existed:
+* replayable golden. `null` on artifacts written before this field existed:
+* replayable golden. `null` on artifacts written before this field existed:
+* replayable golden. `null` on artifacts written before this field existed:
+* replayable golden. `null` on artifacts written before this field existed:
+* replayable golden. `null` on artifacts written before this field existed:
+* replayable golden. `null` on artifacts written before this field existed:
 * requires prior human approval. Scored pass/fail (compliance), never averaged
+* sequence. Splitting gate calls out of `agent_tool_calls` otherwise destroys
+* sequence. Splitting gate calls out of `agent_tool_calls` otherwise destroys
+* sequence. Splitting gate calls out of `agent_tool_calls` otherwise destroys
+* sequence. Splitting gate calls out of `agent_tool_calls` otherwise destroys
+* sequence. Splitting gate calls out of `agent_tool_calls` otherwise destroys
+* sequence. Splitting gate calls out of `agent_tool_calls` otherwise destroys
+* sequence. Splitting gate calls out of `agent_tool_calls` otherwise destroys
 * sort: lower confidence → higher priority for human review.
 * sort: lower confidence → higher priority for human review.
 * sort: lower confidence → higher priority for human review.
 * sort: lower confidence → higher priority for human review.
+* the ordering that mandated-gate compliance is scored on — without this the
+* the ordering that mandated-gate compliance is scored on — without this the
+* the ordering that mandated-gate compliance is scored on — without this the
+* the ordering that mandated-gate compliance is scored on — without this the
+* the ordering that mandated-gate compliance is scored on — without this the
+* the ordering that mandated-gate compliance is scored on — without this the
+* the ordering that mandated-gate compliance is scored on — without this the
 * through opaquely; each built-in validates its own params with zod.
+* to 0 would have been worse than null — it would silently read as "approved
+* to 0 would have been worse than null — it would silently read as "approved
+* to 0 would have been worse than null — it would silently read as "approved
+* to 0 would have been worse than null — it would silently read as "approved
+* to 0 would have been worse than null — it would silently read as "approved
+* to 0 would have been worse than null — it would silently read as "approved
+* to 0 would have been worse than null — it would silently read as "approved
 * tool calls are extracted here and EXCLUDED from `agent_tool_calls`, keeping
 * tool-match semantics clean (gates are meta-actions, not task actions).
 * tools available on every step; adapters build tool definitions from these
@@ -3671,6 +3781,51 @@ target_tool: z.ZodNullable<z.ZodString>;
 target_tool: z.ZodNullable<z.ZodString>;
 target_tool: z.ZodNullable<z.ZodString>;
 target_tool: z.ZodNullable<z.ZodString>;
+task_calls_before: number | null;
+task_calls_before: number | null;
+task_calls_before: number | null;
+task_calls_before: number | null;
+task_calls_before: number | null;
+task_calls_before: number | null;
+task_calls_before: number | null;
+task_calls_before: number | null;
+task_calls_before: number | null;
+task_calls_before: number | null;
+task_calls_before: number | null;
+task_calls_before: number | null;
+task_calls_before: number | null;
+task_calls_before: number | null;
+task_calls_before: number | null;
+task_calls_before: number | null;
+task_calls_before: number | null;
+task_calls_before: number | null;
+task_calls_before: number | null;
+task_calls_before: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+task_calls_before: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+task_calls_before: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+task_calls_before: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+task_calls_before: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+task_calls_before: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+task_calls_before: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+task_calls_before?: number | null | undefined;
+task_calls_before?: number | null | undefined;
+task_calls_before?: number | null | undefined;
+task_calls_before?: number | null | undefined;
+task_calls_before?: number | null | undefined;
+task_calls_before?: number | null | undefined;
+task_calls_before?: number | null | undefined;
+task_calls_before?: number | null | undefined;
+task_calls_before?: number | null | undefined;
+task_calls_before?: number | null | undefined;
+task_calls_before?: number | null | undefined;
+task_calls_before?: number | null | undefined;
+task_calls_before?: number | null | undefined;
+task_calls_before?: number | null | undefined;
+task_calls_before?: number | null | undefined;
+task_calls_before?: number | null | undefined;
+task_calls_before?: number | null | undefined;
+task_calls_before?: number | null | undefined;
+task_calls_before?: number | null | undefined;
 task_id: string;
 task_id: string;
 task_id: string;
@@ -4193,25 +4348,34 @@ violated: z.ZodArray<z.ZodString, "many">;
 // ===== dist/scoring.d.ts (sorted line inventory) =====
 }): AutoScore;
 * A gate tool call recorded during a step, with enough position info for
+* A run that cannot be re-scored cannot serve as a golden — say so loudly.
+* action sequence; the artifact stores that sequence split in two, so replay has
 * approval "before" a gated call means `task_calls_before <= indexOfGatedCall`.
 * calls that preceded this gate call in the agent's action sequence — so an
+* mandated gate reads as honored, assume last and every one reads as violated.
+* null`). Guessing is not an option in either direction: assume 0 and every
 * ordering-sensitive scoring. `task_calls_before` is the number of TASK tool
+* Rebuild the `GateCall`s a step produced from its persisted `gate_events` —
+* the replay seam. The live runner derives gate calls from the agent's raw
+* Throws on an artifact that predates ordering capture (`task_calls_before ===
+* to put the ordering back.
 /** Discretionary ask-precision: matched / asked. Reported separately from recall. */
 /** Discretionary blocker-recall: matched / blockers. Reported separately from precision. */
 /** Mandated-gate compliance: honored / required across all steps. */
 declare function aggregateScoredRun(run: ScoredRun): SuiteAggregate;
 declare function autoScoreStep(opts: {
+declare function gateCallsFromEvents(events: GateEvent[]): GateCall[];
 declare function mergeScores(run: Run, scores: Map<string, Map<number, StepScore>>): ScoredRun;
 dimension_means: Partial<Record<string, number>>;
 discretionary_ask_precision: number | null;
 discretionary_blocker_recall: number | null;
 distraction_detection_rate: number | null;
-export { type GateCall, type SuiteAggregate, aggregateScoredRun, autoScoreStep, mergeScores };
+export { type GateCall, type SuiteAggregate, aggregateScoredRun, autoScoreStep, gateCallsFromEvents, mergeScores };
 finalOutput: string;
 gateCalls?: GateCall[];
 golden_truth_pass_rate: number | null;
 import 'zod';
-import { ScoredRun, EvalStep, EvalTask, AutoScore, Run, StepScore } from './schema.js';
+import { ScoredRun, EvalStep, EvalTask, AutoScore, GateEvent, Run, StepScore } from './schema.js';
 interface GateCall {
 interface SuiteAggregate {
 kind: "approval_request" | "question";
@@ -4229,11 +4393,16 @@ toolsCalled: string[];
 total_steps: number;
 
 // ===== dist/types.d.ts (sorted line inventory) =====
+* adapter could not exist. Additive for adapter authors: adapters CONSUME this
+* always known both; it used to drop them at the adapter boundary, which left
+* an adapter unable to address a specific (task, step) — the reason a scripted
 * build their tool definitions from this. `expected_tools` is intentionally
+* input, they never construct it.
 * NOT here: it is answer-key only, and leaking it to the agent would defeat
 * the point of measuring tool selection.
 * The tool universe offered to the agent on this step — the suite-level
 * toolbox (plus runner-injected gate tools when gating is available). Adapters
+* Which task this call belongs to, and which step within it. The runner has
 config: Record<string, unknown>;
 context: ContextItem[];
 export type { AgentAdapter as A, AgentRunInput as a, AgentRunOutput as b };
@@ -4250,6 +4419,8 @@ prior_steps: Array<{
 prompt: string;
 prompt: string;
 run(input: AgentRunInput): Promise<AgentRunOutput>;
+step_n: number;
+task_id: string;
 tool_calls: ToolCall[];
 tool_calls: ToolCall[];
 toolbox: ToolDecl[];

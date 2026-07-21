@@ -126,11 +126,19 @@ export async function runSuite(
 
       // Split gate calls out of the action sequence: they are meta-actions,
       // recorded as gate_events and excluded from agent_tool_calls.
+      //
+      // In the "unavailable" arm the gate tools were never offered, so a
+      // gate-named call is an agent inventing a tool that does not exist.
+      // Recording it as a gate would credit the control arm with a handoff
+      // the human never received, contaminating the A/B. It stays in
+      // agent_tool_calls as what it was — a call to an unavailable tool.
+      // (Attempted gates remain countable: filter agent_tool_calls by
+      // isGateTool.)
       const taskCalls: ToolCall[] = [];
       const gateEvents: GateEvent[] = [];
       const gateCalls: GateCall[] = [];
       for (const call of out.tool_calls) {
-        if (!isGateTool(call.tool)) {
+        if (gateMode === "unavailable" || !isGateTool(call.tool)) {
           taskCalls.push(call);
           continue;
         }

@@ -16,16 +16,22 @@ export const myAgentAdapter: AgentAdapter = {
   model: "v0.1",
   config: {},
 
-  async run({ prompt, context, expected_tools, prior_steps }) {
+  async run({ prompt, context, toolbox, prior_steps }) {
     const started = Date.now();
 
     // TODO: replace with a real call to your agent
     // -------------------------------------------
+    // `toolbox` is the full tool universe for the suite — offer all of it to
+    // your agent on every step. The suite's per-step `expected_tools` is the
+    // answer key and is deliberately not visible here: an adapter that only
+    // offered the expected tools would be handing the agent the answer, and
+    // tool selection would no longer be measured.
+    //
     // Example shape:
     //   const resp = await myAgent.chat({
     //     prompt,
     //     context,
-    //     tools: expected_tools,
+    //     tools: toolbox,
     //     history: prior_steps,
     //   });
     //   const tool_calls = resp.tool_calls.map(tc => ({

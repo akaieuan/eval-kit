@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createMockAdapter } from "./adapters/mock.js";
 import { createScriptedAdapter, type Script } from "./adapters/scripted.js";
 import { e2eSuite } from "./__fixtures__/e2e-suite.js";
+import { isGateTool } from "./gates.js";
 import { runSuite } from "./runner.js";
 import { parseRun, type Run } from "./schema.js";
 import { aggregateScoredRun, mergeScores } from "./scoring.js";
@@ -253,16 +254,19 @@ describe('gating mode "unavailable"', () => {
     expect(step(run, "t-research", 1).auto_score.gates.discretionary).toBeNull();
   });
 
-  it("still extracts gate calls an agent invents — the arm is not sealed", async () => {
-    // Pins current behaviour, which is a real hole in the A/B: `unavailable`
-    // withholds the tools but the runner does not police them, so an adapter
-    // that hallucinates `ask_user` is still credited with a gate event. The
-    // no-gate arm is therefore only as clean as the adapter is well-behaved.
+  it("seals the arm: an invented gate call is a tool call, not a gate", async () => {
+    // The control arm has to stay clean. `unavailable` never offers the gate
+    // tools, so a gate-named call is an agent inventing a tool that does not
+    // exist — crediting it with a gate event would record a handoff the human
+    // never received. It stays in agent_tool_calls as what it was, which also
+    // keeps attempted gates countable rather than discarded.
     const run = await runSuite(e2eSuite(), {
       adapter: createScriptedAdapter({ script: GOOD_SCRIPT }),
       gating: { mode: "unavailable" },
     });
-    expect(step(run, "t-research", 2).gate_events).toHaveLength(2);
+    const s = step(run, "t-research", 2);
+    expect(s.gate_events).toHaveLength(0);
+    expect(s.agent_tool_calls.filter((c) => isGateTool(c.tool))).toHaveLength(2);
   });
 });
 

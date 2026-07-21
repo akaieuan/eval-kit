@@ -100,10 +100,10 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.56.0",
+    "@anthropic-ai/sdk": "^0.112.4",
     "ansis": "^3.7.0",
     "commander": "^13.0.0",
-    "yaml": "^2.7.0",
+    "yaml": "^2.9.0",
     "zod": "^3.24.1",
     "zod-to-json-schema": "^3.24.1"
   },
@@ -112,6 +112,6 @@
     "tsup": "^8.3.5",
     "typescript": "^5.7.3",
     "vite": "^6.4.2",
-    "vitest": "^4.1.0"
+    "vitest": "^4.1.10"
   }
 }

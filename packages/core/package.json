@@ -1,6 +1,6 @@
 {
   "name": "@eval-kit/core",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Schema, runner, scoring engine, and agent adapters for eval-kit — the scoring cockpit for research agents.",
   "license": "MIT",
   "author": "Ieuan King",
@@ -41,6 +41,14 @@
     "./scoring": {
       "types": "./dist/scoring.d.ts",
       "import": "./dist/scoring.js"
+    },
+    "./gates": {
+      "types": "./dist/gates.d.ts",
+      "import": "./dist/gates.js"
+    },
+    "./verifiers": {
+      "types": "./dist/verifiers/index.d.ts",
+      "import": "./dist/verifiers/index.js"
     },
     "./adapters": {
       "types": "./dist/adapters/index.d.ts",
@@ -100,6 +108,7 @@
     "zod-to-json-schema": "^3.24.1"
   },
   "devDependencies": {
+    "fast-check": "^4.9.0",
     "tsup": "^8.3.5",
     "typescript": "^5.7.3",
     "vite": "^6.4.2",

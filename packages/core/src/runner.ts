@@ -4,6 +4,7 @@ import { GATE_TOOLBOX, isGateTool } from "./gates.js";
 import { autoScoreStep, type GateCall } from "./scoring.js";
 import { runStepVerifiers } from "./verifiers/index.js";
 import type {
+  AutoScore,
   EvalStep,
   EvalSuite,
   EvalTask,
@@ -14,6 +15,26 @@ import type {
   ToolCall,
   ToolDecl,
 } from "./schema.js";
+
+/**
+ * The complete auto-scoring pass for one step: rubric scoring plus verifiers.
+ *
+ * Exported because replay needs it. Re-scoring a recorded run through a
+ * *parallel* implementation would only prove that two implementations agree —
+ * the golden harness has to enter the same door the live runner does.
+ */
+export function scoreStep(opts: {
+  step: EvalStep;
+  task: EvalTask;
+  toolsCalled: string[];
+  finalOutput: string;
+  gateCalls: GateCall[];
+}): AutoScore {
+  return {
+    ...autoScoreStep(opts),
+    verification: runStepVerifiers(opts.step, opts.task, opts.finalOutput),
+  };
+}
 
 export interface GateResolution {
   resolution: GateEvent["resolution"];
@@ -95,6 +116,8 @@ export async function runSuite(
     for (const step of task.steps) {
       opts.onStepStart?.(task, step.n);
       const out = await adapter.run({
+        task_id: task.id,
+        step_n: step.n,
         prompt: step.prompt,
         context: task.context_items,
         toolbox,
@@ -130,6 +153,7 @@ export async function runSuite(
           surfaced,
           target_tool,
           resolution: defaultResolution,
+          task_calls_before: taskCalls.length,
         };
         const resolved = respond?.(draft, { task, step });
         gateEvents.push(
@@ -144,16 +168,13 @@ export async function runSuite(
         });
       }
 
-      const auto_score = {
-        ...autoScoreStep({
-          step,
-          task,
-          toolsCalled: taskCalls.map((t) => t.tool),
-          finalOutput: out.final_output,
-          gateCalls,
-        }),
-        verification: runStepVerifiers(step, task, out.final_output),
-      };
+      const auto_score = scoreStep({
+        step,
+        task,
+        toolsCalled: taskCalls.map((t) => t.tool),
+        finalOutput: out.final_output,
+        gateCalls,
+      });
 
       const result: StepResult = {
         step_n: step.n,

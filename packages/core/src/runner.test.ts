@@ -147,6 +147,7 @@ describe("gate extraction", () => {
         surfaced: "About to delete",
         target_tool: "delete_file",
         resolution: "approved",
+        task_calls_before: 1,
       },
       {
         kind: "question",
@@ -154,6 +155,7 @@ describe("gate extraction", () => {
         surfaced: "Which file?",
         target_tool: null,
         resolution: "answered",
+        task_calls_before: 1,
       },
     ]);
   });

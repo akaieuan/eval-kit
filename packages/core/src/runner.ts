@@ -1,19 +1,74 @@
 import { randomUUID } from "node:crypto";
 import type { AgentAdapter } from "./adapters/types.js";
-import { autoScoreStep } from "./scoring.js";
+import { GATE_TOOLBOX, isGateTool } from "./gates.js";
+import { autoScoreStep, type GateCall } from "./scoring.js";
+import { runStepVerifiers } from "./verifiers/index.js";
 import type {
+  EvalStep,
   EvalSuite,
   EvalTask,
+  GateEvent,
   Run,
   StepResult,
   TaskResult,
   ToolCall,
+  ToolDecl,
 } from "./schema.js";
+
+export interface GateResolution {
+  resolution: GateEvent["resolution"];
+  /** The answer returned to an `ask_user` gate (recorded as `answered`). */
+  answer?: string;
+}
+
+export interface GatingOptions {
+  /** The phase-5 A/B switch. `available` injects the gate tools; default `available`. */
+  mode?: "available" | "unavailable";
+  /**
+   * Scripted resolutions for deterministic replay. Default: approve every
+   * approval request; answer every question with `step.gate_response ?? ""`.
+   */
+  respond?: (
+    ev: GateEvent,
+    ctx: { task: EvalTask; step: EvalStep },
+  ) => GateResolution;
+}
 
 export interface RunnerOptions {
   adapter: AgentAdapter;
+  gating?: GatingOptions;
   onStepStart?: (task: EvalTask, stepN: number) => void;
   onStepComplete?: (task: EvalTask, result: StepResult) => void;
+}
+
+/**
+ * The tool universe offered to the agent. Computed once per suite: the explicit
+ * suite-level toolbox if present, otherwise (legacy suites) the union of every
+ * step's `expected_tools` — preserving old suites while still killing per-step
+ * tool leakage. Gate tools are injected separately, per run.
+ */
+export function resolveToolbox(suite: EvalSuite): ToolDecl[] {
+  if (suite.suite.toolbox.length > 0) return suite.suite.toolbox;
+  const seen = new Set<string>();
+  const union: ToolDecl[] = [];
+  for (const task of suite.suite.tasks) {
+    for (const step of task.steps) {
+      for (const name of step.expected_tools) {
+        if (seen.has(name)) continue;
+        seen.add(name);
+        union.push({ name });
+      }
+    }
+  }
+  return union;
+}
+
+function readStr(args: unknown, key: string): string {
+  if (args && typeof args === "object" && key in args) {
+    const v = (args as Record<string, unknown>)[key];
+    if (typeof v === "string") return v;
+  }
+  return "";
 }
 
 export async function runSuite(
@@ -21,6 +76,12 @@ export async function runSuite(
   opts: RunnerOptions,
 ): Promise<Run> {
   const { adapter } = opts;
+  const gateMode = opts.gating?.mode ?? "available";
+  const respond = opts.gating?.respond;
+  const baseToolbox = resolveToolbox(suite);
+  const toolbox =
+    gateMode === "available" ? [...baseToolbox, ...GATE_TOOLBOX] : baseToolbox;
+
   const started_at = new Date().toISOString();
   const task_results: TaskResult[] = [];
 
@@ -36,22 +97,71 @@ export async function runSuite(
       const out = await adapter.run({
         prompt: step.prompt,
         context: task.context_items,
-        expected_tools: step.expected_tools,
+        toolbox,
         prior_steps: prior,
       });
-      const toolsCalled = out.tool_calls.map((t) => t.tool);
-      const auto_score = autoScoreStep({
-        step,
-        task,
-        toolsCalled,
-        finalOutput: out.final_output,
-      });
+
+      // Split gate calls out of the action sequence: they are meta-actions,
+      // recorded as gate_events and excluded from agent_tool_calls.
+      const taskCalls: ToolCall[] = [];
+      const gateEvents: GateEvent[] = [];
+      const gateCalls: GateCall[] = [];
+      for (const call of out.tool_calls) {
+        if (!isGateTool(call.tool)) {
+          taskCalls.push(call);
+          continue;
+        }
+        const kind: GateEvent["kind"] =
+          call.tool === "request_approval" ? "approval_request" : "question";
+        const surfaced =
+          kind === "approval_request"
+            ? readStr(call.args, "summary")
+            : readStr(call.args, "question");
+        const target_tool =
+          kind === "approval_request"
+            ? readStr(call.args, "target_tool") || null
+            : null;
+        const reason = readStr(call.args, "reason");
+        const defaultResolution: GateEvent["resolution"] =
+          kind === "approval_request" ? "approved" : "answered";
+        const draft: GateEvent = {
+          kind,
+          reason,
+          surfaced,
+          target_tool,
+          resolution: defaultResolution,
+        };
+        const resolved = respond?.(draft, { task, step });
+        gateEvents.push(
+          resolved ? { ...draft, resolution: resolved.resolution } : draft,
+        );
+        gateCalls.push({
+          kind,
+          reason,
+          surfaced,
+          target_tool,
+          task_calls_before: taskCalls.length,
+        });
+      }
+
+      const auto_score = {
+        ...autoScoreStep({
+          step,
+          task,
+          toolsCalled: taskCalls.map((t) => t.tool),
+          finalOutput: out.final_output,
+          gateCalls,
+        }),
+        verification: runStepVerifiers(step, task, out.final_output),
+      };
+
       const result: StepResult = {
         step_n: step.n,
-        agent_tool_calls: out.tool_calls,
+        agent_tool_calls: taskCalls,
         agent_final_output: out.final_output,
         latency_ms: out.latency_ms,
         auto_score,
+        gate_events: gateEvents,
       };
       step_results.push(result);
       prior.push({

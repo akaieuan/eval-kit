@@ -6,6 +6,8 @@ export default defineConfig({
     "src/schema.ts",
     "src/runner.ts",
     "src/scoring.ts",
+    "src/gates.ts",
+    "src/verifiers/index.ts",
     "src/loader.ts",
     "src/ci.ts",
     "src/export.ts",

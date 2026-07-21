@@ -25,7 +25,7 @@ Use tools when they help. Explain your reasoning. Flag uncertainty explicitly. W
 export function createAnthropicAdapter(
   opts: AnthropicAdapterOptions = {},
 ): AgentAdapter {
-  const model = opts.model ?? "claude-sonnet-4-5";
+  const model = opts.model ?? "claude-opus-4-8";
   const maxTokens = opts.maxTokens ?? 4096;
   const maxIter = opts.maxToolIterations ?? 8;
   const systemPrompt = opts.systemPrompt ?? DEFAULT_SYSTEM;
@@ -44,14 +44,17 @@ export function createAnthropicAdapter(
       }
       const client = new Anthropic({ apiKey });
 
-      // Build tool definitions for this step.
-      const tools = input.expected_tools.map((name) => {
-        const custom = opts.toolDefinitions?.[name];
+      // Build tool definitions from the suite-level toolbox (the agent never
+      // sees expected_tools). Per-tool `toolDefinitions` still supply custom
+      // input schemas / simulated results, keyed by name.
+      const tools = input.toolbox.map((decl) => {
+        const custom = opts.toolDefinitions?.[decl.name];
         return {
-          name,
+          name: decl.name,
           description:
+            decl.description ??
             custom?.description ??
-            `Tool "${name}" expected by the eval. Returns a simulated result.`,
+            `Tool "${decl.name}" available in this suite. Returns a simulated result.`,
           input_schema: (custom?.input_schema ?? {
             type: "object",
             additionalProperties: true,

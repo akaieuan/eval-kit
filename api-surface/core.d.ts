@@ -4,16 +4,20 @@
 
 // ===== dist/adapters/index.d.ts (sorted line inventory) =====
 }): AgentAdapter;
-*   { prompt, context, expected_tools, prior_steps }
+*   { prompt, context, toolbox, prior_steps }
 *   { tool_calls: [...], final_output: "...", latency_ms: 1234 }
 *   const adapter = createOpenAIAdapter({ client: new OpenAI(), model: "gpt-5" });
 *   import { createOpenAIAdapter } from "@eval-kit/core/adapters";
 *   import OpenAI from "openai";
+* `expected_tools` (which it no longer sees).
 * And is expected to return:
 * as JSON. Use this to reshape for your backend (e.g. OpenAI-compatible,
 * back as JSON. Use this when your endpoint returns a different shape.
+* Deterministic reference adapter. A naive agent that calls every TASK tool
 * eval-kit. No SDK required.
 * Generic HTTP adapter — point it at any endpoint that runs your agent.
+* never gates). `degraded: true` calls nothing, to simulate a regression for
+* offered in the toolbox (it filters out runner-injected gate tools — the mock
 * OpenAI adapter. Stubs against the OpenAI SDK shape but does NOT bundle the
 * Optional request transformer. By default eval-kit POSTs AgentRunInput
 * Optional response parser. By default eval-kit expects AgentRunOutput
@@ -21,6 +25,7 @@
 * proxies credentials. The stub below documents the expected shape.
 * SDK — the consumer installs `openai` themselves so eval-kit stays slim.
 * The actual API calls are the consumer's responsibility — eval-kit never
+* the diff demo. It builds its "tool defs" from `input.toolbox`, never
 * The endpoint receives JSON like:
 * This is the simplest path to integrating a custom / internal agent with
 * Usage:
@@ -565,15 +570,32 @@ tool_match: boolean | "partial";
 tool: string;
 type ExportFormat = "sft" | "dpo" | "raw";
 
+// ===== dist/gates.d.ts (sorted line inventory) =====
+* `reason` is a free string today, CONVENTIONALLY a kebab-case tag id: the
+* tag-kit seam. No coupling now; a review-outcome catalog ships with real data.
+* The two gate tools the RUNNER injects (they are never declared in suites)
+* these — the moment control returns to a human.
+* whenever the gate surface is available. An agent gates uniformly through
+declare const ASK_USER_TOOL = "ask_user";
+declare const GATE_TOOL_NAMES: readonly string[];
+declare const GATE_TOOLBOX: ToolDecl[];
+declare const REQUEST_APPROVAL_TOOL = "request_approval";
+declare function isGateTool(name: string): boolean;
+export { ASK_USER_TOOL, GATE_TOOLBOX, GATE_TOOL_NAMES, REQUEST_APPROVAL_TOOL, isGateTool };
+import 'zod';
+import { ToolDecl } from './schema.js';
+
 // ===== dist/index.d.ts (sorted line inventory) =====
 export { A as AgentAdapter, a as AgentRunInput, b as AgentRunOutput } from './types.js';
-export { AdapterInfo, AutoScore, ContextItem, Dimension, EvalStep, EvalSuite, EvalTask, RubricScore, Run, ScoredRun, ScoredStepResult, ScoredTaskResult, ScoringHints, StepResult, StepScore, TaskResult, ToolCall, parseRun, parseScoredRun, parseSuite } from './schema.js';
+export { AdapterInfo, AutoScore, Blocker, ContextItem, Dimension, DiscretionaryScore, EvalStep, EvalSuite, EvalTask, Finding, GateEvent, MandatedGate, MandatedGateScore, RubricScore, Run, ScoredRun, ScoredStepResult, ScoredTaskResult, ScoringHints, StepResult, StepScore, TaskResult, ToolCall, ToolDecl, VerifierRef, parseRun, parseScoredRun, parseSuite } from './schema.js';
 export { AnthropicAdapterOptions, HttpAdapterOptions, MockAdapterOptions, OpenAIAdapterOptions, ToolDefinition, createAnthropicAdapter, createHttpAdapter, createMockAdapter, createOpenAIAdapter } from './adapters/index.js';
+export { ASK_USER_TOOL, GATE_TOOLBOX, GATE_TOOL_NAMES, REQUEST_APPROVAL_TOOL, isGateTool } from './gates.js';
+export { BUILT_IN_VERIFIERS, ResolvedContext, Verifier, VerifierInput, formatJsonVerifier, getVerifier, listVerifiers, quoteGroundingVerifier, registerVerifier, requiredSectionsVerifier, runStepVerifiers } from './verifiers/index.js';
 export { C as CiOutcome, a as CiThresholds, S as StepDiff, d as diffRuns, e as evaluateCi } from './ci.js';
 export { DIMENSION_DESCRIPTIONS, DIMENSION_LABELS, DIMENSION_ORDER, DIMENSION_RUBRIC_EXAMPLES } from './rubric.js';
 export { DpoRecord, ExportFormat, ExportOptions, SftRecord, exportDpo, exportRaw, exportSft, toJsonl } from './export.js';
-export { RunnerOptions, runSuite } from './runner.js';
-export { SuiteAggregate, aggregateScoredRun, autoScoreStep, mergeScores } from './scoring.js';
+export { GateCall, SuiteAggregate, aggregateScoredRun, autoScoreStep, mergeScores } from './scoring.js';
+export { GateResolution, GatingOptions, RunnerOptions, resolveToolbox, runSuite } from './runner.js';
 import 'zod';
 
 // ===== dist/loader.d.ts (sorted line inventory) =====
@@ -594,17 +616,178 @@ import 'zod';
 import { Dimension } from './schema.js';
 
 // ===== dist/runner.d.ts (sorted line inventory) =====
+}) => GateResolution;
+* approval request; answer every question with `step.gate_response ?? ""`.
+* Scripted resolutions for deterministic replay. Default: approve every
+* step's `expected_tools` — preserving old suites while still killing per-step
+* suite-level toolbox if present, otherwise (legacy suites) the union of every
+* The tool universe offered to the agent. Computed once per suite: the explicit
+* tool leakage. Gate tools are injected separately, per run.
+/** The answer returned to an `ask_user` gate (recorded as `answered`). */
+/** The phase-5 A/B switch. `available` injects the gate tools; default `available`. */
 adapter: AgentAdapter;
+answer?: string;
+declare function resolveToolbox(suite: EvalSuite): ToolDecl[];
 declare function runSuite(suite: EvalSuite, opts: RunnerOptions): Promise<Run>;
-export { type RunnerOptions, runSuite };
+export { type GateResolution, type GatingOptions, type RunnerOptions, resolveToolbox, runSuite };
+gating?: GatingOptions;
 import 'zod';
 import { A as AgentAdapter } from './types.js';
-import { EvalTask, StepResult, EvalSuite, Run } from './schema.js';
+import { GateEvent, EvalTask, EvalStep, StepResult, EvalSuite, ToolDecl, Run } from './schema.js';
+interface GateResolution {
+interface GatingOptions {
 interface RunnerOptions {
+mode?: "available" | "unavailable";
 onStepComplete?: (task: EvalTask, result: StepResult) => void;
 onStepStart?: (task: EvalTask, stepN: number) => void;
+resolution: GateEvent["resolution"];
+respond?: (ev: GateEvent, ctx: {
+step: EvalStep;
+task: EvalTask;
 
 // ===== dist/schema.d.ts (sorted line inventory) =====
+} | null | undefined;
+} | null | undefined;
+} | null | undefined;
+} | null | undefined;
+} | null | undefined;
+} | null | undefined;
+} | null | undefined;
+} | null | undefined;
+} | null | undefined;
+} | null | undefined;
+} | null | undefined;
+} | null | undefined;
+} | null | undefined;
+} | null | undefined;
+} | null | undefined;
+} | null | undefined;
+} | null | undefined;
+} | null | undefined;
+} | null | undefined;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
+} | null;
 } | null;
 } | null;
 } | null;
@@ -624,6 +807,160 @@ onStepStart?: (task: EvalTask, stepN: number) => void;
 } | undefined;
 } | undefined;
 } | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+} | undefined;
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
 }, "strip", z.ZodTypeAny, {
 }, "strip", z.ZodTypeAny, {
 }, "strip", z.ZodTypeAny, {
@@ -675,6 +1012,49 @@ onStepStart?: (task: EvalTask, stepN: number) => void;
 }[] | undefined;
 }[] | undefined;
 }[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}>, "many">;
+}>, "many">;
+}>, "many">;
+}>, "many">;
+}>, "many">;
+}>, "many">;
+}>, "many">;
 }>, "many">;
 }>, "many">;
 }>, "many">;
@@ -692,18 +1072,73 @@ onStepStart?: (task: EvalTask, stepN: number) => void;
 }>, "many">;
 }>, "many">>;
 }>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+* A recorded gate interaction — the moment control returned to a human. Gate
+* A step-level discretionary blocker: something missing, ambiguous, or
+* A task-level mandated gate: a policy that calling any tool in `before_tools`
+* A tool offered to the agent. The suite-level toolbox is the universe of
+* and never see `expected_tools` (which is answer-key only).
 * Confidence (0..1) the LLM pre-fill assigned when drafting this score.
 * Confidence (0..1) the LLM pre-fill assigned when drafting this score.
 * Confidence (0..1) the LLM pre-fill assigned when drafting this score.
 * Confidence (0..1) the LLM pre-fill assigned when drafting this score.
+* conflicting that a good agent should surface (via `ask_user`) rather than
+* content-grounded verifiers (e.g. quote-grounding) can check the agent's
+* content-grounded verifiers (e.g. quote-grounding) can check the agent's
+* content-grounded verifiers (e.g. quote-grounding) can check the agent's
+* Inline source text. When present the item is a `ResolvedContext` and
+* Inline source text. When present the item is a `ResolvedContext` and
+* Inline source text. When present the item is a `ResolvedContext` and
 * Only populated when pre_filled=true. Used by the review-queue triage
 * Only populated when pre_filled=true. Used by the review-queue triage
 * Only populated when pre_filled=true. Used by the review-queue triage
 * Only populated when pre_filled=true. Used by the review-queue triage
+* output against it. Absent for reference-only items — the dataset seam
+* output against it. Absent for reference-only items — the dataset seam
+* output against it. Absent for reference-only items — the dataset seam
+* paper over. Scored on precision/recall — judgment, never compliance.
+* Reference to a verifier to run against a step's output. `params` is passed
+* requires prior human approval. Scored pass/fail (compliance), never averaged
 * sort: lower confidence → higher priority for human review.
 * sort: lower confidence → higher priority for human review.
 * sort: lower confidence → higher priority for human review.
 * sort: lower confidence → higher priority for human review.
+* through opaquely; each built-in validates its own params with zod.
+* tool calls are extracted here and EXCLUDED from `agent_tool_calls`, keeping
+* tool-match semantics clean (gates are meta-actions, not task actions).
+* tools available on every step; adapters build tool definitions from these
+* where a future loader resolves `ref` to text.
+* where a future loader resolves `ref` to text.
+* where a future loader resolves `ref` to text.
+* with discretionary judgment.
+/** A single machine-checkable issue found by a verifier. */
+/** Canned answer the runner returns to an `ask_user` gate, for deterministic replay. */
+/** Canned answer the runner returns to an `ask_user` gate, for deterministic replay. */
+/** Canned answer the runner returns to an `ask_user` gate, for deterministic replay. */
+/** Did the agent call task tools anyway on a distraction? null on non-distractions. */
+/** Did the agent call task tools anyway on a distraction? null on non-distractions. */
+/** Did the agent call task tools anyway on a distraction? null on non-distractions. */
+/** Did the agent call task tools anyway on a distraction? null on non-distractions. */
+/** Did the agent call task tools anyway on a distraction? null on non-distractions. */
+/** Did the agent call task tools anyway on a distraction? null on non-distractions. */
+/** Did the agent call task tools anyway on a distraction? null on non-distractions. */
+/** Discretionary blocker handling for a step. Precision/recall, never averaged. */
+/** Mandated-gate compliance for a step. Pass/fail, per gate id. */
 adapter: {
 adapter: {
 adapter: {
@@ -815,6 +1250,82 @@ args?: unknown;
 args?: unknown;
 args?: unknown;
 args?: unknown;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: number;
+asked: z.ZodNumber;
+asked: z.ZodNumber;
+asked: z.ZodNumber;
+asked: z.ZodNumber;
+asked: z.ZodNumber;
+asked: z.ZodNumber;
+asked: z.ZodNumber;
+asked: z.ZodNumber;
 auto_score: {
 auto_score: {
 auto_score: {
@@ -845,6 +1356,116 @@ auto_score: z.ZodObject<{
 auto_score: z.ZodObject<{
 auto_score: z.ZodObject<{
 auto_score: z.ZodObject<{
+before_tools: string[];
+before_tools: string[];
+before_tools: string[];
+before_tools: string[];
+before_tools: string[];
+before_tools: string[];
+before_tools: string[];
+before_tools: string[];
+before_tools: string[];
+before_tools: string[];
+before_tools: string[];
+before_tools: string[];
+before_tools: string[];
+before_tools: string[];
+before_tools: z.ZodArray<z.ZodString, "many">;
+before_tools: z.ZodArray<z.ZodString, "many">;
+before_tools: z.ZodArray<z.ZodString, "many">;
+blockers: {
+blockers: {
+blockers: {
+blockers: {
+blockers: {
+blockers: {
+blockers: {
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: number;
+blockers: z.ZodDefault<z.ZodArray<z.ZodObject<{
+blockers: z.ZodDefault<z.ZodArray<z.ZodObject<{
+blockers: z.ZodDefault<z.ZodArray<z.ZodObject<{
+blockers: z.ZodNumber;
+blockers: z.ZodNumber;
+blockers: z.ZodNumber;
+blockers: z.ZodNumber;
+blockers: z.ZodNumber;
+blockers: z.ZodNumber;
+blockers: z.ZodNumber;
+blockers: z.ZodNumber;
+blockers?: {
+blockers?: {
+blockers?: {
+blockers?: {
+blockers?: {
+blockers?: {
+blockers?: {
 config: Record<string, unknown>;
 config: Record<string, unknown>;
 config: Record<string, unknown>;
@@ -858,6 +1479,23 @@ config?: Record<string, unknown> | undefined;
 config?: Record<string, unknown> | undefined;
 config?: Record<string, unknown> | undefined;
 config?: Record<string, unknown> | undefined;
+content: z.ZodOptional<z.ZodString>;
+content: z.ZodOptional<z.ZodString>;
+content: z.ZodOptional<z.ZodString>;
+content?: string | undefined;
+content?: string | undefined;
+content?: string | undefined;
+content?: string | undefined;
+content?: string | undefined;
+content?: string | undefined;
+content?: string | undefined;
+content?: string | undefined;
+content?: string | undefined;
+content?: string | undefined;
+content?: string | undefined;
+content?: string | undefined;
+content?: string | undefined;
+content?: string | undefined;
 context_items: {
 context_items: {
 context_items: {
@@ -870,11 +1508,17 @@ context_items?: {
 context_items?: {
 declare const AdapterInfo: z.ZodObject<{
 declare const AutoScore: z.ZodObject<{
+declare const Blocker: z.ZodObject<{
 declare const ContextItem: z.ZodObject<{
 declare const Dimension: z.ZodEnum<["explainability", "agency_preservation", "long_term_capability", "calibration", "collaborative_performance"]>;
+declare const DiscretionaryScore: z.ZodObject<{
 declare const EvalStep: z.ZodObject<{
 declare const EvalSuite: z.ZodObject<{
 declare const EvalTask: z.ZodObject<{
+declare const Finding: z.ZodObject<{
+declare const GateEvent: z.ZodObject<{
+declare const MandatedGate: z.ZodObject<{
+declare const MandatedGateScore: z.ZodObject<{
 declare const RubricScore: z.ZodUnion<[z.ZodLiteral<0>, z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>]>;
 declare const Run: z.ZodObject<{
 declare const ScoredRun: z.ZodObject<{
@@ -885,6 +1529,8 @@ declare const StepResult: z.ZodObject<{
 declare const StepScore: z.ZodObject<{
 declare const TaskResult: z.ZodObject<{
 declare const ToolCall: z.ZodObject<{
+declare const ToolDecl: z.ZodObject<{
+declare const VerifierRef: z.ZodObject<{
 declare function parseRun(input: unknown): Run;
 declare function parseScoredRun(input: unknown): ScoredRun;
 declare function parseSuite(input: unknown): EvalSuite;
@@ -892,7 +1538,60 @@ description: string;
 description: string;
 description: string;
 description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: string;
+description: z.ZodOptional<z.ZodString>;
+description: z.ZodOptional<z.ZodString>;
 description: z.ZodString;
+description: z.ZodString;
+description: z.ZodString;
+description: z.ZodString;
+description: z.ZodString;
+description: z.ZodString;
+description: z.ZodString;
+description: z.ZodString;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
+description?: string | undefined;
 dimensions_in_scope: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
 dimensions_in_scope: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
 dimensions_in_scope: ("explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance")[];
@@ -948,6 +1647,110 @@ dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_ter
 dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
 dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
 dimensions?: Partial<Record<"explainability" | "agency_preservation" | "long_term_capability" | "calibration" | "collaborative_performance", 0 | 1 | 2 | 3>> | undefined;
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: {
+discretionary: z.ZodNullable<z.ZodObject<{
+discretionary: z.ZodNullable<z.ZodObject<{
+discretionary: z.ZodNullable<z.ZodObject<{
+discretionary: z.ZodNullable<z.ZodObject<{
+discretionary: z.ZodNullable<z.ZodObject<{
+discretionary: z.ZodNullable<z.ZodObject<{
+discretionary: z.ZodNullable<z.ZodObject<{
+distraction_acted: boolean | null;
+distraction_acted: boolean | null;
+distraction_acted: boolean | null;
+distraction_acted: boolean | null;
+distraction_acted: boolean | null;
+distraction_acted: boolean | null;
+distraction_acted: boolean | null;
+distraction_acted: boolean | null;
+distraction_acted: boolean | null;
+distraction_acted: boolean | null;
+distraction_acted: boolean | null;
+distraction_acted: boolean | null;
+distraction_acted: boolean | null;
+distraction_acted: boolean | null;
+distraction_acted: boolean | null;
+distraction_acted: boolean | null;
+distraction_acted: boolean | null;
+distraction_acted: boolean | null;
+distraction_acted: boolean | null;
+distraction_acted: z.ZodDefault<z.ZodNullable<z.ZodBoolean>>;
+distraction_acted: z.ZodDefault<z.ZodNullable<z.ZodBoolean>>;
+distraction_acted: z.ZodDefault<z.ZodNullable<z.ZodBoolean>>;
+distraction_acted: z.ZodDefault<z.ZodNullable<z.ZodBoolean>>;
+distraction_acted: z.ZodDefault<z.ZodNullable<z.ZodBoolean>>;
+distraction_acted: z.ZodDefault<z.ZodNullable<z.ZodBoolean>>;
+distraction_acted: z.ZodDefault<z.ZodNullable<z.ZodBoolean>>;
+distraction_acted?: boolean | null | undefined;
+distraction_acted?: boolean | null | undefined;
+distraction_acted?: boolean | null | undefined;
+distraction_acted?: boolean | null | undefined;
+distraction_acted?: boolean | null | undefined;
+distraction_acted?: boolean | null | undefined;
+distraction_acted?: boolean | null | undefined;
+distraction_acted?: boolean | null | undefined;
+distraction_acted?: boolean | null | undefined;
+distraction_acted?: boolean | null | undefined;
+distraction_acted?: boolean | null | undefined;
+distraction_acted?: boolean | null | undefined;
+distraction_acted?: boolean | null | undefined;
+distraction_acted?: boolean | null | undefined;
+distraction_acted?: boolean | null | undefined;
+distraction_acted?: boolean | null | undefined;
+distraction_acted?: boolean | null | undefined;
+distraction_acted?: boolean | null | undefined;
+distraction_acted?: boolean | null | undefined;
 distraction_caught: boolean | null;
 distraction_caught: boolean | null;
 distraction_caught: boolean | null;
@@ -1017,6 +1820,98 @@ distraction_caught: z.ZodNullable<z.ZodBoolean>;
 distraction_caught: z.ZodNullable<z.ZodBoolean>;
 distraction_caught: z.ZodNullable<z.ZodBoolean>;
 distraction_caught: z.ZodNullable<z.ZodBoolean>;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: number;
+end: z.ZodNumber;
+end: z.ZodNumber;
+end: z.ZodNumber;
+end: z.ZodNumber;
+end: z.ZodNumber;
+end: z.ZodNumber;
+end: z.ZodNumber;
+end: z.ZodNumber;
 ended_at: string;
 ended_at: string;
 ended_at: string;
@@ -1040,7 +1935,158 @@ expected_tools?: string[] | undefined;
 expected_tools?: string[] | undefined;
 expected_tools?: string[] | undefined;
 expected_tools?: string[] | undefined;
-export { AdapterInfo, AutoScore, ContextItem, Dimension, EvalStep, EvalSuite, EvalTask, RubricScore, Run, ScoredRun, ScoredStepResult, ScoredTaskResult, ScoringHints, StepResult, StepScore, TaskResult, ToolCall, parseRun, parseScoredRun, parseSuite };
+export { AdapterInfo, AutoScore, Blocker, ContextItem, Dimension, DiscretionaryScore, EvalStep, EvalSuite, EvalTask, Finding, GateEvent, MandatedGate, MandatedGateScore, RubricScore, Run, ScoredRun, ScoredStepResult, ScoredTaskResult, ScoringHints, StepResult, StepScore, TaskResult, ToolCall, ToolDecl, VerifierRef, parseRun, parseScoredRun, parseSuite };
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: {
+findings: z.ZodArray<z.ZodObject<{
+findings: z.ZodArray<z.ZodObject<{
+findings: z.ZodArray<z.ZodObject<{
+findings: z.ZodArray<z.ZodObject<{
+findings: z.ZodArray<z.ZodObject<{
+findings: z.ZodArray<z.ZodObject<{
+findings: z.ZodArray<z.ZodObject<{
+gate_events: {
+gate_events: {
+gate_events: {
+gate_events: {
+gate_events: {
+gate_events: {
+gate_events: {
+gate_events: {
+gate_events: {
+gate_events: {
+gate_events: {
+gate_events: {
+gate_events: z.ZodDefault<z.ZodArray<z.ZodObject<{
+gate_events: z.ZodDefault<z.ZodArray<z.ZodObject<{
+gate_events: z.ZodDefault<z.ZodArray<z.ZodObject<{
+gate_events: z.ZodDefault<z.ZodArray<z.ZodObject<{
+gate_events: z.ZodDefault<z.ZodArray<z.ZodObject<{
+gate_events: z.ZodDefault<z.ZodArray<z.ZodObject<{
+gate_events?: {
+gate_events?: {
+gate_events?: {
+gate_events?: {
+gate_events?: {
+gate_events?: {
+gate_events?: {
+gate_events?: {
+gate_events?: {
+gate_events?: {
+gate_events?: {
+gate_events?: {
+gate_response: z.ZodOptional<z.ZodString>;
+gate_response: z.ZodOptional<z.ZodString>;
+gate_response: z.ZodOptional<z.ZodString>;
+gate_response?: string | undefined;
+gate_response?: string | undefined;
+gate_response?: string | undefined;
+gate_response?: string | undefined;
+gate_response?: string | undefined;
+gate_response?: string | undefined;
+gate_response?: string | undefined;
+gate_response?: string | undefined;
+gate_response?: string | undefined;
+gate_response?: string | undefined;
+gate_response?: string | undefined;
+gate_response?: string | undefined;
+gate_response?: string | undefined;
+gate_response?: string | undefined;
+gates: {
+gates: {
+gates: {
+gates: {
+gates: {
+gates: {
+gates: {
+gates: {
+gates: {
+gates: {
+gates: {
+gates: {
+gates: {
+gates: {
+gates: {
+gates: {
+gates: {
+gates: {
+gates: {
+gates: z.ZodDefault<z.ZodObject<{
+gates: z.ZodDefault<z.ZodObject<{
+gates: z.ZodDefault<z.ZodObject<{
+gates: z.ZodDefault<z.ZodObject<{
+gates: z.ZodDefault<z.ZodObject<{
+gates: z.ZodDefault<z.ZodObject<{
+gates: z.ZodDefault<z.ZodObject<{
+gates?: {
+gates?: {
+gates?: {
+gates?: {
+gates?: {
+gates?: {
+gates?: {
+gates?: {
+gates?: {
+gates?: {
+gates?: {
+gates?: {
+gates?: {
+gates?: {
+gates?: {
+gates?: {
+gates?: {
+gates?: {
+gates?: {
 golden_truth_rubric: "pass_fail" | "0-3";
 golden_truth_rubric: "pass_fail" | "0-3";
 golden_truth_rubric: "pass_fail" | "0-3";
@@ -1108,6 +2154,82 @@ golden_truth: z.ZodNullable<z.ZodUnion<[z.ZodLiteral<0>, z.ZodLiteral<1>, z.ZodL
 golden_truth: z.ZodString;
 golden_truth: z.ZodString;
 golden_truth: z.ZodString;
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: string[];
+honored: z.ZodArray<z.ZodString, "many">;
+honored: z.ZodArray<z.ZodString, "many">;
+honored: z.ZodArray<z.ZodString, "many">;
+honored: z.ZodArray<z.ZodString, "many">;
+honored: z.ZodArray<z.ZodString, "many">;
+honored: z.ZodArray<z.ZodString, "many">;
+honored: z.ZodArray<z.ZodString, "many">;
+honored: z.ZodArray<z.ZodString, "many">;
 id: string;
 id: string;
 id: string;
@@ -1120,6 +2242,86 @@ id: string;
 id: string;
 id: string;
 id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: string;
+id: z.ZodString;
+id: z.ZodString;
+id: z.ZodString;
+id: z.ZodString;
+id: z.ZodString;
+id: z.ZodString;
+id: z.ZodString;
+id: z.ZodString;
+id: z.ZodString;
+id: z.ZodString;
+id: z.ZodString;
+id: z.ZodString;
 id: z.ZodString;
 id: z.ZodString;
 id: z.ZodString;
@@ -1144,6 +2346,51 @@ is_distraction?: boolean | undefined;
 is_distraction?: boolean | undefined;
 is_distraction?: boolean | undefined;
 is_distraction?: boolean | undefined;
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: "approval_request" | "question";
+kind: z.ZodEnum<["approval_request", "question"]>;
+kind: z.ZodEnum<["approval_request", "question"]>;
+kind: z.ZodEnum<["approval_request", "question"]>;
+kind: z.ZodEnum<["approval_request", "question"]>;
+kind: z.ZodEnum<["approval_request", "question"]>;
+kind: z.ZodEnum<["approval_request", "question"]>;
+kind: z.ZodEnum<["approval_request", "question"]>;
 label: string;
 label: string;
 label: string;
@@ -1191,6 +2438,227 @@ latency_ms: z.ZodNumber;
 latency_ms: z.ZodNumber;
 latency_ms: z.ZodNumber;
 latency_ms: z.ZodNumber;
+mandated_gates: {
+mandated_gates: {
+mandated_gates: {
+mandated_gates: {
+mandated_gates: z.ZodDefault<z.ZodArray<z.ZodObject<{
+mandated_gates: z.ZodDefault<z.ZodArray<z.ZodObject<{
+mandated_gates?: {
+mandated_gates?: {
+mandated_gates?: {
+mandated_gates?: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: {
+mandated: z.ZodNullable<z.ZodObject<{
+mandated: z.ZodNullable<z.ZodObject<{
+mandated: z.ZodNullable<z.ZodObject<{
+mandated: z.ZodNullable<z.ZodObject<{
+mandated: z.ZodNullable<z.ZodObject<{
+mandated: z.ZodNullable<z.ZodObject<{
+mandated: z.ZodNullable<z.ZodObject<{
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: number;
+matched: z.ZodNumber;
+matched: z.ZodNumber;
+matched: z.ZodNumber;
+matched: z.ZodNumber;
+matched: z.ZodNumber;
+matched: z.ZodNumber;
+matched: z.ZodNumber;
+matched: z.ZodNumber;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: string;
+message: z.ZodString;
+message: z.ZodString;
+message: z.ZodString;
+message: z.ZodString;
+message: z.ZodString;
+message: z.ZodString;
+message: z.ZodString;
+message: z.ZodString;
 model: string;
 model: string;
 model: string;
@@ -1231,6 +2699,16 @@ name: string;
 name: string;
 name: string;
 name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: string;
+name: z.ZodString;
+name: z.ZodString;
 name: z.ZodString;
 name: z.ZodString;
 name: z.ZodString;
@@ -1254,6 +2732,102 @@ overall_goal: string;
 overall_goal: string;
 overall_goal: z.ZodString;
 overall_goal: z.ZodString;
+params: Record<string, unknown>;
+params: Record<string, unknown>;
+params: Record<string, unknown>;
+params: Record<string, unknown>;
+params: Record<string, unknown>;
+params: Record<string, unknown>;
+params: Record<string, unknown>;
+params: Record<string, unknown>;
+params: Record<string, unknown>;
+params: Record<string, unknown>;
+params: Record<string, unknown>;
+params: Record<string, unknown>;
+params: Record<string, unknown>;
+params: Record<string, unknown>;
+params: Record<string, unknown>;
+params: Record<string, unknown>;
+params: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
+params: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
+params: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
+params: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
+params: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
+params?: Record<string, unknown> | undefined;
+params?: Record<string, unknown> | undefined;
+params?: Record<string, unknown> | undefined;
+params?: Record<string, unknown> | undefined;
+params?: Record<string, unknown> | undefined;
+params?: Record<string, unknown> | undefined;
+params?: Record<string, unknown> | undefined;
+params?: Record<string, unknown> | undefined;
+params?: Record<string, unknown> | undefined;
+params?: Record<string, unknown> | undefined;
+params?: Record<string, unknown> | undefined;
+params?: Record<string, unknown> | undefined;
+params?: Record<string, unknown> | undefined;
+params?: Record<string, unknown> | undefined;
+params?: Record<string, unknown> | undefined;
+params?: Record<string, unknown> | undefined;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: number;
+passed: z.ZodNumber;
+passed: z.ZodNumber;
+passed: z.ZodNumber;
+passed: z.ZodNumber;
+passed: z.ZodNumber;
+passed: z.ZodNumber;
+passed: z.ZodNumber;
 pre_fill_confidence: z.ZodOptional<z.ZodNumber>;
 pre_fill_confidence: z.ZodOptional<z.ZodNumber>;
 pre_fill_confidence: z.ZodOptional<z.ZodNumber>;
@@ -1319,6 +2893,51 @@ prompt: string;
 prompt: z.ZodString;
 prompt: z.ZodString;
 prompt: z.ZodString;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: string;
+reason: z.ZodString;
+reason: z.ZodString;
+reason: z.ZodString;
+reason: z.ZodString;
+reason: z.ZodString;
+reason: z.ZodString;
+reason: z.ZodString;
 ref: string;
 ref: string;
 ref: string;
@@ -1336,6 +2955,127 @@ ref: string;
 ref: z.ZodString;
 ref: z.ZodString;
 ref: z.ZodString;
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: string[];
+required: z.ZodArray<z.ZodString, "many">;
+required: z.ZodArray<z.ZodString, "many">;
+required: z.ZodArray<z.ZodString, "many">;
+required: z.ZodArray<z.ZodString, "many">;
+required: z.ZodArray<z.ZodString, "many">;
+required: z.ZodArray<z.ZodString, "many">;
+required: z.ZodArray<z.ZodString, "many">;
+required: z.ZodArray<z.ZodString, "many">;
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: "approved" | "denied" | "answered" | "unresolved";
+resolution: z.ZodEnum<["approved", "denied", "answered", "unresolved"]>;
+resolution: z.ZodEnum<["approved", "denied", "answered", "unresolved"]>;
+resolution: z.ZodEnum<["approved", "denied", "answered", "unresolved"]>;
+resolution: z.ZodEnum<["approved", "denied", "answered", "unresolved"]>;
+resolution: z.ZodEnum<["approved", "denied", "answered", "unresolved"]>;
+resolution: z.ZodEnum<["approved", "denied", "answered", "unresolved"]>;
+resolution: z.ZodEnum<["approved", "denied", "answered", "unresolved"]>;
 result: z.ZodUnknown;
 result: z.ZodUnknown;
 result: z.ZodUnknown;
@@ -1491,6 +3231,250 @@ scoring_hints?: {
 scoring_hints?: {
 scoring_hints?: {
 scoring_hints?: {
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: "error" | "warn";
+severity: z.ZodEnum<["error", "warn"]>;
+severity: z.ZodEnum<["error", "warn"]>;
+severity: z.ZodEnum<["error", "warn"]>;
+severity: z.ZodEnum<["error", "warn"]>;
+severity: z.ZodEnum<["error", "warn"]>;
+severity: z.ZodEnum<["error", "warn"]>;
+severity: z.ZodEnum<["error", "warn"]>;
+severity: z.ZodEnum<["error", "warn"]>;
+span: z.ZodOptional<z.ZodObject<{
+span: z.ZodOptional<z.ZodObject<{
+span: z.ZodOptional<z.ZodObject<{
+span: z.ZodOptional<z.ZodObject<{
+span: z.ZodOptional<z.ZodObject<{
+span: z.ZodOptional<z.ZodObject<{
+span: z.ZodOptional<z.ZodObject<{
+span: z.ZodOptional<z.ZodObject<{
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+span?: {
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: number;
+start: z.ZodNumber;
+start: z.ZodNumber;
+start: z.ZodNumber;
+start: z.ZodNumber;
+start: z.ZodNumber;
+start: z.ZodNumber;
+start: z.ZodNumber;
+start: z.ZodNumber;
 started_at: string;
 started_at: string;
 started_at: string;
@@ -1592,11 +3576,101 @@ suite_version: z.ZodString;
 suite: {
 suite: {
 suite: z.ZodObject<{
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: string;
+surfaced: z.ZodString;
+surfaced: z.ZodString;
+surfaced: z.ZodString;
+surfaced: z.ZodString;
+surfaced: z.ZodString;
+surfaced: z.ZodString;
+surfaced: z.ZodString;
 target_agent_type: string;
 target_agent_type: string;
 target_agent_type: string;
 target_agent_type: string;
 target_agent_type: z.ZodString;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: string | null;
+target_tool: z.ZodNullable<z.ZodString>;
+target_tool: z.ZodNullable<z.ZodString>;
+target_tool: z.ZodNullable<z.ZodString>;
+target_tool: z.ZodNullable<z.ZodString>;
+target_tool: z.ZodNullable<z.ZodString>;
+target_tool: z.ZodNullable<z.ZodString>;
+target_tool: z.ZodNullable<z.ZodString>;
 task_id: string;
 task_id: string;
 task_id: string;
@@ -1764,13 +3838,24 @@ tool: z.ZodString;
 tool: z.ZodString;
 tool: z.ZodString;
 tool: z.ZodString;
+toolbox: {
+toolbox: {
+toolbox: z.ZodDefault<z.ZodArray<z.ZodObject<{
+toolbox?: {
+toolbox?: {
 type AdapterInfo = z.infer<typeof AdapterInfo>;
 type AutoScore = z.infer<typeof AutoScore>;
+type Blocker = z.infer<typeof Blocker>;
 type ContextItem = z.infer<typeof ContextItem>;
 type Dimension = z.infer<typeof Dimension>;
+type DiscretionaryScore = z.infer<typeof DiscretionaryScore>;
 type EvalStep = z.infer<typeof EvalStep>;
 type EvalSuite = z.infer<typeof EvalSuite>;
 type EvalTask = z.infer<typeof EvalTask>;
+type Finding = z.infer<typeof Finding>;
+type GateEvent = z.infer<typeof GateEvent>;
+type MandatedGate = z.infer<typeof MandatedGate>;
+type MandatedGateScore = z.infer<typeof MandatedGateScore>;
 type RubricScore = z.infer<typeof RubricScore>;
 type Run = z.infer<typeof Run>;
 type ScoredRun = z.infer<typeof ScoredRun>;
@@ -1781,6 +3866,8 @@ type StepResult = z.infer<typeof StepResult>;
 type StepScore = z.infer<typeof StepScore>;
 type TaskResult = z.infer<typeof TaskResult>;
 type ToolCall = z.infer<typeof ToolCall>;
+type ToolDecl = z.infer<typeof ToolDecl>;
+type VerifierRef = z.infer<typeof VerifierRef>;
 type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
 type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
 type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
@@ -1798,41 +3885,361 @@ type: "pdf" | "url" | "text" | "image" | "canvas" | "other";
 type: z.ZodEnum<["pdf", "url", "text", "image", "canvas", "other"]>;
 type: z.ZodEnum<["pdf", "url", "text", "image", "canvas", "other"]>;
 type: z.ZodEnum<["pdf", "url", "text", "image", "canvas", "other"]>;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: number;
+unprompted: z.ZodNumber;
+unprompted: z.ZodNumber;
+unprompted: z.ZodNumber;
+unprompted: z.ZodNumber;
+unprompted: z.ZodNumber;
+unprompted: z.ZodNumber;
+unprompted: z.ZodNumber;
+unprompted: z.ZodNumber;
+verification: {
+verification: {
+verification: {
+verification: {
+verification: {
+verification: {
+verification: {
+verification: {
+verification: {
+verification: {
+verification: {
+verification: {
+verification: {
+verification: {
+verification: {
+verification: {
+verification: {
+verification: {
+verification: {
+verification: z.ZodDefault<z.ZodNullable<z.ZodObject<{
+verification: z.ZodDefault<z.ZodNullable<z.ZodObject<{
+verification: z.ZodDefault<z.ZodNullable<z.ZodObject<{
+verification: z.ZodDefault<z.ZodNullable<z.ZodObject<{
+verification: z.ZodDefault<z.ZodNullable<z.ZodObject<{
+verification: z.ZodDefault<z.ZodNullable<z.ZodObject<{
+verification: z.ZodDefault<z.ZodNullable<z.ZodObject<{
+verification?: {
+verification?: {
+verification?: {
+verification?: {
+verification?: {
+verification?: {
+verification?: {
+verification?: {
+verification?: {
+verification?: {
+verification?: {
+verification?: {
+verification?: {
+verification?: {
+verification?: {
+verification?: {
+verification?: {
+verification?: {
+verification?: {
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: string;
+verifier: z.ZodString;
+verifier: z.ZodString;
+verifier: z.ZodString;
+verifier: z.ZodString;
+verifier: z.ZodString;
+verifier: z.ZodString;
+verifier: z.ZodString;
+verifier: z.ZodString;
+verifiers: {
+verifiers: {
+verifiers: {
+verifiers: {
+verifiers: {
+verifiers: {
+verifiers: {
+verifiers: {
+verifiers: {
+verifiers: {
+verifiers: {
+verifiers: z.ZodDefault<z.ZodArray<z.ZodObject<{
+verifiers: z.ZodDefault<z.ZodArray<z.ZodObject<{
+verifiers: z.ZodDefault<z.ZodArray<z.ZodObject<{
+verifiers: z.ZodDefault<z.ZodArray<z.ZodObject<{
+verifiers?: {
+verifiers?: {
+verifiers?: {
+verifiers?: {
+verifiers?: {
+verifiers?: {
+verifiers?: {
+verifiers?: {
+verifiers?: {
+verifiers?: {
+verifiers?: {
 version: string;
 version: string;
 version: string;
 version: string;
 version: z.ZodString;
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: string[];
+violated: z.ZodArray<z.ZodString, "many">;
+violated: z.ZodArray<z.ZodString, "many">;
+violated: z.ZodArray<z.ZodString, "many">;
+violated: z.ZodArray<z.ZodString, "many">;
+violated: z.ZodArray<z.ZodString, "many">;
+violated: z.ZodArray<z.ZodString, "many">;
+violated: z.ZodArray<z.ZodString, "many">;
+violated: z.ZodArray<z.ZodString, "many">;
 
 // ===== dist/scoring.d.ts (sorted line inventory) =====
 }): AutoScore;
+* A gate tool call recorded during a step, with enough position info for
+* approval "before" a gated call means `task_calls_before <= indexOfGatedCall`.
+* calls that preceded this gate call in the agent's action sequence — so an
+* ordering-sensitive scoring. `task_calls_before` is the number of TASK tool
+/** Discretionary ask-precision: matched / asked. Reported separately from recall. */
+/** Discretionary blocker-recall: matched / blockers. Reported separately from precision. */
+/** Mandated-gate compliance: honored / required across all steps. */
 declare function aggregateScoredRun(run: ScoredRun): SuiteAggregate;
 declare function autoScoreStep(opts: {
 declare function mergeScores(run: Run, scores: Map<string, Map<number, StepScore>>): ScoredRun;
 dimension_means: Partial<Record<string, number>>;
+discretionary_ask_precision: number | null;
+discretionary_blocker_recall: number | null;
 distraction_detection_rate: number | null;
-export { type SuiteAggregate, aggregateScoredRun, autoScoreStep, mergeScores };
+export { type GateCall, type SuiteAggregate, aggregateScoredRun, autoScoreStep, mergeScores };
 finalOutput: string;
+gateCalls?: GateCall[];
 golden_truth_pass_rate: number | null;
 import 'zod';
 import { ScoredRun, EvalStep, EvalTask, AutoScore, Run, StepScore } from './schema.js';
+interface GateCall {
 interface SuiteAggregate {
+kind: "approval_request" | "question";
+mandated_compliance_rate: number | null;
+reason: string;
 reviewed_steps: number;
 step: EvalStep;
 suite_id: string;
+surfaced: string;
+target_tool: string | null;
+task_calls_before: number;
 task: EvalTask;
 tool_match_accuracy: number;
 toolsCalled: string[];
 total_steps: number;
 
 // ===== dist/types.d.ts (sorted line inventory) =====
+* build their tool definitions from this. `expected_tools` is intentionally
+* NOT here: it is answer-key only, and leaking it to the agent would defeat
+* the point of measuring tool selection.
+* The tool universe offered to the agent on this step — the suite-level
+* toolbox (plus runner-injected gate tools when gating is available). Adapters
 config: Record<string, unknown>;
 context: ContextItem[];
-expected_tools: string[];
 export type { AgentAdapter as A, AgentRunInput as a, AgentRunOutput as b };
 final_output: string;
 final_output: string;
-import { ContextItem, ToolCall } from './schema.js';
+import { ContextItem, ToolDecl, ToolCall } from './schema.js';
 interface AgentAdapter {
 interface AgentRunInput {
 interface AgentRunOutput {
@@ -1845,4 +4252,49 @@ prompt: string;
 run(input: AgentRunInput): Promise<AgentRunOutput>;
 tool_calls: ToolCall[];
 tool_calls: ToolCall[];
+toolbox: ToolDecl[];
+
+// ===== dist/verifiers/index.d.ts (sorted line inventory) =====
+} | null;
+* (whitespace-normalized) in some context item's content. Skips (returns [])
+* `ResolvedContext` narrows it to present.
+* A context item whose source text is inlined — the only kind content-grounded
+* design's `VerifierInput` omitted this; params must reach `verify` somehow,
+* error-severity finding.
+* Every double-quoted passage of >= minWords in the output must appear verbatim
+* Run every verifier referenced by a step against its output. Returns null when
+* so they ride here.)
+* the step declares no verifiers. `passed` counts verifiers that produced no
+* through opaquely. Each verifier validates its own params with zod. (The
+* Verifier params from the suite (`scoring_hints.verifiers[].params`), passed
+* verifiers can check against. `ContextItem.content` is optional in the schema;
+* when no context has content — grounding is only meaningful with sources.
+/** Each named section/heading/label must be present in the output. */
+/** Output must parse as JSON. */
+/** Pure, deterministic, no IO. */
+content: string;
+context: ResolvedContext[];
+declare const BUILT_IN_VERIFIERS: Verifier[];
+declare const formatJsonVerifier: Verifier;
+declare const quoteGroundingVerifier: Verifier;
+declare const requiredSectionsVerifier: Verifier;
+declare function getVerifier(id: string): Verifier;
+declare function listVerifiers(): string[];
+declare function registerVerifier(v: Verifier): void;
+declare function runStepVerifiers(step: EvalStep, task: EvalTask, output: string): {
+description: string;
+export { BUILT_IN_VERIFIERS, type ResolvedContext, type Verifier, type VerifierInput, formatJsonVerifier, getVerifier, listVerifiers, quoteGroundingVerifier, registerVerifier, requiredSectionsVerifier, runStepVerifiers };
+findings: Finding[];
+id: string;
+import 'zod';
+import { EvalStep, EvalTask, ContextItem, Finding } from '../schema.js';
+interface Verifier {
+interface VerifierInput {
+output: string;
+params: Record<string, unknown>;
+passed: number;
+step: EvalStep;
+task: EvalTask;
+type ResolvedContext = ContextItem & {
+verify(input: VerifierInput): Finding[];
 

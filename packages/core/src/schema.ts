@@ -13,17 +13,57 @@ export const ContextItem = z.object({
   type: z.enum(["pdf", "url", "text", "image", "canvas", "other"]),
   label: z.string(),
   ref: z.string(),
+  /**
+   * Inline source text. When present the item is a `ResolvedContext` and
+   * content-grounded verifiers (e.g. quote-grounding) can check the agent's
+   * output against it. Absent for reference-only items — the dataset seam
+   * where a future loader resolves `ref` to text.
+   */
+  content: z.string().optional(),
 });
 export type ContextItem = z.infer<typeof ContextItem>;
+
+/**
+ * A tool offered to the agent. The suite-level toolbox is the universe of
+ * tools available on every step; adapters build tool definitions from these
+ * and never see `expected_tools` (which is answer-key only).
+ */
+export const ToolDecl = z.object({
+  name: z.string(),
+  description: z.string().optional(), // adapters synthesize one if absent
+});
+export type ToolDecl = z.infer<typeof ToolDecl>;
+
+/**
+ * Reference to a verifier to run against a step's output. `params` is passed
+ * through opaquely; each built-in validates its own params with zod.
+ */
+export const VerifierRef = z.object({
+  id: z.string(),
+  params: z.record(z.unknown()).default({}),
+});
+export type VerifierRef = z.infer<typeof VerifierRef>;
 
 export const ScoringHints = z
   .object({
     tool_match: z.enum(["strict", "subset", "any"]).default("subset"),
     golden_truth_rubric: z.enum(["pass_fail", "0-3"]).default("0-3"),
     dimensions: z.array(Dimension).default([]),
+    verifiers: z.array(VerifierRef).default([]),
   })
   .default({});
 export type ScoringHints = z.infer<typeof ScoringHints>;
+
+/**
+ * A step-level discretionary blocker: something missing, ambiguous, or
+ * conflicting that a good agent should surface (via `ask_user`) rather than
+ * paper over. Scored on precision/recall — judgment, never compliance.
+ */
+export const Blocker = z.object({
+  id: z.string(),
+  description: z.string(),
+});
+export type Blocker = z.infer<typeof Blocker>;
 
 export const EvalStep = z.object({
   n: z.number().int().positive(),
@@ -31,8 +71,23 @@ export const EvalStep = z.object({
   expected_tools: z.array(z.string()).default([]),
   golden_truth: z.string(),
   scoring_hints: ScoringHints,
+  blockers: z.array(Blocker).default([]),
+  /** Canned answer the runner returns to an `ask_user` gate, for deterministic replay. */
+  gate_response: z.string().optional(),
 });
 export type EvalStep = z.infer<typeof EvalStep>;
+
+/**
+ * A task-level mandated gate: a policy that calling any tool in `before_tools`
+ * requires prior human approval. Scored pass/fail (compliance), never averaged
+ * with discretionary judgment.
+ */
+export const MandatedGate = z.object({
+  id: z.string(),
+  before_tools: z.array(z.string()).min(1),
+  description: z.string(),
+});
+export type MandatedGate = z.infer<typeof MandatedGate>;
 
 export const EvalTask = z.object({
   id: z.string(),
@@ -40,6 +95,7 @@ export const EvalTask = z.object({
   overall_goal: z.string(),
   is_distraction: z.boolean().default(false),
   context_items: z.array(ContextItem).default([]),
+  mandated_gates: z.array(MandatedGate).default([]),
   steps: z.array(EvalStep).min(1).max(9),
   notes_on_observed_runs: z.string().optional(),
 });
@@ -52,6 +108,7 @@ export const EvalSuite = z.object({
     description: z.string(),
     target_agent_type: z.string(),
     dimensions_in_scope: z.array(Dimension),
+    toolbox: z.array(ToolDecl).default([]),
     tasks: z.array(EvalTask).min(1),
   }),
 });
@@ -64,9 +121,61 @@ export const ToolCall = z.object({
 });
 export type ToolCall = z.infer<typeof ToolCall>;
 
+/**
+ * A recorded gate interaction — the moment control returned to a human. Gate
+ * tool calls are extracted here and EXCLUDED from `agent_tool_calls`, keeping
+ * tool-match semantics clean (gates are meta-actions, not task actions).
+ */
+export const GateEvent = z.object({
+  kind: z.enum(["approval_request", "question"]),
+  reason: z.string(),
+  surfaced: z.string(), // the summary/question the human actually saw
+  target_tool: z.string().nullable(),
+  resolution: z.enum(["approved", "denied", "answered", "unresolved"]),
+});
+export type GateEvent = z.infer<typeof GateEvent>;
+
+/** A single machine-checkable issue found by a verifier. */
+export const Finding = z.object({
+  verifier: z.string(),
+  severity: z.enum(["error", "warn"]),
+  message: z.string(),
+  span: z.object({ start: z.number(), end: z.number() }).optional(),
+});
+export type Finding = z.infer<typeof Finding>;
+
+/** Mandated-gate compliance for a step. Pass/fail, per gate id. */
+export const MandatedGateScore = z.object({
+  required: z.array(z.string()), // gate ids triggered by this step's tool calls
+  honored: z.array(z.string()), // approval requested BEFORE the gated call
+  violated: z.array(z.string()), // gated tool called with no prior approval
+});
+export type MandatedGateScore = z.infer<typeof MandatedGateScore>;
+
+/** Discretionary blocker handling for a step. Precision/recall, never averaged. */
+export const DiscretionaryScore = z.object({
+  blockers: z.number(), // declared on this step
+  asked: z.number(), // ask_user events
+  matched: z.number(), // asks that address a declared blocker
+  unprompted: z.number(), // asks on steps with zero blockers (over-asking signal)
+});
+export type DiscretionaryScore = z.infer<typeof DiscretionaryScore>;
+
 export const AutoScore = z.object({
   tool_match: z.union([z.boolean(), z.literal("partial")]),
   distraction_caught: z.boolean().nullable(),
+  /** Did the agent call task tools anyway on a distraction? null on non-distractions. */
+  distraction_acted: z.boolean().nullable().default(null),
+  gates: z
+    .object({
+      mandated: MandatedGateScore.nullable(), // null when task declares no mandated gates
+      discretionary: DiscretionaryScore.nullable(), // null when step has no blockers AND no asks
+    })
+    .default({ mandated: null, discretionary: null }),
+  verification: z
+    .object({ passed: z.number(), findings: z.array(Finding) })
+    .nullable()
+    .default(null),
 });
 export type AutoScore = z.infer<typeof AutoScore>;
 
@@ -76,6 +185,7 @@ export const StepResult = z.object({
   agent_final_output: z.string(),
   latency_ms: z.number().nonnegative(),
   auto_score: AutoScore,
+  gate_events: z.array(GateEvent).default([]),
 });
 export type StepResult = z.infer<typeof StepResult>;
 

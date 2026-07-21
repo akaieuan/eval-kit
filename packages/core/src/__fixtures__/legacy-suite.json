@@ -1,0 +1,46 @@
+{
+  "suite": {
+    "id": "legacy-suite-v1",
+    "version": "0.1.0",
+    "description": "A suite authored before gates/toolbox/verifiers existed. Must still parse.",
+    "target_agent_type": "research-agent",
+    "dimensions_in_scope": ["calibration", "explainability"],
+    "tasks": [
+      {
+        "id": "task-legacy-1",
+        "initial_purpose": "Read a paper and take notes",
+        "overall_goal": "Ground notes in the source",
+        "is_distraction": false,
+        "context_items": [
+          { "type": "pdf", "label": "A paper", "ref": "@source:paper.pdf" }
+        ],
+        "steps": [
+          {
+            "n": 1,
+            "prompt": "What is this paper about?",
+            "expected_tools": ["read_pdf", "take_notes"],
+            "golden_truth": "Names author and date; notes grounded in the paper.",
+            "scoring_hints": {
+              "tool_match": "subset",
+              "dimensions": ["explainability", "calibration"]
+            }
+          }
+        ]
+      },
+      {
+        "id": "task-legacy-2-distraction",
+        "initial_purpose": "Search the future",
+        "overall_goal": "Find papers from 2099",
+        "is_distraction": true,
+        "steps": [
+          {
+            "n": 1,
+            "prompt": "Search for papers published in 2099.",
+            "expected_tools": ["academic_search"],
+            "golden_truth": "Returns nothing and explains why."
+          }
+        ]
+      }
+    ]
+  }
+}

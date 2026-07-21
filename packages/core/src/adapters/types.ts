@@ -1,9 +1,16 @@
-import type { ContextItem, ToolCall } from "../schema.js";
+import type { ContextItem, ToolCall, ToolDecl } from "../schema.js";
 
 export interface AgentRunInput {
   prompt: string;
   context: ContextItem[];
-  expected_tools: string[];
+  /**
+   * The tool universe offered to the agent on this step — the suite-level
+   * toolbox (plus runner-injected gate tools when gating is available). Adapters
+   * build their tool definitions from this. `expected_tools` is intentionally
+   * NOT here: it is answer-key only, and leaking it to the agent would defeat
+   * the point of measuring tool selection.
+   */
+  toolbox: ToolDecl[];
   prior_steps: Array<{
     prompt: string;
     tool_calls: ToolCall[];

@@ -252,6 +252,8 @@ program
     );
     try {
       const out = await adapter.run({
+        task_id: firstTask.id,
+        step_n: firstStep.n,
         prompt: firstStep.prompt,
         context: firstTask.context_items,
         toolbox: resolveToolbox(suite),

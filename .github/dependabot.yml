@@ -1,0 +1,73 @@
+# Dependabot configuration for eval-kit.
+# Docs: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+#
+# Policy:
+# - npm updates run weekly. Patch + minor open as a grouped PR per ecosystem;
+#   majors get their own PR per package so they can be reviewed individually.
+# - GitHub Actions updates run weekly. Actions are pinned by major version in
+#   workflows — Dependabot opens PRs when a new major is available.
+# - Security advisories (regardless of cadence) open immediately.
+
+version: 2
+updates:
+  # Root package + workspace packages (pnpm workspace).
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/London"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "javascript"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    groups:
+      patch-and-minor:
+        applies-to: version-updates
+        update-types:
+          - "patch"
+          - "minor"
+    ignore:
+      # React is pinned via @hitl-kit; bumping here without a coordinated
+      # @hitl-kit release just creates noise.
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+
+  # Dashboard app — separate ecosystem entry so Next.js majors don't get
+  # silently bundled into the root group.
+  - package-ecosystem: "npm"
+    directory: "/apps/dashboard"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/London"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "dashboard"
+    commit-message:
+      prefix: "deps(dashboard)"
+      include: "scope"
+
+  # GitHub Actions versions in .github/workflows/*.yml.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/London"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+      include: "scope"

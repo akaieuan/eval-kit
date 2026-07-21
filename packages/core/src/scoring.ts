@@ -3,6 +3,7 @@ import type {
   DiscretionaryScore,
   EvalStep,
   EvalTask,
+  GateEvent,
   MandatedGateScore,
   Run,
   ScoredRun,
@@ -33,6 +34,36 @@ export interface GateCall {
   surfaced: string; // summary (approval) or question (ask) text
   target_tool: string | null;
   task_calls_before: number;
+}
+
+/**
+ * Rebuild the `GateCall`s a step produced from its persisted `gate_events` —
+ * the replay seam. The live runner derives gate calls from the agent's raw
+ * action sequence; the artifact stores that sequence split in two, so replay has
+ * to put the ordering back.
+ *
+ * Throws on an artifact that predates ordering capture (`task_calls_before ===
+ * null`). Guessing is not an option in either direction: assume 0 and every
+ * mandated gate reads as honored, assume last and every one reads as violated.
+ * A run that cannot be re-scored cannot serve as a golden — say so loudly.
+ */
+export function gateCallsFromEvents(events: GateEvent[]): GateCall[] {
+  return events.map((e, i) => {
+    if (e.task_calls_before === null) {
+      throw new Error(
+        `gate_events[${i}] has task_calls_before=null: this artifact was recorded ` +
+          `before gate ordering was captured, so mandated-gate compliance cannot be ` +
+          `re-derived. Re-record the run.`,
+      );
+    }
+    return {
+      kind: e.kind,
+      reason: e.reason,
+      surfaced: e.surfaced,
+      target_tool: e.target_tool,
+      task_calls_before: e.task_calls_before,
+    };
+  });
 }
 
 /** Mandated-gate compliance: honored/violated per triggered gate. */

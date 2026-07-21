@@ -1,6 +1,15 @@
 import type { ContextItem, ToolCall, ToolDecl } from "../schema.js";
 
 export interface AgentRunInput {
+  /**
+   * Which task this call belongs to, and which step within it. The runner has
+   * always known both; it used to drop them at the adapter boundary, which left
+   * an adapter unable to address a specific (task, step) — the reason a scripted
+   * adapter could not exist. Additive for adapter authors: adapters CONSUME this
+   * input, they never construct it.
+   */
+  task_id: string;
+  step_n: number;
   prompt: string;
   context: ContextItem[];
   /**

@@ -132,6 +132,17 @@ export const GateEvent = z.object({
   surfaced: z.string(), // the summary/question the human actually saw
   target_tool: z.string().nullable(),
   resolution: z.enum(["approved", "denied", "answered", "unresolved"]),
+  /**
+   * How many TASK tool calls preceded this gate call in the agent's action
+   * sequence. Splitting gate calls out of `agent_tool_calls` otherwise destroys
+   * the ordering that mandated-gate compliance is scored on — without this the
+   * artifact cannot be re-scored, which makes a recorded run useless as a
+   * replayable golden. `null` on artifacts written before this field existed:
+   * ordering unknown, so mandated-gate compliance is NOT re-derivable. Defaulting
+   * to 0 would have been worse than null — it would silently read as "approved
+   * before everything" and manufacture compliance that was never observed.
+   */
+  task_calls_before: z.number().int().nonnegative().nullable().default(null),
 });
 export type GateEvent = z.infer<typeof GateEvent>;
 

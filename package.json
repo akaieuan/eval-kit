@@ -20,6 +20,7 @@
     "lint": "pnpm -r lint",
     "smoke:publish": "node scripts/publish-smoke.mjs",
     "check:readme": "node scripts/readme-check.mjs",
+    "verify:goldens": "node scripts/verify-goldens.mjs",
     "test:api": "vitest run --config vitest.api.config.ts",
     "api:check": "node scripts/api-surface.mjs && vitest run --config vitest.api.config.ts",
     "clean": "pnpm -r clean && rm -rf node_modules"

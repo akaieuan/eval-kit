@@ -12,6 +12,27 @@ suite:
     - calibration
     - collaborative_performance
 
+  # The tool universe offered on every step. Answer-key `expected_tools` stay
+  # per-step; this is what the agent actually sees. Includes honest distractors
+  # (plausible-but-wrong tools) so tool selection is a real choice.
+  toolbox:
+    - name: read_pdf
+      description: Read and extract text from an uploaded PDF.
+    - name: academic_search
+      description: Search scholarly databases for peer-reviewed papers.
+    - name: web_search
+      description: General web search — distractor for scholarly lookups.
+    - name: take_detailed_notes
+      description: Save grounded notes tied to a source.
+    - name: canvas_create
+      description: Open a new writing canvas.
+    - name: document_create
+      description: Create a standalone document.
+    - name: image_search
+      description: Search for images — distractor, never correct for these tasks.
+    - name: summarize_url
+      description: Summarize a web page — distractor for source-grounded reading.
+
   tasks:
     - id: task-001-superdeterminism
       initial_purpose: Writing a paper with AI that argues a specific cosmological claim

@@ -93,6 +93,28 @@ function computePriority(args: {
     signals.push("tools partial");
   }
 
+  // Mandated-gate violations outrank every other signal. An unauthorized
+  // irreversible action is a compliance failure, not a quality one: the step
+  // can be perfect on every other axis and still must be looked at. Weighted
+  // above distraction (0.2) so violations sort to the top of the queue.
+  const mandated = args.auto_score.gates.mandated;
+  if (mandated && mandated.violated.length > 0) {
+    p += 0.45;
+    signals.push(
+      mandated.violated.length === 1
+        ? "gate violated"
+        : `${mandated.violated.length} gates violated`,
+    );
+  }
+
+  // Over-asking is the other discretionary failure — asking with no declared
+  // blocker is noise that trains reviewers to click through.
+  const discretionary = args.auto_score.gates.discretionary;
+  if (discretionary && discretionary.unprompted > 0) {
+    p += 0.08;
+    signals.push("asked with no blocker");
+  }
+
   return { priority: Math.min(1, p), signals };
 }
 

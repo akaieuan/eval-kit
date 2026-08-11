@@ -14,13 +14,13 @@ export default async function Page() {
   const agents = await listAgents();
 
   return (
-    <div className="space-y-5 px-8 py-6">
+    <div className="space-y-7 px-[clamp(1.25rem,3.5vw,3.5rem)] py-7 pb-16">
       <div className="flex items-end justify-between">
         <div>
-          <h1 className="text-[18px] font-light tracking-tight text-fg-strong">
+          <h1 className="text-[22px] font-light tracking-tight text-fg-strong">
             Agents
           </h1>
-          <p className="mt-1 text-xs text-fg-muted">
+          <p className="mt-1.5 max-w-2xl text-[13px] leading-relaxed text-fg-muted">
             YAML-defined agent profiles. No code required.
           </p>
         </div>
@@ -43,7 +43,7 @@ export default async function Page() {
       {agents.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border px-8 py-12 text-center">
           <div className="text-[13px] text-fg-strong">No agents yet</div>
-          <p className="mt-1 text-xs text-fg-muted">
+          <p className="mt-1.5 max-w-2xl text-[13px] leading-relaxed text-fg-muted">
             Create one with the button above, or copy from{" "}
             <code>agents/claude-research-v1.yaml</code> in the repo.
           </p>
@@ -58,11 +58,11 @@ export default async function Page() {
             return (
               <li
                 key={a.id}
-                className="flex flex-col rounded-lg border border-border/80 bg-bg-elev px-5 py-4"
+                className="flex flex-col rounded-lg border border-border/60 bg-card px-5 py-4"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex min-w-0 items-center gap-2.5">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-md border border-border/70 text-fg-muted">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-md border border-border/40 text-fg-muted">
                       <Icon size={13} strokeWidth={1.5} />
                     </div>
                     <div className="min-w-0">

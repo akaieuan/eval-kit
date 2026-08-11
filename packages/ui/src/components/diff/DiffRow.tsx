@@ -35,7 +35,7 @@ export function DiffRow({ diff, className }: DiffRowProps) {
   return (
     <div
       className={cn(
-        "rounded-md border border-border/70 border-l-2 bg-bg-elev px-4 py-3",
+        "rounded-md border border-border/40 border-l-2 bg-bg-elev px-4 py-3",
         border,
         className,
       )}

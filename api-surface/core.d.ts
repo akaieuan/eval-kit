@@ -4,41 +4,53 @@
 
 // ===== dist/adapters/index.d.ts (sorted line inventory) =====
 }): AgentAdapter;
+*   (scored as covering every gate on the step — `target_tool: null`), and
 *   { prompt, context, toolbox, prior_steps }
 *   { tool_calls: [...], final_output: "...", latency_ms: 1234 }
 *   const adapter = createOpenAIAdapter({ client: new OpenAI(), model: "gpt-5" });
+*   emit an `ask_user` when the step prompt matches `askOn`.
+*   gate scores as violated. This is the "output looks fine, authorization
 *   import { createOpenAIAdapter } from "@eval-kit/core/adapters";
 *   import OpenAI from "openai";
+*   never happened" agent.
+*   task tools are called with no approval, so every triggered mandated
+* - `"bypass"` (default, the historical behavior): ignore them entirely —
+* - `"honor"`: emit one blanket `request_approval` before any task tool
 * (default) turns a typo in a test fixture into a loud failure instead of a
-* `expected_tools` (which it no longer sees).
 * A deterministic adapter whose behaviour — including GATE behaviour — is
 * A scripted action. The agent's output is a LINEAR sequence of tool calls, and
 * And is expected to return:
 * as JSON. Use this to reshape for your backend (e.g. OpenAI-compatible,
 * back as JSON. Use this when your endpoint returns a different shape.
+* blocker whose `description` is a phrase of the prompt will match it.
 * contract is "a naive agent that calls every task tool it is offered, and never
 * declared per (task, step).
+* defs" from `input.toolbox`, never `expected_tools` (which it no longer
 * Deterministic reference adapter. A naive agent that calls every TASK tool
 * eval-kit. No SDK required.
 * factory two unrelated behaviours and make "default behaviour unchanged" a
 * gate scoring is ordering-sensitive (an approval only honors a mandated gate if
 * gates". It backs the README quickstart and the diff demo, and its output is
 * Generic HTTP adapter — point it at any endpoint that runs your agent.
+* How the mock treats runner-injected gate tools.
+* In `"honor"` mode: prompts matching this pattern get an `ask_user` whose
 * instrument for exercising the runner, not a reference agent.
 * it precedes the gated call). So the script is an ordered list of actions, not
 * load-bearing for those. Bolting a script onto it would give one exported
 * matter of reading carefully rather than a structural fact. This adapter is an
-* never gates). `degraded: true` calls nothing, to simulate a regression for
-* offered in the toolbox (it filters out runner-injected gate tools — the mock
+* offered in the toolbox. `degraded: true` calls nothing, to simulate a
 * OpenAI adapter. Stubs against the OpenAI SDK shape but does NOT bundle the
 * Optional request transformer. By default eval-kit POSTs AgentRunInput
 * Optional response parser. By default eval-kit expects AgentRunOutput
 * Override `requestBody` / `parseResponse` for any other shape.
 * proxies credentials. The stub below documents the expected shape.
+* question echoes the prompt. Deterministic stand-in for judgment — a
+* regression for the diff demo. `gateBehavior` controls whether it respects
+* runner-injected gate tools (see MockAdapterOptions). It builds its "tool
 * SDK — the consumer installs `openai` themselves so eval-kit stays slim.
+* sees).
 * silently empty step that still produces a plausible-looking artifact.
 * The actual API calls are the consumer's responsibility — eval-kit never
-* the diff demo. It builds its "tool defs" from `input.toolbox`, never
 * The endpoint receives JSON like:
 * This is the simplest path to integrating a custom / internal agent with
 * two separate buckets — interleaving is the thing under test.
@@ -59,6 +71,7 @@ actions?: ScriptedAction[];
 apiKey?: string;
 apiKey?: string;
 args?: unknown;
+askOn?: RegExp;
 baseURL?: string;
 call: string;
 chat: {
@@ -76,6 +89,7 @@ export { AgentAdapter, AgentRunInput, AgentRunOutput, type AnthropicAdapterOptio
 final_output?: string;
 gate: "ask_user";
 gate: "request_approval";
+gateBehavior?: "honor" | "bypass";
 headers?: Record<string, string>;
 import '../schema.js';
 import 'zod';

@@ -129,7 +129,7 @@ export function SessionTracker({ className }: SessionTrackerProps) {
             size={11}
             strokeWidth={1.5}
             className={cn(
-              session.scoredCount > 0 ? "text-accent" : "text-fg-muted-2",
+              session.scoredCount > 0 ? "text-brand" : "text-fg-muted-2",
             )}
           />
           <span className="tabular-nums">{session.scoredCount}</span>
@@ -140,7 +140,7 @@ export function SessionTracker({ className }: SessionTrackerProps) {
         </button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-64 p-4">
-        <div className="text-[13px] font-normal tracking-tight text-fg-strong">
+        <div className="text-[13px] font-light tracking-tight text-fg-strong">
           Review session
         </div>
         <p className="mt-0.5 text-2xs text-fg-muted">
@@ -218,7 +218,7 @@ function Row({
 }) {
   return (
     <div className="flex items-center justify-between">
-      <dt className="text-2xs uppercase tracking-wider text-fg-muted-2">
+      <dt className="label">
         {label}
       </dt>
       <dd>{value}</dd>

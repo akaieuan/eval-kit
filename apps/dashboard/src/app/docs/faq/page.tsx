@@ -44,7 +44,7 @@ export default function Page() {
 
       <H2 id="contributing">Can I contribute?</H2>
       <P>
-        Yes — see <a href="https://github.com/akaieuan/eval-kit/blob/main/CONTRIBUTING.md" className="text-accent underline">CONTRIBUTING.md</a>. Best contributions: real research workflows ported into the seed suite, adapters for new agent SDKs, and sharper inline docs.
+        Yes — see <a href="https://github.com/akaieuan/eval-kit/blob/main/CONTRIBUTING.md" className="text-brand underline">CONTRIBUTING.md</a>. Best contributions: real research workflows ported into the seed suite, adapters for new agent SDKs, and sharper inline docs.
       </P>
     </>
   );

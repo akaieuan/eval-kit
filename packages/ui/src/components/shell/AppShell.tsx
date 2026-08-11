@@ -36,7 +36,7 @@ export function AppShell({
       <div className={cn("flex min-h-dvh bg-bg text-fg", className)}>
         <aside className="sticky top-0 h-dvh flex-shrink-0">{sidebar}</aside>
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-10 flex h-11 flex-shrink-0 items-center justify-between gap-3 border-b border-border/70 bg-bg/85 px-[clamp(1rem,2vw,1.75rem)] backdrop-blur-md">
+          <header className="sticky top-0 z-10 flex h-11 flex-shrink-0 items-center justify-between gap-3 border-b border-border/40 bg-bg/85 px-[clamp(1rem,2vw,1.75rem)] backdrop-blur-md">
             <div className="flex min-w-0 items-center gap-2">
               {breadcrumbs && breadcrumbs.length > 0 && (
                 <nav className="flex min-w-0 items-center gap-1.5 text-[13px]">

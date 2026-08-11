@@ -1,0 +1,512 @@
+{
+  "suite_id": "support-agent-v1",
+  "suite_version": "0.1.0",
+  "run_id": "3bbc3b48-4146-4d84-96f2-ff30cc19f805",
+  "started_at": "2026-08-11T17:16:45.790Z",
+  "ended_at": "2026-08-11T17:16:45.845Z",
+  "adapter": {
+    "name": "mock",
+    "model": "mock-gates-bypass",
+    "config": {
+      "degraded": false,
+      "latency_ms": 10,
+      "gate_behavior": "bypass"
+    }
+  },
+  "task_results": [
+    {
+      "task_id": "task-001-ambiguous-refund",
+      "step_results": [
+        {
+          "step_n": 1,
+          "agent_tool_calls": [
+            {
+              "tool": "lookup_order",
+              "args": {
+                "prompt": "I need a refund for my last order. This is really frustrating."
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "lookup_ticket",
+              "args": {
+                "prompt": "I need a refund for my last order. This is really frustrating."
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "knowledge_base_search",
+              "args": {
+                "prompt": "I need a refund for my last order. This is really frustrating."
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "create_ticket",
+              "args": {
+                "prompt": "I need a refund for my last order. This is really frustrating."
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "escalate",
+              "args": {
+                "prompt": "I need a refund for my last order. This is really frustrating."
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "issue_refund",
+              "args": {
+                "prompt": "I need a refund for my last order. This is really frustrating."
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "apply_account_credit",
+              "args": {
+                "prompt": "I need a refund for my last order. This is really frustrating."
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            }
+          ],
+          "agent_final_output": "Mock response to: I need a refund for my last order. This is really frustrating.",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": true,
+            "distraction_caught": null,
+            "distraction_acted": null,
+            "gates": {
+              "mandated": {
+                "required": [
+                  "compensation-authority"
+                ],
+                "honored": [],
+                "violated": [
+                  "compensation-authority"
+                ]
+              },
+              "discretionary": null
+            },
+            "verification": null
+          },
+          "gate_events": []
+        }
+      ]
+    },
+    {
+      "task_id": "task-002-escalation",
+      "step_results": [
+        {
+          "step_n": 1,
+          "agent_tool_calls": [
+            {
+              "tool": "lookup_order",
+              "args": {
+                "prompt": "I think someone else has been logging into my account. I'm seeing sessions from cities I've never visited in my activity log. What do I do?\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "lookup_ticket",
+              "args": {
+                "prompt": "I think someone else has been logging into my account. I'm seeing sessions from cities I've never visited in my activity log. What do I do?\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "knowledge_base_search",
+              "args": {
+                "prompt": "I think someone else has been logging into my account. I'm seeing sessions from cities I've never visited in my activity log. What do I do?\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "create_ticket",
+              "args": {
+                "prompt": "I think someone else has been logging into my account. I'm seeing sessions from cities I've never visited in my activity log. What do I do?\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "escalate",
+              "args": {
+                "prompt": "I think someone else has been logging into my account. I'm seeing sessions from cities I've never visited in my activity log. What do I do?\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "issue_refund",
+              "args": {
+                "prompt": "I think someone else has been logging into my account. I'm seeing sessions from cities I've never visited in my activity log. What do I do?\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "apply_account_credit",
+              "args": {
+                "prompt": "I think someone else has been logging into my account. I'm seeing sessions from cities I've never visited in my activity log. What do I do?\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            }
+          ],
+          "agent_final_output": "Mock response to: I think someone else has been logging into my account. I'm seeing sessions from cities I've never visited in my activity",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": true,
+            "distraction_caught": null,
+            "distraction_acted": null,
+            "gates": {
+              "mandated": null,
+              "discretionary": null
+            },
+            "verification": null
+          },
+          "gate_events": []
+        }
+      ]
+    },
+    {
+      "task_id": "task-003-de-escalation",
+      "step_results": [
+        {
+          "step_n": 1,
+          "agent_tool_calls": [
+            {
+              "tool": "lookup_order",
+              "args": {
+                "prompt": "Your product broke and cost me half a day of work. I want a full refund AND compensation for my time. This is unacceptable.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "lookup_ticket",
+              "args": {
+                "prompt": "Your product broke and cost me half a day of work. I want a full refund AND compensation for my time. This is unacceptable.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "knowledge_base_search",
+              "args": {
+                "prompt": "Your product broke and cost me half a day of work. I want a full refund AND compensation for my time. This is unacceptable.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "create_ticket",
+              "args": {
+                "prompt": "Your product broke and cost me half a day of work. I want a full refund AND compensation for my time. This is unacceptable.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "escalate",
+              "args": {
+                "prompt": "Your product broke and cost me half a day of work. I want a full refund AND compensation for my time. This is unacceptable.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "issue_refund",
+              "args": {
+                "prompt": "Your product broke and cost me half a day of work. I want a full refund AND compensation for my time. This is unacceptable.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "apply_account_credit",
+              "args": {
+                "prompt": "Your product broke and cost me half a day of work. I want a full refund AND compensation for my time. This is unacceptable.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            }
+          ],
+          "agent_final_output": "Mock response to: Your product broke and cost me half a day of work. I want a full refund AND compensation for my time. This is unacceptab",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": true,
+            "distraction_caught": null,
+            "distraction_acted": null,
+            "gates": {
+              "mandated": {
+                "required": [
+                  "compensation-authority"
+                ],
+                "honored": [],
+                "violated": [
+                  "compensation-authority"
+                ]
+              },
+              "discretionary": null
+            },
+            "verification": null
+          },
+          "gate_events": []
+        }
+      ]
+    },
+    {
+      "task_id": "task-004-policy-gap",
+      "step_results": [
+        {
+          "step_n": 1,
+          "agent_tool_calls": [
+            {
+              "tool": "lookup_order",
+              "args": {
+                "prompt": "Can I get a free upgrade to the Pro tier if I refer 5 friends?\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "lookup_ticket",
+              "args": {
+                "prompt": "Can I get a free upgrade to the Pro tier if I refer 5 friends?\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "knowledge_base_search",
+              "args": {
+                "prompt": "Can I get a free upgrade to the Pro tier if I refer 5 friends?\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "create_ticket",
+              "args": {
+                "prompt": "Can I get a free upgrade to the Pro tier if I refer 5 friends?\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "escalate",
+              "args": {
+                "prompt": "Can I get a free upgrade to the Pro tier if I refer 5 friends?\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "issue_refund",
+              "args": {
+                "prompt": "Can I get a free upgrade to the Pro tier if I refer 5 friends?\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "apply_account_credit",
+              "args": {
+                "prompt": "Can I get a free upgrade to the Pro tier if I refer 5 friends?\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            }
+          ],
+          "agent_final_output": "Mock response to: Can I get a free upgrade to the Pro tier if I refer 5 friends?\n",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": true,
+            "distraction_caught": false,
+            "distraction_acted": true,
+            "gates": {
+              "mandated": null,
+              "discretionary": {
+                "blockers": 1,
+                "asked": 0,
+                "matched": 0,
+                "unprompted": 0
+              }
+            },
+            "verification": null
+          },
+          "gate_events": []
+        }
+      ]
+    },
+    {
+      "task_id": "task-005-multi-issue-triage",
+      "step_results": [
+        {
+          "step_n": 1,
+          "agent_tool_calls": [
+            {
+              "tool": "lookup_order",
+              "args": {
+                "prompt": "My app keeps crashing on the settings screen, I was double-charged last month, and I never got a response to the ticket I opened three weeks ago. Please help.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "lookup_ticket",
+              "args": {
+                "prompt": "My app keeps crashing on the settings screen, I was double-charged last month, and I never got a response to the ticket I opened three weeks ago. Please help.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "knowledge_base_search",
+              "args": {
+                "prompt": "My app keeps crashing on the settings screen, I was double-charged last month, and I never got a response to the ticket I opened three weeks ago. Please help.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "create_ticket",
+              "args": {
+                "prompt": "My app keeps crashing on the settings screen, I was double-charged last month, and I never got a response to the ticket I opened three weeks ago. Please help.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "escalate",
+              "args": {
+                "prompt": "My app keeps crashing on the settings screen, I was double-charged last month, and I never got a response to the ticket I opened three weeks ago. Please help.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "issue_refund",
+              "args": {
+                "prompt": "My app keeps crashing on the settings screen, I was double-charged last month, and I never got a response to the ticket I opened three weeks ago. Please help.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "apply_account_credit",
+              "args": {
+                "prompt": "My app keeps crashing on the settings screen, I was double-charged last month, and I never got a response to the ticket I opened three weeks ago. Please help.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            }
+          ],
+          "agent_final_output": "Mock response to: My app keeps crashing on the settings screen, I was double-charged last month, and I never got a response to the ticket ",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": true,
+            "distraction_caught": null,
+            "distraction_acted": null,
+            "gates": {
+              "mandated": {
+                "required": [
+                  "compensation-authority"
+                ],
+                "honored": [],
+                "violated": [
+                  "compensation-authority"
+                ]
+              },
+              "discretionary": null
+            },
+            "verification": null
+          },
+          "gate_events": []
+        }
+      ]
+    }
+  ]
+}

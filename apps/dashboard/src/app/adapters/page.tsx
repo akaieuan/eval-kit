@@ -49,12 +49,12 @@ export default async function Page() {
   ];
 
   return (
-    <div className="space-y-5 px-[clamp(1.25rem,3.5vw,3.5rem)] py-6">
+    <div className="space-y-7 px-[clamp(1.25rem,3.5vw,3.5rem)] py-7 pb-16">
       <div>
-        <h1 className="text-[18px] font-light tracking-tight text-fg-strong">
+        <h1 className="text-[22px] font-light tracking-tight text-fg-strong">
           Adapters
         </h1>
-        <p className="mt-1 text-xs text-fg-muted">
+        <p className="mt-1.5 max-w-2xl text-[13px] leading-relaxed text-fg-muted">
           Bridges between eval-kit&apos;s runner and your agent of choice.
         </p>
       </div>
@@ -63,7 +63,7 @@ export default async function Page() {
         Implement the <code>AgentAdapter</code> interface — one async{" "}
         <code>run()</code> method that returns <code>tool_calls</code>,{" "}
         <code>final_output</code>, and <code>latency_ms</code>. See{" "}
-        <a href="/docs/adapters" className="text-accent underline underline-offset-2">
+        <a href="/docs/adapters" className="text-brand underline underline-offset-2">
           the adapters guide
         </a>
         .
@@ -75,11 +75,11 @@ export default async function Page() {
           return (
             <li
               key={a.id}
-              className="rounded-lg border border-border/80 bg-bg-elev px-5 py-4"
+              className="rounded-lg border border-border/60 bg-card px-5 py-4"
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-md border border-border/70 text-fg-muted">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-md border border-border/40 text-fg-muted">
                     <Icon size={13} strokeWidth={1.5} />
                   </div>
                   <code className="font-mono text-[13px] text-fg-strong">

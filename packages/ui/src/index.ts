@@ -1,10 +1,22 @@
 // Primitives
 export * from "./components/primitives/index.js";
+// Layout primitives — page chrome. Routes should never hand-roll gutters,
+// title blocks, section rhythm, or filter rows again.
+export * from "./components/layout/index.js";
 // Utilities
 export { cn } from "./lib/cn.js";
 export { isMac, modLabel, shortcutLabel } from "./lib/kbd.js";
 // Shell (app shell, nav, command palette)
 export * from "./components/shell/index.js";
+export {
+  PALETTES,
+  readMode,
+  readPalette,
+  applyMode,
+  applyPalette,
+  type Mode,
+  type Palette,
+} from "./components/shell/ThemeToggle.js";
 // Review / home / diff / inbox feature components
 export * from "./components/review/index.js";
 export * from "./components/home/index.js";

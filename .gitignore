@@ -9,8 +9,13 @@ dist
 .env
 .env.local
 coverage
+# Run artifacts are a reviewer's own data — not ours to version.
 runs/*.json
 !runs/.gitkeep
+# ...except the demo artifacts the README points at and the dashboard needs
+# to render anything on a fresh clone. These are evidence, generated
+# deterministically by `pnpm gen:gate-demo` — regenerate, never hand-edit.
+!runs/test-*.json
 .vercel
 .claude/
 *.tgz

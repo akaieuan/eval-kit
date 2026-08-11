@@ -33,7 +33,7 @@ export function RegressionSummary({ diffs, className }: RegressionSummaryProps) 
   return (
     <div
       className={cn(
-        "rounded-lg border border-border/80 bg-bg-elev px-6 py-5",
+        "rounded-lg border border-border/60 bg-card px-6 py-5",
         className,
       )}
     >
@@ -47,7 +47,7 @@ export function RegressionSummary({ diffs, className }: RegressionSummaryProps) 
 
       {worst.length > 0 && (
         <div className="mt-6 border-t border-border/60 pt-5">
-          <div className="mb-3 text-2xs uppercase tracking-wider text-fg-muted-2">
+          <div className="mb-3 label">
             Worst regressions
           </div>
           <ul className="space-y-1.5">
@@ -89,7 +89,7 @@ function Stat({
         : "text-fg";
   return (
     <div>
-      <div className="text-2xs uppercase tracking-wider text-fg-muted-2">
+      <div className="label">
         {label}
       </div>
       <div

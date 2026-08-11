@@ -98,7 +98,7 @@ Examples
     -o training/dpo.jsonl`}</Pre>
       <P>
         Pre-filled scores are excluded by default (see{" "}
-        <a href="/docs/paradigm" className="text-accent underline">
+        <a href="/docs/paradigm" className="text-brand underline">
           the paradigm
         </a>
         : humans score, not LLMs). Pass <Code>--include-prefilled</Code> only if

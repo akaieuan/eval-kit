@@ -34,12 +34,12 @@ export function StatCard({
   return (
     <div
       className={cn(
-        "flex flex-col justify-between rounded-lg border border-border/80 bg-bg-elev px-5 py-4 min-h-[112px]",
+        "flex flex-col justify-between rounded-lg border border-border/60 bg-card px-5 py-4 min-h-[112px] transition-colors hover:bg-bg-elev/70",
         className,
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="text-2xs uppercase tracking-wider text-fg-muted-2">
+        <div className="label">
           {label}
         </div>
         {sparkline && (

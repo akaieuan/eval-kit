@@ -3,11 +3,13 @@ import {
   EmptyState,
   InboxRow,
   InlineHelp,
+  RunTable,
   RunTableRow,
   StatCardGroup,
   WelcomePanel,
 } from "@eval-kit/ui";
-import { Inbox as InboxIcon, Rocket } from "lucide-react";
+import { Inbox as InboxIcon } from "lucide-react";
+import { PixelHead } from "@/components/brand/PixelHead";
 import { listInboxItems } from "@/lib/inbox";
 import {
   listRuns,
@@ -27,9 +29,13 @@ export default async function Page() {
 
   if (all.length === 0) {
     return (
-      <div className="px-8 py-10">
+      <div className="space-y-7 px-[clamp(1.25rem,3.5vw,3.5rem)] py-7 pb-16">
         <EmptyState
-          icon={<Rocket size={16} strokeWidth={1.5} />}
+          mark={
+            <span aria-hidden>
+              <PixelHead size={72} grid={18} gap={0.12} icon="podium" once />
+            </span>
+          }
           title="No runs yet"
           description={
             <div className="space-y-3">
@@ -37,14 +43,14 @@ export default async function Page() {
                 Generate a mock run to try the scoring flow. From the repo
                 root:
               </p>
-              <pre className="mx-auto max-w-lg whitespace-pre-wrap rounded-md border border-border/70 bg-bg-elev px-3 py-2.5 text-left font-mono text-xs text-fg-muted">
+              <pre className="mx-auto max-w-lg whitespace-pre-wrap rounded-md border border-border/40 bg-bg-elev px-3 py-2.5 text-left font-mono text-xs text-fg-muted">
                 {`node packages/core/dist/cli.js run \\
   packages/seed-suite/suites/research-agent-v1.yaml \\
   --adapter mock --out runs/demo.json`}
               </pre>
               <p>
                 Or read the{" "}
-                <a href="/docs/quickstart" className="text-accent underline underline-offset-2">
+                <a href="/docs/quickstart" className="text-brand underline underline-offset-2">
                   quickstart
                 </a>{" "}
                 for the full adapter walkthrough.
@@ -69,16 +75,16 @@ export default async function Page() {
     }));
 
   return (
-    <div className="space-y-8 px-[clamp(1.25rem,3.5vw,3.5rem)] py-6">
+    <div className="space-y-8 px-[clamp(1.25rem,3.5vw,3.5rem)] py-7 pb-16">
       <WelcomePanel />
 
       <section>
         <div className="mb-4 flex items-baseline justify-between">
           <div className="flex items-baseline gap-2">
-            <h2 className="text-[15px] font-normal tracking-tight text-fg-strong">
+            <h2 className="text-[15px] font-light tracking-tight text-fg-strong">
               Inbox
             </h2>
-            <span className="text-2xs uppercase tracking-wider text-fg-muted-2">
+            <span className="label">
               {priorityPreview.length} of {inbox.filter((i) => i.status !== "reviewed").length} pending
             </span>
           </div>
@@ -91,7 +97,7 @@ export default async function Page() {
         </div>
 
         {priorityPreview.length > 0 ? (
-          <div className="overflow-hidden rounded-lg border border-border/80 bg-bg-elev divide-y divide-border/60">
+          <div className="overflow-hidden rounded-lg border border-border/60 bg-card divide-y divide-border/60">
             {priorityPreview.map((item) => (
               <div key={item.id} data-inbox-id={item.id}>
                 <InboxRow
@@ -117,7 +123,7 @@ export default async function Page() {
             ))}
           </div>
         ) : (
-          <div className="rounded-lg border border-border/80 bg-bg-elev px-5 py-10 text-center">
+          <div className="rounded-lg border border-border/60 bg-card px-5 py-10 text-center">
             <InboxIcon
               size={18}
               strokeWidth={1.5}
@@ -132,38 +138,30 @@ export default async function Page() {
 
       <section>
         <div className="mb-4 flex items-baseline justify-between">
-          <h2 className="text-[15px] font-normal tracking-tight text-fg-strong">
+          <h2 className="text-[15px] font-light tracking-tight text-fg-strong">
             Overview
           </h2>
-          <span className="text-2xs uppercase tracking-wider text-fg-muted-2">
+          <span className="label">
             latest scored run
           </span>
         </div>
         <StatCardGroup
           scoredRuns={scoredRuns}
           unreviewedStepCount={unreviewed}
+          allRuns={sortedRuns.map((r) => r.run)}
         />
       </section>
 
       <section>
         <div className="mb-4 flex items-baseline justify-between">
-          <h2 className="text-[15px] font-normal tracking-tight text-fg-strong">
+          <h2 className="text-[15px] font-light tracking-tight text-fg-strong">
             Runs
           </h2>
-          <span className="text-2xs uppercase tracking-wider text-fg-muted-2">
+          <span className="label">
             {sortedRuns.length} total · {unscoredRuns.length} unscored
           </span>
         </div>
-        <div className="overflow-hidden rounded-lg border border-border/80 bg-bg-elev">
-          <div className="grid grid-cols-[120px_1fr_180px_72px_72px_120px_80px] gap-3 border-b border-border/80 bg-bg-elev-2/40 px-4 py-2.5 text-2xs uppercase tracking-wider text-fg-muted-2">
-            <div>Run</div>
-            <div>Suite</div>
-            <div>Adapter</div>
-            <div>Tool</div>
-            <div>Pass</div>
-            <div>Trend</div>
-            <div className="text-right">Started</div>
-          </div>
+        <RunTable>
           {sortedRuns.map(({ run, scored, file }) => (
             <RunTableRow
               key={file}
@@ -172,14 +170,14 @@ export default async function Page() {
               href={`/runs/${run.run_id}`}
             />
           ))}
-        </div>
+        </RunTable>
       </section>
 
       <InlineHelp id="home-next-steps" title="What's next?">
         The Inbox surfaces work that needs your attention — start there. The
         Diff page flags regressions once you have two scored runs. New to
         eval-kit?{" "}
-        <Link href="/docs/quickstart" className="text-accent underline underline-offset-2">
+        <Link href="/docs/quickstart" className="text-brand underline underline-offset-2">
           Open the quickstart →
         </Link>
       </InlineHelp>

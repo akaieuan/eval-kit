@@ -64,7 +64,7 @@ export function Sparkline({
         d={path}
         fill="none"
         strokeWidth={strokeWidth}
-        className="stroke-accent"
+        className="stroke-brand"
       />
       {showDots &&
         points.map((p, i) => (
@@ -75,7 +75,7 @@ export function Sparkline({
             r={1.8}
             className={cn(
               threshold === undefined
-                ? "fill-accent"
+                ? "fill-brand"
                 : p.v < threshold
                   ? "fill-danger"
                   : "fill-good",

@@ -37,7 +37,7 @@ export function TaskProgressItem({
       <ProgressRing value={value} size={13} strokeWidth={1.5} />
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-center gap-1.5">
-          <span className="truncate font-mono text-2xs uppercase tracking-wider text-fg-muted-2">
+          <span className="truncate font-mono label">
             {taskId}
           </span>
           {isDistraction && (

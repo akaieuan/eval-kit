@@ -35,7 +35,7 @@ export function SidebarNav({
   footer,
 }: SidebarNavProps) {
   return (
-    <nav className="flex h-full w-[clamp(200px,15vw,240px)] flex-col border-r border-border/70 bg-bg px-3 py-3">
+    <nav className="flex h-full w-[clamp(200px,15vw,240px)] flex-col border-r border-sidebar-border bg-sidebar px-3 py-3 text-sidebar-foreground">
       {header && (
         <div className="mb-4 flex items-center gap-2 px-2 py-1.5">{header}</div>
       )}
@@ -44,7 +44,7 @@ export function SidebarNav({
         {groups.map((group, gIdx) => (
           <div key={group.label ?? gIdx}>
             {group.label && (
-              <div className="mb-2 px-2 text-[10px] uppercase tracking-wider text-fg-muted-2">
+              <div className="label mb-2 px-2 text-[10px] tracking-[0.14em]">
                 {group.label}
               </div>
             )}
@@ -60,8 +60,8 @@ export function SidebarNav({
                     className={cn(
                       "group flex items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px] transition-colors",
                       active
-                        ? "bg-bg-elev-2 text-fg-strong"
-                        : "text-fg-muted hover:bg-bg-elev-2/60 hover:text-fg",
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                        : "text-fg-muted hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
                     )}
                   >
                     <Icon

@@ -67,7 +67,7 @@ export function CommandPalette({
             return value.toLowerCase().includes(search.toLowerCase()) ? 1 : 0;
           }}
         >
-          <div className="flex items-center gap-2.5 border-b border-border/70 px-3.5 py-3">
+          <div className="flex items-center gap-2.5 border-b border-border/40 px-3.5 py-3">
             <Search size={13} strokeWidth={1.5} className="text-fg-muted-2" />
             <Command.Input
               value={query}

@@ -23,7 +23,7 @@ export function DimensionExplainer({ dimension }: DimensionExplainerProps) {
         <button
           type="button"
           aria-label={`Explain ${DIMENSION_LABELS[dimension]}`}
-          className="inline-flex h-4 w-4 items-center justify-center rounded-full text-fg-muted-2 hover:text-accent"
+          className="inline-flex h-4 w-4 items-center justify-center rounded-full text-fg-muted-2 hover:text-brand"
         >
           <Info size={12} />
         </button>

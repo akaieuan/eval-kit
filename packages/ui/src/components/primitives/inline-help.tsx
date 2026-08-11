@@ -12,10 +12,22 @@ export interface InlineHelpProps {
   className?: string;
 }
 
+/*
+ * akaOSS's aside idiom: a hairline rule on the left, no fill, no box.
+ * Accents are punctuation — a dot, a rule, a date — and never a background
+ * wash, so the old accent-tinted panel read as foreign the moment the rest of
+ * the app moved into the house palette. Tone lives in the marker only.
+ */
 const variantClasses = {
-  info: "border-border/70 bg-bg-elev text-fg-muted",
-  accent: "border-accent/20 bg-accent/[0.04] text-fg-muted",
-  warn: "border-warn/30 bg-warn/[0.05] text-warn",
+  info: "border-l-border/60 text-fg-muted",
+  accent: "border-l-accent/50 text-fg-muted",
+  warn: "border-l-warn/60 text-fg-muted",
+};
+
+const markerClasses = {
+  info: "bg-fg-muted-2",
+  accent: "bg-brand",
+  warn: "bg-warn",
 };
 
 export function InlineHelp({
@@ -42,19 +54,23 @@ export function InlineHelp({
   return (
     <div
       className={cn(
-        "flex items-start gap-3 rounded-lg border px-3.5 py-3 text-xs leading-relaxed",
+        "flex items-start gap-3 border-l pl-4 pr-2 py-1 text-[13px] leading-relaxed",
         variantClasses[variant],
         className,
       )}
     >
-      <Info
-        size={13}
-        strokeWidth={1.5}
-        className="mt-0.5 flex-shrink-0 opacity-60"
+      <span
+        aria-hidden
+        className={cn(
+          "mt-[0.55rem] size-1.5 flex-shrink-0 rounded-full",
+          markerClasses[variant],
+        )}
       />
       <div className="flex-1">
         {title && (
-          <div className="mb-0.5 font-normal text-fg-strong">{title}</div>
+          <div className="mb-0.5 font-light tracking-tight text-fg-strong">
+            {title}
+          </div>
         )}
         <div>{children}</div>
       </div>

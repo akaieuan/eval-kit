@@ -1,4 +1,4 @@
-import { RunTableRow, InlineHelp } from "@eval-kit/ui";
+import { RunTable, RunTableRow, InlineHelp } from "@eval-kit/ui";
 import { listRuns } from "@/lib/runs";
 
 export default async function Page({
@@ -31,12 +31,12 @@ export default async function Page({
   });
 
   return (
-    <div className="space-y-5 px-[clamp(1.25rem,3.5vw,3.5rem)] py-6">
+    <div className="space-y-7 px-[clamp(1.25rem,3.5vw,3.5rem)] py-7 pb-16">
       <div>
-        <h1 className="text-[18px] font-light tracking-tight text-fg-strong">
+        <h1 className="text-[22px] font-light tracking-tight text-fg-strong">
           All runs
         </h1>
-        <p className="mt-1 text-xs text-fg-muted">
+        <p className="mt-1.5 max-w-2xl text-[13px] leading-relaxed text-fg-muted">
           Every <code>runs/*.json</code> artifact on disk.
         </p>
       </div>
@@ -51,7 +51,7 @@ export default async function Page({
         <div className="flex flex-col gap-1">
           <label
             htmlFor="q"
-            className="text-2xs uppercase tracking-wider text-fg-muted-2"
+            className="text-[13px] text-fg-muted"
           >
             Search
           </label>
@@ -66,7 +66,7 @@ export default async function Page({
         <div className="flex flex-col gap-1">
           <label
             htmlFor="adapter"
-            className="text-2xs uppercase tracking-wider text-fg-muted-2"
+            className="text-[13px] text-fg-muted"
           >
             Adapter
           </label>
@@ -87,7 +87,7 @@ export default async function Page({
         <div className="flex flex-col gap-1">
           <label
             htmlFor="status"
-            className="text-2xs uppercase tracking-wider text-fg-muted-2"
+            className="text-[13px] text-fg-muted"
           >
             Status
           </label>
@@ -113,16 +113,7 @@ export default async function Page({
       {filtered.length === 0 ? (
         <p className="text-xs text-fg-muted">No runs match.</p>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-border/80 bg-bg-elev">
-          <div className="grid grid-cols-[120px_1fr_180px_72px_72px_120px_80px] gap-3 border-b border-border/80 bg-bg-elev-2/40 px-4 py-2.5 text-2xs uppercase tracking-wider text-fg-muted-2">
-            <div>Run</div>
-            <div>Suite</div>
-            <div>Adapter</div>
-            <div>Tool</div>
-            <div>Pass</div>
-            <div>Trend</div>
-            <div className="text-right">Started</div>
-          </div>
+        <RunTable>
           {filtered.map((entry) => (
             <RunTableRow
               key={entry.file}
@@ -131,7 +122,7 @@ export default async function Page({
               href={`/runs/${entry.run.run_id}`}
             />
           ))}
-        </div>
+        </RunTable>
       )}
     </div>
   );

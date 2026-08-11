@@ -44,10 +44,10 @@ export default async function Page({
     <div className="flex flex-col">
       <form
         method="get"
-        className="flex items-end gap-3 border-b border-border/70 bg-bg-elev/40 px-[clamp(1.25rem,3.5vw,3.5rem)] py-4"
+        className="flex items-end gap-3 border-b border-border/40 bg-bg-elev/40 px-[clamp(1.25rem,3.5vw,3.5rem)] py-4"
       >
         <div>
-          <div className="mb-1.5 text-2xs uppercase tracking-wider text-fg-muted-2">
+          <div className="mb-1.5 label">
             A (baseline)
           </div>
           <select
@@ -63,7 +63,7 @@ export default async function Page({
           </select>
         </div>
         <div>
-          <div className="mb-1.5 text-2xs uppercase tracking-wider text-fg-muted-2">
+          <div className="mb-1.5 label">
             B (new)
           </div>
           <select

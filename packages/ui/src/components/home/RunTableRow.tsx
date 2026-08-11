@@ -2,7 +2,9 @@
 import type { Run, ScoredRun } from "@eval-kit/core";
 import { aggregateScoredRun } from "@eval-kit/core";
 import { cn } from "../../lib/cn.js";
+import { formatRatio, gateTotals } from "../../lib/gates.js";
 import { Sparkline } from "../primitives/sparkline.js";
+import { RUN_TABLE_COLUMNS } from "./RunTable.js";
 
 export interface RunTableRowProps {
   run: Run | ScoredRun;
@@ -38,6 +40,20 @@ export function RunTableRow({ run, scored, href }: RunTableRowProps) {
     }
   }
 
+  // Mandated-gate compliance as a COUNT, not a percentage: "11/12" reads as
+  // one unauthorized action; "92%" reads as a passing grade. A run whose suite
+  // declares no gates shows an explicit dash with a reason on hover, never a
+  // zero that could be mistaken for a clean result.
+  const gates = gateTotals(run);
+  const gateRatio = formatRatio(gates.honored, gates.required);
+  const gateTitle =
+    gateRatio === null
+      ? "No mandated gates declared in this suite — not assessed"
+      : `${gates.honored} of ${gates.required} gated calls had approval first` +
+        (gates.violated > 0
+          ? ` · ${gates.violated} unauthorized`
+          : "");
+
   const RowWrap = href ? "a" : "div";
   const rowProps = href ? { href } : {};
 
@@ -45,7 +61,8 @@ export function RunTableRow({ run, scored, href }: RunTableRowProps) {
     <RowWrap
       {...(rowProps as Record<string, unknown>)}
       className={cn(
-        "group grid grid-cols-[120px_1fr_180px_72px_72px_120px_80px] items-center gap-3 border-b border-border/60 px-4 py-3 text-[13px] transition-colors hover:bg-bg-elev-2/50 last:border-b-0",
+        RUN_TABLE_COLUMNS,
+        "group grid items-center gap-3 border-b border-border/60 px-4 py-3 text-[13px] transition-colors hover:bg-bg-elev-2/50 last:border-b-0",
       )}
     >
       <div className="flex items-center gap-2">
@@ -74,6 +91,15 @@ export function RunTableRow({ run, scored, href }: RunTableRowProps) {
         {agg && agg.golden_truth_pass_rate !== null
           ? `${(agg.golden_truth_pass_rate * 100).toFixed(0)}%`
           : "—"}
+      </div>
+      <div className="tabular-nums" title={gateTitle}>
+        {gateRatio === null ? (
+          <span className="text-fg-muted-2">—</span>
+        ) : (
+          <span className={gates.violated > 0 ? "text-danger" : "text-fg-muted"}>
+            {gateRatio}
+          </span>
+        )}
       </div>
       <div className="flex items-center">
         <Sparkline

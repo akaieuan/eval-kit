@@ -10,14 +10,27 @@
 }): react_jsx_runtime.JSX.Element | null;
 *   <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
 * after a successful inline score / autosave to keep the tracker in sync.
+* alignment with the data. Exported so RunTableRow consumes the identical
+* Every run, scored or not. Gate compliance is AUTO-scored — it exists the
 * flash of the default theme. Render this as:
+* gates off `scoredRuns` made the cards report "no gates declared" while
+* Header cells and body rows are laid out by the SAME grid string. It lived
+* inline in two dashboard routes and again in RunTableRow, so adding a column
 * Inline script to apply the stored theme before hydration, preventing a
 * inside <head>.
+* meant editing three places and any miss silently knocked the headers out of
+* moment a run is traced, unlike pass rate which waits on a human. Reading
+* Optional so existing callers keep working; falls back to scoredRuns.
 * Public API: bump the session score counter. Other components call this
+* The run-table column template.
+* the runs table directly below showed 0/3 and 3/3 on unscored runs.
+* value — the alignment is now structural, not a convention.
+/** Bordered table shell + header row. Rows are passed as children. */
 /** Called when user clicks "Pre-fill" for a task. Returns the pre-filled scores. */
 /** If provided, wrap the whole row as a link to this URL (used for preview lists). */
 /** If set, values below this render red, above render green; else all accent */
 /** Ref for keyboard focus management */
+/** RunTableRow elements. */
 /** Values in the natural scale for the series (e.g. 0..3 for rubric scores) */
 /** Whether the prefill feature is available (e.g. env key set) */
 /** Whether to render a tiny numeric label in the center */
@@ -28,6 +41,7 @@ actions: CommandAction[];
 active?: boolean;
 active?: boolean;
 agent_output_preview: string;
+allRuns?: (Run | ScoredRun)[];
 appVersion?: string;
 asChild?: boolean;
 autoFocusKeyboard?: boolean;
@@ -38,6 +52,8 @@ breadcrumbs?: BreadcrumbItem[];
 children: ReactNode;
 children: ReactNode;
 children: ReactNode;
+children: ReactNode;
+className?: string;
 className?: string;
 className?: string;
 className?: string;
@@ -82,6 +98,7 @@ declare const Popover: react.FC<PopoverPrimitive.PopoverProps>;
 declare const PopoverAnchor: react.ForwardRefExoticComponent<PopoverPrimitive.PopoverAnchorProps & react.RefAttributes<HTMLDivElement>>;
 declare const PopoverContent: react.ForwardRefExoticComponent<Omit<PopoverPrimitive.PopoverContentProps & react.RefAttributes<HTMLDivElement>, "ref"> & react.RefAttributes<HTMLDivElement>>;
 declare const PopoverTrigger: react.ForwardRefExoticComponent<PopoverPrimitive.PopoverTriggerProps & react.RefAttributes<HTMLButtonElement>>;
+declare const RUN_TABLE_COLUMNS = "grid-cols-[120px_1fr_180px_72px_72px_88px_120px_80px]";
 declare const Select: react.FC<SelectPrimitive.SelectProps>;
 declare const SelectContent: react.ForwardRefExoticComponent<Omit<SelectPrimitive.SelectContentProps & react.RefAttributes<HTMLDivElement>, "ref"> & react.RefAttributes<HTMLDivElement>>;
 declare const SelectGroup: react.ForwardRefExoticComponent<SelectPrimitive.SelectGroupProps & react.RefAttributes<HTMLDivElement>>;
@@ -120,6 +137,7 @@ declare function readTheme(): Theme;
 declare function recordScoreInSession(): void;
 declare function RegressionSummary({ diffs, className }: RegressionSummaryProps): react_jsx_runtime.JSX.Element;
 declare function RunReviewPage({ suite, run, reviewerId, initialScores, onScoreChange, onPrefillTask, saving, savedAt, saveError, prefillAvailable, }: RunReviewPageProps): react_jsx_runtime.JSX.Element;
+declare function RunTable({ children, className }: RunTableProps): react_jsx_runtime.JSX.Element;
 declare function RunTableRow({ run, scored, href }: RunTableRowProps): react_jsx_runtime.JSX.Element;
 declare function ScoreSlider({ label, value, onChange, disabled, dimension, compact, }: ScoreSliderProps): react_jsx_runtime.JSX.Element;
 declare function SessionTracker({ className }: SessionTrackerProps): react_jsx_runtime.JSX.Element | null;
@@ -127,7 +145,7 @@ declare function shortcutLabel(keys: string[]): string;
 declare function SidebarNav({ groups, currentPath, header, footer, }: SidebarNavProps): react_jsx_runtime.JSX.Element;
 declare function Sparkline({ values, min, max, width, height, className, threshold, strokeWidth, showDots, }: SparklineProps): react_jsx_runtime.JSX.Element;
 declare function StatCard({ label, value, sublabel, delta, sparkline, sparklineMax, className, }: StatCardProps): react_jsx_runtime.JSX.Element;
-declare function StatCardGroup({ scoredRuns, unreviewedStepCount, }: StatCardGroupProps): react_jsx_runtime.JSX.Element;
+declare function StatCardGroup({ scoredRuns, unreviewedStepCount, allRuns, }: StatCardGroupProps): react_jsx_runtime.JSX.Element;
 declare function StepReviewCard({ step, result, dimensions, isDistraction, score, reviewerId, onChange, focused, autoFocusKeyboard, }: StepReviewCardProps): react_jsx_runtime.JSX.Element;
 declare function TaskProgressItem({ taskId, title, stepsScored, stepsTotal, isDistraction, active, onClick, }: TaskProgressItemProps): react_jsx_runtime.JSX.Element;
 declare function ThemeToggle({ className }: ThemeToggleProps): react_jsx_runtime.JSX.Element;
@@ -150,7 +168,7 @@ emptyDescription?: string;
 emptyTitle?: string;
 error: string;
 errorMessage?: string;
-export { AppShell, type AppShellProps, AutosaveBadge, Badge, type BadgeProps, type BreadcrumbItem, Button, type ButtonProps, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, type CommandAction, type CommandContext, CommandPalette, DashboardPage, Dialog, DialogClose, DialogContent, type DialogContentProps, DialogDescription, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, DiffPage, DiffRow, DimensionExplainer, EmptyState, type EmptyStateProps, HelpMenu, type InboxItemLite, InboxRow, type InboxRowProps, InboxView, type InboxViewProps, type InitialScoreEntry, InlineHelp, type InlineHelpProps, Input, type InputProps, Kbd, type NavItem, Pill, type PillProps, Popover, PopoverAnchor, PopoverContent, PopoverTrigger, type PrefillResult, ProgressRing, type ProgressRingProps, RegressionSummary, RunReviewPage, type RunReviewPageProps, RunTableRow, ScoreSlider, Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, SessionTracker, type SessionTrackerProps, SidebarNav, Sparkline, type SparklineProps, StatCard, StatCardGroup, type StatCardProps, StepReviewCard, Tabs, TabsContent, TabsList, TabsTrigger, TaskProgressItem, Textarea, type TextareaProps, type Theme, ThemeToggle, ToolCallDelta, Tooltip, TooltipContent, type TooltipProps, TooltipProvider, TooltipRoot, TooltipTrigger, WelcomePanel, applyTheme, badgeVariants, buttonVariants, cn, isMac, modLabel, readTheme, recordScoreInSession, shortcutLabel, themeInitScript };
+export { AppShell, type AppShellProps, AutosaveBadge, Badge, type BadgeProps, type BreadcrumbItem, Button, type ButtonProps, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, type CommandAction, type CommandContext, CommandPalette, DashboardPage, Dialog, DialogClose, DialogContent, type DialogContentProps, DialogDescription, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, DiffPage, DiffRow, DimensionExplainer, EmptyState, type EmptyStateProps, HelpMenu, type InboxItemLite, InboxRow, type InboxRowProps, InboxView, type InboxViewProps, type InitialScoreEntry, InlineHelp, type InlineHelpProps, Input, type InputProps, Kbd, type NavItem, Pill, type PillProps, Popover, PopoverAnchor, PopoverContent, PopoverTrigger, type PrefillResult, ProgressRing, type ProgressRingProps, RUN_TABLE_COLUMNS, RegressionSummary, RunReviewPage, type RunReviewPageProps, RunTable, type RunTableProps, RunTableRow, ScoreSlider, Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, SessionTracker, type SessionTrackerProps, SidebarNav, Sparkline, type SparklineProps, StatCard, StatCardGroup, type StatCardProps, StepReviewCard, Tabs, TabsContent, TabsList, TabsTrigger, TaskProgressItem, Textarea, type TextareaProps, type Theme, ThemeToggle, ToolCallDelta, Tooltip, TooltipContent, type TooltipProps, TooltipProvider, TooltipRoot, TooltipTrigger, WelcomePanel, applyTheme, badgeVariants, buttonVariants, cn, isMac, modLabel, readTheme, recordScoreInSession, shortcutLabel, themeInitScript };
 export { DIMENSION_DESCRIPTIONS, DIMENSION_LABELS, DIMENSION_RUBRIC_EXAMPLES } from '@eval-kit/core';
 external?: boolean;
 focused?: boolean;
@@ -210,6 +228,7 @@ interface PillProps extends HTMLAttributes<HTMLSpanElement> {
 interface ProgressRingProps {
 interface RegressionSummaryProps {
 interface RunReviewPageProps {
+interface RunTableProps {
 interface RunTableRowProps {
 interface ScoreSliderProps {
 interface SessionTrackerProps {

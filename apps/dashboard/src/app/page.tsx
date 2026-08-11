@@ -3,6 +3,7 @@ import {
   EmptyState,
   InboxRow,
   InlineHelp,
+  RunTable,
   RunTableRow,
   StatCardGroup,
   WelcomePanel,
@@ -142,6 +143,7 @@ export default async function Page() {
         <StatCardGroup
           scoredRuns={scoredRuns}
           unreviewedStepCount={unreviewed}
+          allRuns={sortedRuns.map((r) => r.run)}
         />
       </section>
 
@@ -154,16 +156,7 @@ export default async function Page() {
             {sortedRuns.length} total · {unscoredRuns.length} unscored
           </span>
         </div>
-        <div className="overflow-hidden rounded-lg border border-border/80 bg-bg-elev">
-          <div className="grid grid-cols-[120px_1fr_180px_72px_72px_120px_80px] gap-3 border-b border-border/80 bg-bg-elev-2/40 px-4 py-2.5 text-2xs uppercase tracking-wider text-fg-muted-2">
-            <div>Run</div>
-            <div>Suite</div>
-            <div>Adapter</div>
-            <div>Tool</div>
-            <div>Pass</div>
-            <div>Trend</div>
-            <div className="text-right">Started</div>
-          </div>
+        <RunTable>
           {sortedRuns.map(({ run, scored, file }) => (
             <RunTableRow
               key={file}
@@ -172,7 +165,7 @@ export default async function Page() {
               href={`/runs/${run.run_id}`}
             />
           ))}
-        </div>
+        </RunTable>
       </section>
 
       <InlineHelp id="home-next-steps" title="What's next?">

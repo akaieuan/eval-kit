@@ -113,17 +113,26 @@ export function InboxRow({
               distraction
             </span>
           )}
-          {item.signals
-            .filter((s) => s !== "distraction" && s !== "unscored")
-            .slice(0, 2)
-            .map((s) => (
+          {(() => {
+            const rest = item.signals.filter(
+              (s) => s !== "distraction" && s !== "unscored",
+            );
+            // Gate violations are compliance failures, not quality signals:
+            // they are toned danger and are never the ones truncated away.
+            const isGate = (s: string) => s.includes("gate");
+            const ordered = [...rest.filter(isGate), ...rest.filter((s) => !isGate(s))];
+            return ordered.slice(0, 3).map((s) => (
               <span
                 key={s}
-                className="text-2xs uppercase tracking-wider text-fg-muted-2"
+                className={cn(
+                  "text-2xs uppercase tracking-wider",
+                  isGate(s) ? "text-danger" : "text-fg-muted-2",
+                )}
               >
                 {s}
               </span>
-            ))}
+            ));
+          })()}
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import { RunTableRow, InlineHelp } from "@eval-kit/ui";
+import { RunTable, RunTableRow, InlineHelp } from "@eval-kit/ui";
 import { listRuns } from "@/lib/runs";
 
 export default async function Page({
@@ -113,16 +113,7 @@ export default async function Page({
       {filtered.length === 0 ? (
         <p className="text-xs text-fg-muted">No runs match.</p>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-border/80 bg-bg-elev">
-          <div className="grid grid-cols-[120px_1fr_180px_72px_72px_120px_80px] gap-3 border-b border-border/80 bg-bg-elev-2/40 px-4 py-2.5 text-2xs uppercase tracking-wider text-fg-muted-2">
-            <div>Run</div>
-            <div>Suite</div>
-            <div>Adapter</div>
-            <div>Tool</div>
-            <div>Pass</div>
-            <div>Trend</div>
-            <div className="text-right">Started</div>
-          </div>
+        <RunTable>
           {filtered.map((entry) => (
             <RunTableRow
               key={entry.file}
@@ -131,7 +122,7 @@ export default async function Page({
               href={`/runs/${entry.run.run_id}`}
             />
           ))}
-        </div>
+        </RunTable>
       )}
     </div>
   );

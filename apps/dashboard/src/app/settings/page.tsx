@@ -22,7 +22,7 @@ export default async function Page() {
         root or export them in your shell.
       </InlineHelp>
 
-      <div className="divide-y divide-border/60 rounded-lg border border-border/40 bg-bg-elev/40 px-5 text-xs">
+      <div className="divide-y divide-border/60 rounded-lg border border-border/60 bg-card px-5 text-xs">
         <Row
           label="ANTHROPIC_API_KEY"
           value={keySet ? "set" : "not set"}

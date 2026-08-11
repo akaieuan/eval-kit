@@ -11,7 +11,7 @@ export const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
          scale. Radius comes from --radius-lg, rebased to the akaOSS card
          tier (18px = their rounded-2xl). */
       className={cn(
-        "rounded-lg border border-border/40 bg-bg-elev/40",
+        "rounded-lg border border-border/60 bg-card",
         className,
       )}
       {...props}

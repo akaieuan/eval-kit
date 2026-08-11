@@ -33,7 +33,7 @@ export function RegressionSummary({ diffs, className }: RegressionSummaryProps) 
   return (
     <div
       className={cn(
-        "rounded-lg border border-border/40 bg-bg-elev/40 px-6 py-5",
+        "rounded-lg border border-border/60 bg-card px-6 py-5",
         className,
       )}
     >

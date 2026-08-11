@@ -35,7 +35,7 @@ export function RunTable({ children, className }: RunTableProps) {
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-lg border border-border/40 bg-bg-elev/40",
+        "overflow-hidden rounded-lg border border-border/60 bg-card",
         className,
       )}
     >

@@ -1,8 +1,7 @@
 "use client";
 import type { RubricScore } from "@eval-kit/core";
-import { Check, ChevronRight, Sparkles, SkipForward } from "lucide-react";
 import { cn } from "../../lib/cn.js";
-import { Kbd } from "../primitives/kbd.js";
+import { META, MONO } from "../../lib/type.js";
 
 export interface InboxItemLite {
   id: string;
@@ -25,41 +24,54 @@ export interface InboxRowProps {
   active?: boolean;
   onFocus?: () => void;
   onOpen?: () => void;
-  onScore?: (score: RubricScore) => void;
-  onAcceptPrefill?: () => void;
-  onSkip?: () => void;
-  saving?: boolean;
-  /** If provided, wrap the whole row as a link to this URL (used for preview lists). */
+  /** Link form, for the home-page preview where there is no detail pane. */
   href?: string;
+  className?: string;
 }
 
-const statusStyles = {
-  unscored: "border-l-warn/80",
-  pre_filled: "border-l-accent/80",
-  reviewed: "border-l-good/80",
-} as const;
-
-const statusLabel = {
-  unscored: "Unscored",
-  pre_filled: "AI draft",
-  reviewed: "Reviewed",
-} as const;
-
+/**
+ * A rail row: identity, one line of content, one signal.
+ *
+ * This used to render between 8 and 17 elements — a status border, a status
+ * glyph AND a status word (three encodings of one fact), task id, separator,
+ * step number, title, prompt, up to three signal chips, and up to six action
+ * buttons — at roughly equal visual weight, for every one of ~60 unpaginated
+ * rows. That is why the queue was unreadable: the overwhelm was arithmetic.
+ *
+ * Now the row answers exactly one question — "is this worth my attention
+ * next?" — and everything needed to ACT on it lives in the detail pane. Status
+ * is encoded once, in the dot. Only the highest-priority signal is shown;
+ * `computePriority` already ranks them, and the rest are visible on the right.
+ */
 export function InboxRow({
   item,
   active,
   onFocus,
   onOpen,
-  onScore,
-  onAcceptPrefill,
-  onSkip,
-  saving,
   href,
+  className,
 }: InboxRowProps) {
   const Wrap = href ? "a" : "div";
-  const wrapProps = href
-    ? ({ href, className: "block" } as Record<string, unknown>)
-    : {};
+  const wrapProps = href ? ({ href } as Record<string, unknown>) : {};
+
+  // One signal, chosen by the same ranking that orders the queue: a
+  // compliance failure outranks a quality one. `+N` keeps the omission
+  // visible rather than silently dropping signals, as the old row did.
+  const isGate = (s: string) => s.includes("gate");
+  const ranked = [
+    ...item.signals.filter(isGate),
+    ...item.signals.filter((s) => !isGate(s) && s !== "unscored"),
+  ];
+  const lead = ranked[0];
+  const extra = Math.max(0, ranked.length - 1);
+
+  const dotTone =
+    item.status === "reviewed"
+      ? "bg-good"
+      : item.status === "pre_filled"
+        ? "bg-accent"
+        : "bg-warn";
+
   return (
     <Wrap
       {...wrapProps}
@@ -68,136 +80,50 @@ export function InboxRow({
       onClick={onFocus}
       onDoubleClick={onOpen}
       className={cn(
-        "group grid grid-cols-[16px_minmax(160px,220px)_minmax(0,1fr)_auto] items-start gap-4 border-l-2 px-4 py-3 text-[13px] transition-colors",
+        "group flex w-full items-start gap-3 px-4 py-3 text-left transition-colors",
         href ? "cursor-pointer" : "cursor-default",
-        statusStyles[item.status],
-        active && "bg-bg-elev-2/60",
-        !active && "hover:bg-bg-elev-2/50",
+        active
+          ? "bg-bg-elev-2/70"
+          : "hover:bg-bg-elev-2/40",
+        className,
       )}
     >
-      <div className="flex items-center justify-center pt-0.5">
-        {item.status === "unscored" && (
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-warn" />
-        )}
-        {item.status === "pre_filled" && (
-          <Sparkles size={11} strokeWidth={1.5} className="text-accent" />
-        )}
-        {item.status === "reviewed" && (
-          <Check size={11} strokeWidth={1.5} className="text-good" />
-        )}
-      </div>
-
-      <div className="min-w-0">
-        <div className="flex items-center gap-1.5">
-          <code className="truncate font-mono label">
+      <span
+        aria-hidden
+        className={cn("mt-1.5 size-1.5 shrink-0 rounded-full", dotTone)}
+      />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-baseline gap-2">
+          <code className={cn(MONO, "truncate text-[11px]")}>
             {item.task_id}
           </code>
-          <span className="text-2xs text-fg-muted-2">·</span>
-          <span className="font-mono text-2xs text-fg-muted-2">
-            step {item.step_n}
-          </span>
+          <span className={cn(META, "shrink-0")}>step {item.step_n}</span>
         </div>
-        <div className="mt-1 truncate text-xs text-fg-muted">
-          {item.task_title}
-        </div>
-      </div>
-
-      <div className="min-w-0">
-        <div className="truncate text-fg-strong">{item.step_prompt}</div>
-        <div className="mt-1.5 flex items-center gap-3 flex-wrap">
-          <span className="label">
-            {statusLabel[item.status]}
-          </span>
-          {item.is_distraction && (
-            <span className="text-2xs uppercase tracking-wider text-warn">
-              distraction
-            </span>
+        <p
+          className={cn(
+            "mt-1 line-clamp-2 text-[13px] leading-snug",
+            active ? "text-fg-strong" : "text-fg",
           )}
-          {(() => {
-            const rest = item.signals.filter(
-              (s) => s !== "distraction" && s !== "unscored",
-            );
-            // Gate violations are compliance failures, not quality signals:
-            // they are toned danger and are never the ones truncated away.
-            const isGate = (s: string) => s.includes("gate");
-            const ordered = [...rest.filter(isGate), ...rest.filter((s) => !isGate(s))];
-            return ordered.slice(0, 3).map((s) => (
-              <span
-                key={s}
-                className={cn(
-                  "text-2xs uppercase tracking-wider",
-                  isGate(s) ? "text-danger" : "text-fg-muted-2",
-                )}
-              >
-                {s}
-              </span>
-            ));
-          })()}
-        </div>
-      </div>
-
-      <div className="flex items-center gap-1 justify-end">
-        {active && item.status !== "reviewed" && (
-          <>
-            {item.status === "pre_filled" && onAcceptPrefill && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onAcceptPrefill();
-                }}
-                disabled={saving}
-                className="flex items-center gap-1 rounded-md border border-good/40 bg-good/8 px-2 py-0.5 text-2xs text-good hover:bg-good/15 disabled:opacity-50"
-              >
-                <Check size={10} strokeWidth={1.5} /> Accept
-                <Kbd>A</Kbd>
-              </button>
-            )}
-            {[1, 2, 3].map((n) => (
-              <button
-                key={n}
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onScore?.(n as RubricScore);
-                }}
-                disabled={saving}
-                className={cn(
-                  "h-6 w-6 rounded-md border text-xs font-mono transition-colors",
-                  item.current_golden_truth === n
-                    ? "border-accent bg-accent/10 text-accent"
-                    : "border-border text-fg-muted hover:border-border-strong hover:text-fg",
-                )}
-              >
-                {n}
-              </button>
-            ))}
-            {onSkip && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSkip();
-                }}
-                className="flex h-6 w-6 items-center justify-center rounded-md border border-border text-fg-muted-2 hover:border-border-strong hover:text-fg"
-                title="Skip (s)"
-              >
-                <SkipForward size={10} strokeWidth={1.5} />
-              </button>
-            )}
-          </>
-        )}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onOpen?.();
-          }}
-          className="flex h-6 w-6 items-center justify-center rounded-md text-fg-muted-2 transition-colors hover:bg-bg-elev-2 hover:text-fg"
-          title="Open full review (enter)"
         >
-          <ChevronRight size={12} strokeWidth={1.5} />
-        </button>
+          {item.step_prompt}
+        </p>
+        {lead && (
+          <div className="mt-1.5 flex items-center gap-2">
+            <span
+              className={cn(
+                "text-[11px] uppercase tracking-[0.14em]",
+                isGate(lead) ? "text-danger" : "text-fg-muted-2",
+              )}
+            >
+              {lead}
+            </span>
+            {extra > 0 && (
+              <span className={META} title={ranked.slice(1).join(" · ")}>
+                +{extra}
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </Wrap>
   );

@@ -75,7 +75,7 @@ export default async function Page() {
           return (
             <li
               key={a.id}
-              className="rounded-lg border border-border/40 bg-bg-elev/40 px-5 py-4"
+              className="rounded-lg border border-border/60 bg-card px-5 py-4"
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2.5">

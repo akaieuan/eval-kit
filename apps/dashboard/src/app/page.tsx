@@ -92,7 +92,7 @@ export default async function Page() {
         </div>
 
         {priorityPreview.length > 0 ? (
-          <div className="overflow-hidden rounded-lg border border-border/40 bg-bg-elev/40 divide-y divide-border/60">
+          <div className="overflow-hidden rounded-lg border border-border/60 bg-card divide-y divide-border/60">
             {priorityPreview.map((item) => (
               <div key={item.id} data-inbox-id={item.id}>
                 <InboxRow
@@ -118,7 +118,7 @@ export default async function Page() {
             ))}
           </div>
         ) : (
-          <div className="rounded-lg border border-border/40 bg-bg-elev/40 px-5 py-10 text-center">
+          <div className="rounded-lg border border-border/60 bg-card px-5 py-10 text-center">
             <InboxIcon
               size={18}
               strokeWidth={1.5}

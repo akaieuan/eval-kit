@@ -70,7 +70,7 @@ function RunSummary({
   run: ScoredRun;
 }) {
   return (
-    <div className="rounded-lg border border-border/40 bg-bg-elev/40 px-5 py-4 text-xs">
+    <div className="rounded-lg border border-border/60 bg-card px-5 py-4 text-xs">
       <div className="label">
         {label}
       </div>

@@ -37,7 +37,7 @@ export default async function Page() {
           {suites.map((entry) => (
             <li
               key={entry.file}
-              className="rounded-lg border border-border/40 bg-bg-elev/40 px-5 py-4"
+              className="rounded-lg border border-border/60 bg-card px-5 py-4"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">

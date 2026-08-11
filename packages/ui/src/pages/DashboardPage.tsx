@@ -48,7 +48,7 @@ export function DashboardPage({
             {all.length} total · {unscoredRuns.length} unscored
           </span>
         </div>
-        <div className="overflow-hidden rounded-lg border border-border/40 bg-bg-elev/40">
+        <div className="overflow-hidden rounded-lg border border-border/60 bg-card">
           <div className="grid grid-cols-[120px_1fr_180px_72px_72px_120px_80px] gap-3 border-b border-border/40 bg-bg-elev-2/40 px-4 py-2.5 label">
             <div>Run</div>
             <div>Suite</div>

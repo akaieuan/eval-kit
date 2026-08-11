@@ -32,6 +32,25 @@ const config: Config = {
           pressed: rgb("--accent-pressed"),
         },
         secondary: rgb("--secondary"),
+        // shadcn token contract — semantic SURFACES with paired foregrounds.
+        // Without these there was no way to say "this is a card" vs "this is
+        // a popover" vs "this is an inset well": everything was bg-bg-elev.
+        card: { DEFAULT: rgb("--card"), foreground: rgb("--card-foreground") },
+        popover: {
+          DEFAULT: rgb("--popover"),
+          foreground: rgb("--popover-foreground"),
+        },
+        primary: {
+          DEFAULT: rgb("--primary"),
+          foreground: rgb("--primary-foreground"),
+        },
+        destructive: {
+          DEFAULT: rgb("--destructive"),
+          foreground: rgb("--destructive-foreground"),
+        },
+        "muted-foreground": rgb("--muted-foreground"),
+        input: rgb("--input"),
+        ring: rgb("--ring"),
         good: rgb("--good"),
         warn: rgb("--warn"),
         danger: rgb("--danger"),

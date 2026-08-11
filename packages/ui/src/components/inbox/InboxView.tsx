@@ -3,9 +3,10 @@ import type { RubricScore } from "@eval-kit/core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "../../lib/cn.js";
 import { EmptyState } from "../primitives/empty-state.js";
-import { InlineHelp } from "../primitives/inline-help.js";
-import { Kbd } from "../primitives/kbd.js";
+import { SplitPane } from "../layout/SplitPane.js";
+import { MICRO } from "../../lib/type.js";
 import { InboxRow, type InboxItemLite } from "./InboxRow.js";
+import { TriagePane } from "./TriagePane.js";
 
 export interface InboxViewProps {
   items: InboxItemLite[];
@@ -139,60 +140,61 @@ export function InboxView({
 
   const unscoredCount = items.filter((i) => i.status === "unscored").length;
   const prefilledCount = items.filter((i) => i.status === "pre_filled").length;
+  const doneCount = items.length - unscoredCount - prefilledCount;
 
   return (
-    <div className="space-y-3">
-      <InlineHelp
-        id="inbox-help"
-        variant="accent"
-        title="Prioritized queue"
-      >
-        Rows are sorted by priority: unscored, AI drafts needing review, and
-        distractions first. Use <Kbd>J</Kbd>/<Kbd>K</Kbd> to move,{" "}
-        <Kbd>1</Kbd>/<Kbd>2</Kbd>/<Kbd>3</Kbd> to set golden-truth in place,{" "}
-        <Kbd>A</Kbd> to accept an AI draft, <Kbd>S</Kbd> to skip,{" "}
-        <Kbd>Enter</Kbd> to open the full review card.
-      </InlineHelp>
-
-      <div className="flex items-baseline gap-5 label">
-        <span className="tabular-nums">
-          {unscoredCount} <span className="text-warn">unscored</span>
-        </span>
-        <span className="tabular-nums">
-          {prefilledCount} <span className="text-info">awaiting review</span>
-        </span>
-        <span className="tabular-nums">
-          {items.length - unscoredCount - prefilledCount}{" "}
-          <span className="text-good">done</span>
-        </span>
-      </div>
-
-      <div
-        ref={containerRef}
-        className={cn(
-          "overflow-hidden rounded-lg border border-border/40 bg-bg-elev/40",
-          "divide-y divide-border/60",
-        )}
-      >
-        {visible.map((item) => (
-          <div key={item.id} data-inbox-id={item.id}>
-            <InboxRow
-              item={item}
-              active={item.id === activeId}
-              saving={saving}
-              onFocus={() => setActiveId(item.id)}
-              onOpen={() => onOpenFull(item)}
-              onScore={(v) =>
-                onScoreStep(item, { kind: "golden_truth", value: v })
-              }
-              onAcceptPrefill={() =>
-                onScoreStep(item, { kind: "accept_prefill" })
-              }
-              onSkip={() => onScoreStep(item, { kind: "skip" })}
-            />
+    <SplitPane
+      rail={
+        <div ref={containerRef} className="flex flex-col">
+          {/* Counts live above the rail, not as a separate page band: they
+              describe the list they sit on top of. */}
+          <div className="sticky top-0 z-10 flex items-baseline gap-4 border-b border-border/40 bg-bg/80 px-4 py-3 backdrop-blur-md">
+            <span className={cn(MICRO, "tabular-nums")}>
+              {unscoredCount} <span className="text-warn">unscored</span>
+            </span>
+            <span className={cn(MICRO, "tabular-nums")}>
+              {prefilledCount} <span className="text-accent">drafts</span>
+            </span>
+            <span className={cn(MICRO, "tabular-nums")}>
+              {doneCount} <span className="text-good">done</span>
+            </span>
           </div>
-        ))}
-      </div>
-    </div>
+          <div className="divide-y divide-border/40">
+            {visible.map((item) => (
+              <div key={item.id} data-inbox-id={item.id}>
+                <InboxRow
+                  item={item}
+                  active={item.id === activeId}
+                  onFocus={() => setActiveId(item.id)}
+                  onOpen={() => onOpenFull(item)}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      }
+    >
+      {active ? (
+        <TriagePane
+          item={active}
+          saving={saving}
+          onScore={(v) => void scoreActive({ kind: "golden_truth", value: v })}
+          onAcceptPrefill={
+            active.status === "pre_filled"
+              ? () => void scoreActive({ kind: "accept_prefill" })
+              : undefined
+          }
+          onSkip={() => void scoreActive({ kind: "skip" })}
+          onOpenFull={() => onOpenFull(active)}
+        />
+      ) : (
+        <div className="flex h-full items-center justify-center p-10">
+          <EmptyState
+            title="Nothing selected"
+            description="Pick an item from the queue, or press J to start at the top."
+          />
+        </div>
+      )}
+    </SplitPane>
   );
 }

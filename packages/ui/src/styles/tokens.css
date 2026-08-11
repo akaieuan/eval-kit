@@ -49,6 +49,31 @@
 
   /* akaOSS puts no shadow on a card — lift is border + translate. Shadows
      survive only for genuinely floating layers (popover, dialog, palette). */
+
+  /* ── shadcn token contract ──────────────────────────────────────────────
+     eval-kit already had shadcn's ARCHITECTURE (Radix + CVA + tailwind-merge)
+     but not its token contract, so there was no vocabulary to distinguish a
+     card from a popover from an inset well — every surface reached for
+     bg-bg-elev/40 and the layout flattened. These are the standard names,
+     with akaOSS's values, so registry components and akaoss-authored markup
+     drop in unmodified.
+
+     One deliberate divergence: shadcn treats `accent` as a hover SURFACE.
+     eval-kit uses --accent as the brand blue (per akaOSS's --accent-blue) and
+     spells the hover surface `secondary`. Documented rather than silently
+     different. */
+  --card: 253 253 251;
+  --card-foreground: 13 13 12;
+  --popover: 253 253 251;
+  --popover-foreground: 13 13 12;
+  --primary: 20 20 19;
+  --primary-foreground: 250 250 248;
+  --muted-foreground: 94 94 91;
+  --destructive: 198 73 91;
+  --destructive-foreground: 253 253 251;
+  --input: 201 201 200;
+  --ring: 94 94 91;
+
   --shadow-sm: 0 0 0 0 transparent;
   --shadow-md: 0 0 0 0 transparent;
   --shadow-lg: 0 12px 32px rgb(0 0 0 / 0.1), 0 1px 2px rgb(0 0 0 / 0.06);
@@ -73,7 +98,6 @@
      byte-identical to their source and never drift. Substitution happens at
      computed-value time, so this one definition follows .dark automatically. */
   --foreground: rgb(var(--fg));
-  --muted-foreground: rgb(var(--muted));
   --accent-amber: rgb(var(--warn));
   --accent-green: rgb(var(--good));
   --accent-rose: rgb(var(--danger));
@@ -107,6 +131,20 @@
   --warn: 240 190 103; /* accent-amber  */
   --danger: 236 115 128; /* accent-rose   */
   --info: 179 160 236; /* accent-violet */
+
+
+  /* shadcn contract — dark */
+  --card: 17 17 16;
+  --card-foreground: 234 234 232;
+  --popover: 17 17 16;
+  --popover-foreground: 234 234 232;
+  --primary: 234 234 232;
+  --primary-foreground: 15 15 14;
+  --muted-foreground: 137 137 135;
+  --destructive: 236 115 128;
+  --destructive-foreground: 17 17 16;
+  --input: 42 42 41;
+  --ring: 128 128 126;
 
   --shadow-sm: 0 0 0 0 transparent;
   --shadow-md: 0 0 0 0 transparent;

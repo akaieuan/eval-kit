@@ -336,7 +336,7 @@ export function RunReviewPage({
         </InlineHelp>
 
         {onPrefillTask && (
-          <div className="mb-4 flex items-center justify-between rounded-lg border border-border/40 bg-bg-elev/40 px-4 py-3">
+          <div className="mb-4 flex items-center justify-between rounded-lg border border-border/60 bg-card px-4 py-3">
             <div className="flex flex-col">
               <div className="text-xs text-fg-strong">
                 AI pre-fill (optional)

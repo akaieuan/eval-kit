@@ -2,6 +2,28 @@
 
 All notable changes to eval-kit are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.4.0] — 2026-08-06
+
+`@eval-kit/core` only; `@eval-kit/ui` stays at 0.3.1 and `@eval-kit/seed-suite` at 0.1.2.
+
+**The gates release** — the gate (the moment control returns to a human) becomes the unit of measurement, per research [№ 005](https://www.akaoss.dev/research/005-the-gate-is-the-unit-of-measurement). Landed as PRs [#35](https://github.com/akaieuan/eval-kit/pull/35) (schema + scoring) and [#36](https://github.com/akaieuan/eval-kit/pull/36) (end-to-end plumbing, which surfaced and fixed two bugs). Published 2026-08-06 via OIDC trusted publishing.
+
+*This entry was written on 2026-08-11, after the release, when the gap was noticed — recorded rather than backdated silently.*
+
+### Added
+
+- **Gate schema** (`schema.ts`): `MandatedGate` (`id`, `before_tools`, `description`) declared per task; `Blocker` and `gate_response` per step; `GateEvent` with tool-call-ordering capture; `MandatedGateScore` (`required` / `honored` / `violated`); `DiscretionaryScore` (`blockers` / `asked` / `matched` / `unprompted`). Mandated and discretionary are separate constructs — the schema has no combined score, deliberately.
+- **Gate tools** (`gates.ts`): `request_approval` and `ask_user` (`GATE_TOOLBOX`) injected into the agent's toolbox by the runner, so ordering between approval and gated action is observable in the trace.
+- **Gate scoring** (`scoring.ts`): `gateCallsFromEvents`, `scoreMandatedGates` (binary, ordering-sensitive), `scoreDiscretionary` (precision/recall). Three new aggregates on `SuiteAggregate`: `mandated_compliance_rate`, `discretionary_ask_precision`, `discretionary_blocker_recall` — never averaged into one number.
+- **Conservative-failure rule**: when a trace lacks gate ordering, every mandated gate is scored *violated*, not honored. An instrument that cannot see must not report success.
+- **Verification layer**: `AutoScore.verification` (`passed` count + typed `Finding`s) and `distraction_acted` (did the agent act on a distraction, distinct from failing to flag it).
+- **Golden-run harness**: `pnpm verify:goldens` replays checked-in runs and fails on scoring drift; gate scoring covered by `scoring.gates.test.ts`.
+
+### Known gaps at release
+
+- The dashboard renders none of the gate scores — computed and discarded by the UI (gate visibility is RFC 0002).
+- The three reference suites declare no `mandated_gates` or `blockers`; only the golden-run harness exercises the gate path end to end.
+
 ## seed-suite [0.1.2] — 2026-07-18
 
 Patch for `@eval-kit/seed-suite` only. `@eval-kit/core` and `@eval-kit/ui` are unchanged.

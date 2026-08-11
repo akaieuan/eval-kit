@@ -154,7 +154,7 @@ export function InboxView({
         <Kbd>Enter</Kbd> to open the full review card.
       </InlineHelp>
 
-      <div className="flex items-baseline gap-5 text-2xs uppercase tracking-wider text-fg-muted-2">
+      <div className="flex items-baseline gap-5 label">
         <span className="tabular-nums">
           {unscoredCount} <span className="text-warn">unscored</span>
         </span>
@@ -170,7 +170,7 @@ export function InboxView({
       <div
         ref={containerRef}
         className={cn(
-          "overflow-hidden rounded-lg border border-border/80 bg-bg-elev",
+          "overflow-hidden rounded-lg border border-border/40 bg-bg-elev/40",
           "divide-y divide-border/60",
         )}
       >

@@ -5,8 +5,13 @@ export const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
+      /* akaOSS card idiom: translucent fill over the ground, hairline border
+         at /40, no shadow ever. Lift on hover is border + translate, which
+         is the house's entire hover vocabulary — never a shadow, never a
+         scale. Radius comes from --radius-lg, rebased to the akaOSS card
+         tier (18px = their rounded-2xl). */
       className={cn(
-        "rounded-lg border border-border/80 bg-bg-elev",
+        "rounded-lg border border-border/40 bg-bg-elev/40",
         className,
       )}
       {...props}
@@ -34,7 +39,7 @@ export const CardTitle = forwardRef<
   <h3
     ref={ref}
     className={cn(
-      "text-[13px] font-normal tracking-tight text-fg-strong",
+      "text-[13px] font-light tracking-tight text-fg-strong",
       className,
     )}
     {...props}

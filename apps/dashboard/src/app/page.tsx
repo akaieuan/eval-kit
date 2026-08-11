@@ -38,7 +38,7 @@ export default async function Page() {
                 Generate a mock run to try the scoring flow. From the repo
                 root:
               </p>
-              <pre className="mx-auto max-w-lg whitespace-pre-wrap rounded-md border border-border/70 bg-bg-elev px-3 py-2.5 text-left font-mono text-xs text-fg-muted">
+              <pre className="mx-auto max-w-lg whitespace-pre-wrap rounded-md border border-border/40 bg-bg-elev px-3 py-2.5 text-left font-mono text-xs text-fg-muted">
                 {`node packages/core/dist/cli.js run \\
   packages/seed-suite/suites/research-agent-v1.yaml \\
   --adapter mock --out runs/demo.json`}
@@ -76,10 +76,10 @@ export default async function Page() {
       <section>
         <div className="mb-4 flex items-baseline justify-between">
           <div className="flex items-baseline gap-2">
-            <h2 className="text-[15px] font-normal tracking-tight text-fg-strong">
+            <h2 className="text-[15px] font-light tracking-tight text-fg-strong">
               Inbox
             </h2>
-            <span className="text-2xs uppercase tracking-wider text-fg-muted-2">
+            <span className="label">
               {priorityPreview.length} of {inbox.filter((i) => i.status !== "reviewed").length} pending
             </span>
           </div>
@@ -92,7 +92,7 @@ export default async function Page() {
         </div>
 
         {priorityPreview.length > 0 ? (
-          <div className="overflow-hidden rounded-lg border border-border/80 bg-bg-elev divide-y divide-border/60">
+          <div className="overflow-hidden rounded-lg border border-border/40 bg-bg-elev/40 divide-y divide-border/60">
             {priorityPreview.map((item) => (
               <div key={item.id} data-inbox-id={item.id}>
                 <InboxRow
@@ -118,7 +118,7 @@ export default async function Page() {
             ))}
           </div>
         ) : (
-          <div className="rounded-lg border border-border/80 bg-bg-elev px-5 py-10 text-center">
+          <div className="rounded-lg border border-border/40 bg-bg-elev/40 px-5 py-10 text-center">
             <InboxIcon
               size={18}
               strokeWidth={1.5}
@@ -133,10 +133,10 @@ export default async function Page() {
 
       <section>
         <div className="mb-4 flex items-baseline justify-between">
-          <h2 className="text-[15px] font-normal tracking-tight text-fg-strong">
+          <h2 className="text-[15px] font-light tracking-tight text-fg-strong">
             Overview
           </h2>
-          <span className="text-2xs uppercase tracking-wider text-fg-muted-2">
+          <span className="label">
             latest scored run
           </span>
         </div>
@@ -149,10 +149,10 @@ export default async function Page() {
 
       <section>
         <div className="mb-4 flex items-baseline justify-between">
-          <h2 className="text-[15px] font-normal tracking-tight text-fg-strong">
+          <h2 className="text-[15px] font-light tracking-tight text-fg-strong">
             Runs
           </h2>
-          <span className="text-2xs uppercase tracking-wider text-fg-muted-2">
+          <span className="label">
             {sortedRuns.length} total · {unscoredRuns.length} unscored
           </span>
         </div>

@@ -57,7 +57,7 @@ export function WelcomePanel({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-xl border border-border/80 bg-bg-elev px-6 py-6",
+        "relative overflow-hidden rounded-xl border border-border/40 bg-bg-elev px-6 py-6",
         className,
       )}
     >
@@ -75,7 +75,7 @@ export function WelcomePanel({ className }: { className?: string }) {
         <X size={13} strokeWidth={1.5} />
       </button>
 
-      <div className="mb-1.5 text-2xs uppercase tracking-wider text-fg-muted-2">
+      <div className="mb-1.5 label">
         Welcome to eval-kit
       </div>
       <h2 className="text-[20px] font-light tracking-tight text-fg-strong">
@@ -92,7 +92,7 @@ export function WelcomePanel({ className }: { className?: string }) {
           return (
             <li
               key={i}
-              className="flex flex-col rounded-lg border border-border/70 bg-bg p-3.5"
+              className="flex flex-col rounded-lg border border-border/40 bg-bg p-3.5"
             >
               <div className="flex items-center justify-between">
                 <Icon size={14} strokeWidth={1.5} className="text-fg-muted" />

@@ -35,14 +35,14 @@ export function RunTable({ children, className }: RunTableProps) {
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-lg border border-border/80 bg-bg-elev",
+        "overflow-hidden rounded-lg border border-border/40 bg-bg-elev/40",
         className,
       )}
     >
       <div
         className={cn(
           RUN_TABLE_COLUMNS,
-          "grid gap-3 border-b border-border/80 bg-bg-elev-2/40 px-4 py-2.5 text-2xs uppercase tracking-wider text-fg-muted-2",
+          "grid gap-3 border-b border-border/40 bg-bg-elev-2/40 px-4 py-2.5 label",
         )}
       >
         {HEADINGS.map((h) => (

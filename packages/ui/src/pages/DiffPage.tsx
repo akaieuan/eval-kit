@@ -40,7 +40,7 @@ export function DiffPage({ a, b }: DiffPageProps) {
           if (changed.length === 0) return null;
           return (
             <section key={taskId}>
-              <h3 className="mb-3 flex items-center gap-2 font-mono text-2xs uppercase tracking-wider text-fg-muted-2">
+              <h3 className="mb-3 flex items-center gap-2 font-mono label">
                 <span>{taskId}</span>
                 <span className="text-fg-muted-2">
                   · {changed.length} change{changed.length === 1 ? "" : "s"}
@@ -70,8 +70,8 @@ function RunSummary({
   run: ScoredRun;
 }) {
   return (
-    <div className="rounded-lg border border-border/80 bg-bg-elev px-5 py-4 text-xs">
-      <div className="text-2xs uppercase tracking-wider text-fg-muted-2">
+    <div className="rounded-lg border border-border/40 bg-bg-elev/40 px-5 py-4 text-xs">
+      <div className="label">
         {label}
       </div>
       <div className="mt-2">

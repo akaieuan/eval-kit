@@ -18,7 +18,7 @@ export const Pill = forwardRef<HTMLSpanElement, PillProps>(
     <span
       ref={ref}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-bg-elev px-2 py-0.5 text-2xs font-normal text-fg-muted",
+        "inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-0.5 text-2xs font-normal text-fg-muted",
         className,
       )}
       {...props}

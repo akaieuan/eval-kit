@@ -28,7 +28,7 @@ export function EmptyState({
           {icon}
         </div>
       )}
-      <h3 className="mb-1 text-[13px] font-normal tracking-tight text-fg-strong">
+      <h3 className="mb-1 text-[13px] font-light tracking-tight text-fg-strong">
         {title}
       </h3>
       {description && (

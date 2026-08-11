@@ -94,7 +94,7 @@ export function NewAgentForm() {
 
       <div className="flex items-end gap-3">
         <div className="flex flex-col gap-1">
-          <label className="text-2xs uppercase tracking-wider text-fg-muted-2">
+          <label className="label">
             Backend
           </label>
           <div className="inline-flex items-center rounded-md border border-border bg-bg-elev">
@@ -114,7 +114,7 @@ export function NewAgentForm() {
         <div className="flex flex-1 flex-col gap-1">
           <label
             htmlFor="filename"
-            className="text-2xs uppercase tracking-wider text-fg-muted-2"
+            className="label"
           >
             Filename
           </label>
@@ -130,7 +130,7 @@ export function NewAgentForm() {
         <div className="flex items-center justify-between">
           <label
             htmlFor="yaml"
-            className="text-2xs uppercase tracking-wider text-fg-muted-2"
+            className="label"
           >
             Profile YAML
           </label>

@@ -37,7 +37,7 @@ export function ScoreSlider({
   return (
     <div className={cn("flex items-center gap-3", compact && "py-0.5")}>
       <div className="flex min-w-0 flex-1 items-center gap-1.5">
-        <div className="truncate text-2xs uppercase tracking-wider text-fg-muted-2">
+        <div className="truncate label">
           {label}
         </div>
         {dimension && <DimensionExplainer dimension={dimension} />}

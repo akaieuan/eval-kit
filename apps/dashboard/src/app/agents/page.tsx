@@ -58,11 +58,11 @@ export default async function Page() {
             return (
               <li
                 key={a.id}
-                className="flex flex-col rounded-lg border border-border/80 bg-bg-elev px-5 py-4"
+                className="flex flex-col rounded-lg border border-border/40 bg-bg-elev/40 px-5 py-4"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex min-w-0 items-center gap-2.5">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-md border border-border/70 text-fg-muted">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-md border border-border/40 text-fg-muted">
                       <Icon size={13} strokeWidth={1.5} />
                     </div>
                     <div className="min-w-0">

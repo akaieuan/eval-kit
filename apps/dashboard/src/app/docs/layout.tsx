@@ -29,14 +29,14 @@ const DOCS_NAV: { group: string; items: { href: string; label: string }[] }[] = 
 export default function DocsLayout({ children }: { children: ReactNode }) {
   return (
     <div className="grid grid-cols-[clamp(180px,15vw,240px)_minmax(0,1fr)] gap-0">
-      <aside className="sticky top-11 h-[calc(100dvh-44px)] overflow-y-auto border-r border-border/70 bg-bg px-4 py-6">
-        <div className="mb-5 text-2xs uppercase tracking-wider text-fg-muted-2">
+      <aside className="sticky top-11 h-[calc(100dvh-44px)] overflow-y-auto border-r border-border/40 bg-bg px-4 py-6">
+        <div className="mb-5 label">
           Docs
         </div>
         <nav className="space-y-5">
           {DOCS_NAV.map((group) => (
             <div key={group.group}>
-              <div className="mb-2 text-[10px] uppercase tracking-wider text-fg-muted-2">
+              <div className="mb-2 label text-[10px]">
                 {group.group}
               </div>
               <ul className="space-y-px">

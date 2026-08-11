@@ -277,9 +277,9 @@ export function RunReviewPage({
 
   return (
     <div className="grid h-full grid-cols-[clamp(220px,18vw,280px)_minmax(0,1fr)] gap-0">
-      <aside className="sticky top-11 h-[calc(100dvh-44px)] overflow-y-auto border-r border-border/70 bg-bg p-3">
+      <aside className="sticky top-11 h-[calc(100dvh-44px)] overflow-y-auto border-r border-border/40 bg-bg p-3">
         <div className="mb-3 flex items-center justify-between px-1">
-          <div className="text-2xs uppercase tracking-wider text-fg-muted-2">
+          <div className="label">
             Tasks
           </div>
           <AutosaveBadge
@@ -336,7 +336,7 @@ export function RunReviewPage({
         </InlineHelp>
 
         {onPrefillTask && (
-          <div className="mb-4 flex items-center justify-between rounded-lg border border-border/80 bg-bg-elev px-4 py-3">
+          <div className="mb-4 flex items-center justify-between rounded-lg border border-border/40 bg-bg-elev/40 px-4 py-3">
             <div className="flex flex-col">
               <div className="text-xs text-fg-strong">
                 AI pre-fill (optional)
@@ -370,7 +370,7 @@ export function RunReviewPage({
         {activeTask && activeResult ? (
           <div className="space-y-4 pb-20">
             <div>
-              <div className="font-mono text-2xs uppercase tracking-wider text-fg-muted-2">
+              <div className="font-mono label">
                 {activeTask.id}
               </div>
               <h2 className="mt-1 text-[18px] font-light tracking-tight text-fg-strong">

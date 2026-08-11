@@ -114,7 +114,7 @@ export function StepReviewCard({
       <header className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <div className="mb-3 flex items-center gap-2">
-            <span className="font-mono text-2xs uppercase tracking-wider text-fg-muted-2">
+            <span className="font-mono label">
               Step {step.n}
             </span>
             <Badge variant={toolMatchLabel.tone}>
@@ -143,7 +143,7 @@ export function StepReviewCard({
       </header>
 
       <section className="mt-5">
-        <div className="mb-2 text-2xs uppercase tracking-wider text-fg-muted-2">
+        <div className="mb-2 label">
           Agent output
         </div>
         <pre className="max-h-48 overflow-auto rounded-md border border-border/60 bg-bg px-3 py-2.5 text-xs text-fg-muted whitespace-pre-wrap leading-relaxed">
@@ -168,7 +168,7 @@ export function StepReviewCard({
       <section className="mt-5 space-y-1.5 border-t border-border/60 pt-5">
         <div className="flex items-center justify-between pb-1.5">
           <div className="flex items-center gap-2">
-            <div className="text-2xs uppercase tracking-wider text-fg-muted-2">
+            <div className="label">
               Scoring
             </div>
             {score?.pre_filled && (

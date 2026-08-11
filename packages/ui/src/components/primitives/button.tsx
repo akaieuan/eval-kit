@@ -11,13 +11,13 @@ const buttonVariants = cva(
         default:
           "border border-border bg-bg-elev text-fg hover:border-border-strong hover:bg-bg-elev-2",
         primary:
-          "bg-fg-strong text-bg hover:bg-fg",
+          "bg-fg/15 text-fg-strong hover:bg-fg/25",
         ghost:
           "text-fg-muted hover:bg-bg-elev-2 hover:text-fg",
         outline:
           "border border-border text-fg-muted hover:border-border-strong hover:text-fg",
         danger:
-          "border border-danger/30 text-danger hover:bg-danger/8",
+          "border border-danger/40 text-danger hover:bg-danger/10",
       },
       size: {
         sm: "h-6 px-2 text-xs",

@@ -1,5 +1,5 @@
 "use client";
-import { Activity, Keyboard } from "lucide-react";
+import { Keyboard } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { Toaster } from "sonner";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
@@ -14,8 +14,12 @@ import {
   type CommandAction,
 } from "@eval-kit/ui";
 import { NAV_ITEMS, groupedNav } from "@/lib/nav";
+import { PixelHead } from "@/components/brand/PixelHead";
 
-const APP_VERSION = "0.2.0";
+// Read from package.json so it cannot drift from the shipped version.
+import pkg from "../../package.json";
+
+const APP_VERSION = pkg.version;
 
 export function DashboardShell({
   children,
@@ -148,15 +152,19 @@ export function DashboardShell({
             groups={sidebarGroups}
             currentPath={pathname}
             header={
+              /* The akaOSS mark. `podium` is eval-kit's assigned icon in the
+                 family's PixelHead library — three-tier podium, 2·1·3. The
+                 canvas is aria-hidden, so the wordmark beside it carries the
+                 accessible name. */
               <a href="/" className="flex items-center gap-2.5">
-                <div className="flex h-6 w-6 items-center justify-center rounded-md border border-border bg-bg-elev text-fg-strong">
-                  <Activity size={12} strokeWidth={1.5} />
-                </div>
+                <span aria-hidden className="flex items-center">
+                  <PixelHead size={22} grid={18} gap={0.12} icon="podium" still />
+                </span>
                 <div className="flex flex-col leading-tight">
-                  <span className="text-[13px] font-normal tracking-tight text-fg-strong">
+                  <span className="text-[13px] font-light tracking-tight text-fg-strong">
                     eval-kit
                   </span>
-                  <span className="text-2xs text-fg-muted-2">
+                  <span className="label text-[10px] tracking-[0.14em]">
                     local · v{APP_VERSION}
                   </span>
                 </div>
@@ -211,9 +219,12 @@ export function DashboardShell({
         onClose={() => setShortcutsOpen(false)}
       />
 
+      {/* theme="system" rather than a hardcoded "dark": the toast styling is
+          token-driven, so it follows whichever theme is active. Pinning it
+          dark left light-mode toasts inverted. */}
       <Toaster
         position="bottom-right"
-        theme="dark"
+        theme="system"
         toastOptions={{
           className:
             "!bg-bg-elev !border !border-border !text-fg !shadow-lg !rounded-lg",
@@ -286,7 +297,7 @@ function Section({
 }) {
   return (
     <div>
-      <div className="mb-1 text-2xs uppercase tracking-wider text-fg-muted-2">
+      <div className="mb-1 label">
         {title}
       </div>
       <ul className="space-y-1">{children}</ul>

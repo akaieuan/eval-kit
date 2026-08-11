@@ -89,7 +89,7 @@ export function InboxRow({
 
       <div className="min-w-0">
         <div className="flex items-center gap-1.5">
-          <code className="truncate font-mono text-2xs uppercase tracking-wider text-fg-muted-2">
+          <code className="truncate font-mono label">
             {item.task_id}
           </code>
           <span className="text-2xs text-fg-muted-2">·</span>
@@ -105,7 +105,7 @@ export function InboxRow({
       <div className="min-w-0">
         <div className="truncate text-fg-strong">{item.step_prompt}</div>
         <div className="mt-1.5 flex items-center gap-3 flex-wrap">
-          <span className="text-2xs uppercase tracking-wider text-fg-muted-2">
+          <span className="label">
             {statusLabel[item.status]}
           </span>
           {item.is_distraction && (

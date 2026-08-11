@@ -46,15 +46,15 @@ export default async function Page({
       </InlineHelp>
 
       <div className="grid gap-4 md:grid-cols-[300px_1fr]">
-        <aside className="space-y-4 rounded-lg border border-border/80 bg-bg-elev px-5 py-4 text-xs">
+        <aside className="space-y-4 rounded-lg border border-border/40 bg-bg-elev/40 px-5 py-4 text-xs">
           <div>
-            <div className="text-2xs uppercase tracking-wider text-fg-muted-2">
+            <div className="label">
               Target
             </div>
             <div className="mt-1 text-fg">{suite.target_agent_type}</div>
           </div>
           <div>
-            <div className="text-2xs uppercase tracking-wider text-fg-muted-2">
+            <div className="label">
               Dimensions in scope
             </div>
             <div className="mt-1.5 flex flex-wrap gap-1">
@@ -66,7 +66,7 @@ export default async function Page({
             </div>
           </div>
           <div>
-            <div className="text-2xs uppercase tracking-wider text-fg-muted-2">
+            <div className="label">
               Tasks
             </div>
             <ul className="mt-1.5 space-y-1">
@@ -81,8 +81,8 @@ export default async function Page({
             </ul>
           </div>
         </aside>
-        <div className="overflow-hidden rounded-lg border border-border/80 bg-bg-elev">
-          <div className="flex items-center justify-between border-b border-border/70 bg-bg-elev-2/40 px-4 py-2">
+        <div className="overflow-hidden rounded-lg border border-border/40 bg-bg-elev/40">
+          <div className="flex items-center justify-between border-b border-border/40 bg-bg-elev-2/40 px-4 py-2">
             <code className="font-mono text-2xs text-fg-muted-2">
               {entry.file}
             </code>

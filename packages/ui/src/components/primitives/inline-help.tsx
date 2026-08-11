@@ -13,7 +13,7 @@ export interface InlineHelpProps {
 }
 
 const variantClasses = {
-  info: "border-border/70 bg-bg-elev text-fg-muted",
+  info: "border-border/40 bg-bg-elev text-fg-muted",
   accent: "border-accent/20 bg-accent/[0.04] text-fg-muted",
   warn: "border-warn/30 bg-warn/[0.05] text-warn",
 };

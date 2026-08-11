@@ -42,15 +42,17 @@
     color: inherit;
     letter-spacing: inherit;
   }
-  /* Hairline headings — minimal visual weight */
+  /* akaOSS display idiom: headings are LIGHT + tracking-tight. Weight never
+     goes above 500 anywhere in this system; emphasis comes from lightness
+     and size, not from bolding. */
   h1,
   h2,
   h3,
   h4,
   h5,
   h6 {
-    letter-spacing: -0.015em;
-    font-weight: 500;
+    letter-spacing: -0.025em;
+    font-weight: 300;
   }
   /* Thin, translucent scrollbars */
   ::-webkit-scrollbar {
@@ -69,5 +71,43 @@
   }
   ::-webkit-scrollbar-track {
     background: transparent;
+  }
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--border-strong)) transparent;
+  }
+}
+
+@layer components {
+  /*
+   * The akaOSS micro-label: mono, 11px, wide-tracked, uppercase, muted.
+   * Deliberately a class and not a component — it goes on whatever element
+   * the markup already needed (<p>, <span>, <th>, <figcaption>).
+   *
+   * Replaces the ad-hoc `text-2xs uppercase tracking-wider text-fg-muted-2`
+   * that appeared ~40 times across the app and was its strongest visual
+   * signature while being copy-pasted rather than named.
+   */
+  .label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem; /* 11px */
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgb(var(--muted));
+  }
+}
+
+@layer utilities {
+  /*
+   * `focus-visible:focus-ring` was referenced by button.tsx and tabs.tsx but
+   * this utility never existed, so both had NO visible focus indicator — an
+   * a11y bug that shipped because a missing class fails silently. Defined
+   * here with the akaOSS ring treatment.
+   */
+  .focus-ring {
+    outline: none;
+    border-color: rgb(var(--accent));
+    box-shadow: 0 0 0 3px rgb(var(--accent) / 0.3);
   }
 }

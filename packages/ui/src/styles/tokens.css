@@ -1,89 +1,115 @@
 /*
- * eval-kit design tokens.
+ * eval-kit design tokens — the akaOSS palette.
  *
- * Aesthetic: minimal, thin-line. Muted surfaces, hairline borders, whisper shadows.
- * Base (:root) = LIGHT. `.dark` on <html> flips to dark.
- * Values are "R G B" triples so Tailwind alpha syntax (`bg-accent/20`) works.
+ * SOURCE OF TRUTH: akaoss/src/app/globals.css. Every value below is that
+ * file's oklch converted to sRGB; the akaOSS hex table (docs at
+ * akaoss/src/app/demo) is the check — #0d0d0c, #5e5e5b, #1d6bde, #eaeae8,
+ * #898987, #f0be67 all reproduce exactly. If akaOSS retints, re-derive from
+ * there rather than nudging these by eye.
+ *
+ * Why triples and not oklch: akaOSS is Tailwind v4 (CSS-first, oklch native);
+ * eval-kit is Tailwind v3, whose alpha syntax (`bg-accent/20`) needs
+ * `rgb(var(--x) / <alpha-value>)`, so the vars must be bare "R G B".
+ *
+ * The palette's rule: every surface sits on hue 107 at near-zero chroma.
+ * Hierarchy comes from lightness and alpha, NEVER from hue. The five accents
+ * are punctuation — dots, rules, a date, a status word — never fills. Amber
+ * is 3.27:1 on light paper, which is why accents never carry small text.
+ *
+ * Base (:root) = LIGHT. `.dark` on <html> flips to dark, and dark is default.
  */
 
 :root {
-  /* Surfaces — light. Paper-white base, elevations shift by only a hair. */
-  --bg: 252 252 253;
-  --bg-elev: 255 255 255;
-  --bg-elev-2: 248 248 250;
-  --bg-elev-3: 242 242 245;
+  /* Warm paper. Cards read as lifted near-white against a grayer ground. */
+  --bg: 240 240 238; /* akaOSS --background  oklch(0.955 0.003 107) */
+  --bg-elev: 253 253 251; /* akaOSS --card        oklch(0.993 0.002 107) */
+  --bg-elev-2: 230 230 228; /* akaOSS --muted       oklch(0.925 0.003 107) */
+  --bg-elev-3: 222 222 220;
 
-  /* Borders — hairline in light mode */
-  --border: 232 232 236;
-  --border-strong: 214 215 221;
+  /* Composited from akaOSS's alpha borders (ink @14%/18%/20% over paper) —
+     eval-kit components apply their own /60–/80 on top of these. */
+  --border: 210 210 208;
+  --border-strong: 197 197 195;
 
-  /* Foreground — slightly softer than pure black for minimal feel */
-  --fg: 32 34 40;
-  --fg-strong: 14 15 19;
-  --muted: 105 108 118;
-  --muted-2: 162 165 174;
+  --fg: 13 13 12; /* akaOSS --foreground        oklch(0.16 0.002 107) */
+  --fg-strong: 3 3 3;
+  --muted: 94 94 91; /* akaOSS --muted-foreground  oklch(0.48 0.004 107) */
+  --muted-2: 134 134 132;
 
-  /* Accent = deep blue, confident but restrained */
-  --accent: 48 108 220;
-  --accent-hover: 66 125 233;
-  --accent-pressed: 36 92 195;
+  /* Accents. --accent is akaOSS accent-blue; the status trio maps to
+     green / amber / rose so tone is a family decision, not a local one. */
+  --accent: 29 107 222; /* accent-blue   */
+  --accent-hover: 45 120 232;
+  --accent-pressed: 22 92 196;
+  --secondary: 113 82 181; /* accent-violet */
+  --good: 55 114 73; /* accent-green  */
+  --warn: 179 121 3; /* accent-amber  */
+  --danger: 198 73 91; /* accent-rose   */
+  --info: 113 82 181; /* accent-violet */
 
-  --secondary: 140 158 95;
+  /* akaOSS puts no shadow on a card — lift is border + translate. Shadows
+     survive only for genuinely floating layers (popover, dialog, palette). */
+  --shadow-sm: 0 0 0 0 transparent;
+  --shadow-md: 0 0 0 0 transparent;
+  --shadow-lg: 0 12px 32px rgb(0 0 0 / 0.1), 0 1px 2px rgb(0 0 0 / 0.06);
 
-  --good: 34 150 90;
-  --warn: 197 128 47;
-  --danger: 206 85 72;
-  --info: 100 144 196;
+  /* Rebased on akaOSS --radius: 0.625rem = 10px, card tier = 1.125rem = 18px
+     (their `rounded-2xl`). `lg` lands on the card tier so every existing
+     `rounded-lg` surface picks up the house radius without a sweep. */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
 
-  /* Elevation — near-invisible shadows. We rely on hairlines instead. */
-  --shadow-sm: 0 1px 0 rgb(0 0 0 / 0.02);
-  --shadow-md: 0 1px 2px rgb(0 0 0 / 0.04), 0 1px 1px rgb(0 0 0 / 0.02);
-  --shadow-lg: 0 8px 24px rgb(0 0 0 / 0.06), 0 1px 2px rgb(0 0 0 / 0.03);
-
-  /* Radii — tight, consistent. Large rounds reserved for pills. */
-  --radius-xs: 2px;
-  --radius-sm: 4px;
-  --radius: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
-
-  /* Typography */
   --font-sans:
-    "Inter", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    system-ui, sans-serif;
-  --font-mono: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, monospace;
+    var(--font-inter), ui-sans-serif, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", system-ui, sans-serif;
+  --font-mono:
+    var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* akaOSS-name aliases. Components copied verbatim from akaoss (PixelHead)
+     consume `--foreground` directly; aliasing here means those files stay
+     byte-identical to their source and never drift. Substitution happens at
+     computed-value time, so this one definition follows .dark automatically. */
+  --foreground: rgb(var(--fg));
+  --muted-foreground: rgb(var(--muted));
+  --accent-amber: rgb(var(--warn));
+  --accent-green: rgb(var(--good));
+  --accent-rose: rgb(var(--danger));
+  --accent-blue: rgb(var(--accent));
+  --accent-violet: rgb(var(--secondary));
 
   color-scheme: light;
 }
 
+/* Warm near-black. akaOSS's default, and eval-kit's. */
 .dark {
-  /* Surfaces — dark. Deep neutral with subtle tonal steps. */
-  --bg: 9 10 12;
-  --bg-elev: 15 16 19;
-  --bg-elev-2: 21 22 26;
-  --bg-elev-3: 28 30 35;
+  --bg: 10 10 9; /* akaOSS --background  oklch(0.146 0.002 107) */
+  --bg-elev: 17 17 16; /* akaOSS --card        oklch(0.176 0.002 107) */
+  --bg-elev-2: 27 27 26; /* akaOSS --secondary   oklch(0.22 0.002 107)  */
+  --bg-elev-3: 36 36 35;
 
-  --border: 30 32 38;
-  --border-strong: 50 53 62;
+  /* white @10%/18% over the near-black ground */
+  --border: 34 34 34;
+  --border-strong: 54 54 53;
 
-  --fg: 226 228 234;
-  --fg-strong: 244 245 248;
-  --muted: 140 144 154;
-  --muted-2: 92 96 106;
+  --fg: 234 234 232; /* akaOSS --foreground        oklch(0.937 0.003 107) */
+  --fg-strong: 248 249 246;
+  --muted: 137 137 135; /* akaOSS --muted-foreground  oklch(0.63 0.004 107)  */
+  --muted-2: 94 94 91;
 
-  --accent: 120 165 250;
-  --accent-hover: 146 183 252;
-  --accent-pressed: 96 146 240;
+  --accent: 93 152 244; /* accent-blue   */
+  --accent-hover: 124 172 247;
+  --accent-pressed: 74 136 232;
+  --secondary: 179 160 236; /* accent-violet */
+  --good: 105 181 127; /* accent-green  */
+  --warn: 240 190 103; /* accent-amber  */
+  --danger: 236 115 128; /* accent-rose   */
+  --info: 179 160 236; /* accent-violet */
 
-  --secondary: 160 178 115;
-
-  --good: 110 200 140;
-  --warn: 216 165 92;
-  --danger: 232 120 105;
-  --info: 140 180 225;
-
-  --shadow-sm: 0 1px 0 rgb(0 0 0 / 0.3);
-  --shadow-md: 0 1px 2px rgb(0 0 0 / 0.4), 0 1px 1px rgb(0 0 0 / 0.25);
+  --shadow-sm: 0 0 0 0 transparent;
+  --shadow-md: 0 0 0 0 transparent;
   --shadow-lg: 0 12px 32px rgb(0 0 0 / 0.55), 0 1px 2px rgb(0 0 0 / 0.35);
 
   color-scheme: dark;

@@ -49,7 +49,7 @@ export default async function Page({
       </InlineHelp>
 
       <div className="grid gap-4 md:grid-cols-[260px_1fr]">
-        <aside className="space-y-3 rounded-lg border border-border/80 bg-bg-elev px-4 py-3 text-xs">
+        <aside className="space-y-3 rounded-lg border border-border/40 bg-bg-elev/40 px-4 py-3 text-xs">
           <Row label="Backend" value={a.based_on} />
           {"model" in a && a.model && <Row label="Model" value={a.model} />}
           {"max_tool_iterations" in a && a.max_tool_iterations && (
@@ -64,7 +64,7 @@ export default async function Page({
           {"url" in a && a.url && <Row label="URL" value={a.url} />}
           {tools.length > 0 && (
             <div>
-              <div className="text-2xs uppercase tracking-wider text-fg-muted-2">
+              <div className="label">
                 Tools
               </div>
               <ul className="mt-1.5 space-y-1">
@@ -77,8 +77,8 @@ export default async function Page({
             </div>
           )}
         </aside>
-        <div className="overflow-hidden rounded-lg border border-border/80 bg-bg-elev">
-          <div className="flex items-center justify-between border-b border-border/70 bg-bg-elev-2/40 px-3 py-2">
+        <div className="overflow-hidden rounded-lg border border-border/40 bg-bg-elev/40">
+          <div className="flex items-center justify-between border-b border-border/40 bg-bg-elev-2/40 px-3 py-2">
             <code className="font-mono text-2xs text-fg-muted-2">
               {entry.file}
             </code>
@@ -95,7 +95,7 @@ export default async function Page({
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-2">
-      <span className="text-2xs uppercase tracking-wider text-fg-muted-2">
+      <span className="label">
         {label}
       </span>
       <span className="truncate font-mono text-xs text-fg">{value}</span>

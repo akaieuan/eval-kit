@@ -56,6 +56,8 @@ const config: Config = {
       fontSize: {
         "2xs": ["10.5px", { lineHeight: "14px", letterSpacing: "0.01em" }],
       },
+      // akaOSS caps weight at 500 and leans on LIGHT (300) for display type.
+      // 450/500 stay as the medium/semibold slots; 300 is now reachable.
       fontWeight: {
         thin: "200",
         extralight: "250",

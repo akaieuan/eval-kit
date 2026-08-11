@@ -20,7 +20,7 @@ import { writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const OUT = join(dirname(fileURLToPath(import.meta.url)), "../packages/ui/src/styles/themes.css");
+const OUT = join(dirname(fileURLToPath(import.meta.url)), "../packages/ui/src/styles/tokens.css");
 
 /** Tailwind neutral scales — shadcn's "Base Color" set. */
 const BASES = {
@@ -42,11 +42,17 @@ const HUES = {
   violet: { 300:"c4b5fd",400:"a78bfa",500:"8b5cf6",600:"7c3aed",700:"6d28d9" },
 };
 
+/*
+ * Status colours carry WORDS (GATE VIOLATED, DISTRACTION), so they are body
+ * text and must clear 4.5:1 on the lightest ground. The 600 steps do not:
+ * green-600 is 3.30:1 and amber-600 is 2.94:1 on white. Both step to 700.
+ * The 400 steps are already 7-13:1 on the dark ground.
+ */
 const STATUS = {
-  red:   { l:"dc2626", d:"f87171" },
-  green: { l:"16a34a", d:"4ade80" },
-  amber: { l:"ca8a04", d:"facc15" },
-  blue:  { l:"2563eb", d:"60a5fa" },
+  red:   { l:"dc2626", d:"f87171" }, // 4.83 / 7.16
+  green: { l:"15803d", d:"4ade80" }, // 5.02 / 11.36
+  amber: { l:"a16207", d:"facc15" }, // 4.92 / 12.93
+  blue:  { l:"2563eb", d:"60a5fa" }, // 5.17 / 7.79
 };
 
 const t = (h) => `${parseInt(h.slice(0,2),16)} ${parseInt(h.slice(2,4),16)} ${parseInt(h.slice(4,6),16)}`;
@@ -162,6 +168,35 @@ function theme(name, S, H) {
   return `${lSel} {${light}\n}\n\n${dSel} {${dark}\n}`;
 }
 
+
+/** Radius, fonts and shadows do not vary by palette. */
+const SHARED = `
+:root {
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+
+  --shadow-sm: 0 0 0 0 transparent;
+  --shadow-md: 0 0 0 0 transparent;
+  --shadow-lg: 0 12px 32px rgb(0 0 0 / 0.1), 0 1px 2px rgb(0 0 0 / 0.06);
+
+  --font-sans:
+    var(--font-inter), ui-sans-serif, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", system-ui, sans-serif;
+  --font-mono:
+    var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  color-scheme: light;
+}
+
+.dark {
+  --shadow-lg: 0 12px 32px rgb(0 0 0 / 0.55), 0 1px 2px rgb(0 0 0 / 0.35);
+  color-scheme: dark;
+}
+`;
+
 const blocks = [];
 for (const [name, S] of Object.entries(BASES)) blocks.push(theme(name, S, null));
 for (const [name, H] of Object.entries(HUES)) blocks.push(theme(name, BASES.zinc, H));
@@ -183,5 +218,5 @@ const header = `/*
  * needs them. Regenerate with: node scripts/gen-themes.mjs
  */
 `;
-writeFileSync(OUT, header + "\n" + blocks.join("\n\n") + "\n");
-console.log(`themes.css — ${Object.keys(BASES).length + Object.keys(HUES).length} themes x 2 modes`);
+writeFileSync(OUT, header + SHARED + "\n" + blocks.join("\n\n") + "\n");
+console.log(`tokens.css — ${Object.keys(BASES).length + Object.keys(HUES).length} themes x 2 modes`);

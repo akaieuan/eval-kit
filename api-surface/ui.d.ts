@@ -11,25 +11,17 @@
 }): react_jsx_runtime.JSX.Element;
 }): react_jsx_runtime.JSX.Element;
 *   <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-*   machine data is mono, human voice is Inter.
-*  global (mono / 11px / 0.18em / uppercase). Not for field labels. */
 *  group; repeating it on every dimension is noise. */
-* (section meta, group headers); it is not a general-purpose label style.
 * `agent_output_preview` is rendered here for the first time. It has been
 * `computePriority` already ranks them, and the rest are visible on the right.
-* `text-xs` (61), `text-2xs` (52), `text-[13px]` (50), plus eight more — and
 * <aside> — three overlapping scroll containers, so the wheel target depended
 * A gated call with no prior approval is marked in the destructive tone at the
 * A rail row: identity, one line of content, one signal.
-* A run id, a tool name, a score, a timestamp — mono. A field label, a
 * A titled block within a page. Heading left, meta right — the akaOSS section
 * actions came first — but until now no screen showed it, so a reviewer had to
 * after a successful inline score / autosave to keep the tracker in sync.
 * alignment with the data. Exported so RunTableRow consumes the identical
-* always that it belongs to an existing role, not that the scale needs a
 * Applies the stored mode AND palette before hydration so there is no flash of
-* author which to reach for, so every route invented its own hierarchy and
-* Before this file the app used **12 distinct sizes across 199 usages** —
 * buttons — at roughly equal visual weight, for every one of ~60 unpaginated
 * computed in lib/inbox.ts and carried through the whole item shape since the
 * disturb whether you are in dark mode.
@@ -57,7 +49,6 @@
 * Mode + palette selector.
 * moment a run is traced, unlike pass rate which waits on a human. Reading
 * next?" — and everything needed to ACT on it lives in the detail pane. Status
-* none of them agreed. That is what made the type read as confusing.
 * Now the row answers exactly one question — "is this worth my attention
 * on cursor position and the rail could scroll away from the content it
 * Optional so existing callers keep working; falls back to scoredRuns.
@@ -67,11 +58,7 @@
 * region in the app.
 * rows. That is why the queue was unreadable: the overwhelm was arithmetic.
 * scrolling <section> inside AppShell's scrolling <main> inside a scrolling
-* section heading, a description — Inter. `MICRO` is a micro-eyebrow only
 * separately because they are independent axes — picking Rose should not
-* seventh entry.
-* Six roles. If a new piece of text does not fit one, the answer is almost
-* Source: akaoss/src/app/globals.css + the /demo type specimens.
 * spelled three different ways across four files, with nothing keeping them in
 * step number, title, prompt, up to three signal chips, and up to six action
 * step. Exported so a change to the header can't silently break every sticky
@@ -82,11 +69,8 @@
 * The detail half of the triage queue: everything needed to judge ONE step.
 * The first restyle pass swept these into wide-tracked uppercase mono, which
 * The rail answers "is this worth my attention next?"; this answers "what is
-* THE RULE, which the first restyle pass got wrong:
 * The run-table column template.
 * the runs table directly below showed 0/3 and 3/3 on unscored runs.
-* the top three were used interchangeably for the same roles. Nothing told an
-* The type scale.
 * This is the surface that makes mandated-gate compliance checkable by a
 * This used to render between 8 and 17 elements — a status border, a status
 * toggle can no longer express the choice. Mode and palette are stored
@@ -102,26 +86,18 @@
 /** Every palette in the registry (packages/ui/src/styles/themes.css). */
 /** If set, values below this render red, above render green; else all accent */
 /** Link form, for the home-page preview where there is no detail pane. */
-/** Machine data: ids, tool names, scores, latencies, timestamps. */
 /** Mandated gates declared on the parent task — drives the gate timeline. */
 /** Mandated gates declared on the task this step belongs to. */
 /** Micro-eyebrow above the title (mono). Use for counts/context, not prose. */
-/** Micro-eyebrow: section meta, group headers, table headers. The `.label`
 /** One line under the title. Human voice — keep it a sentence. */
-/** Page title. One per route, set by `PageHeader`. */
-/** Primary prose: prompts, agent output, descriptions the reader must read. */
 /** Rail width. Defaults to the review-rail clamp. */
 /** Ref for keyboard focus management */
 /** Resolve `system` against the OS and set `.dark` on <html>. */
 /** Right-aligned controls: buttons, toggles. */
 /** Right-aligned micro-meta on the heading row — counts, status. */
 /** RunTableRow elements. */
-/** Secondary prose and field labels. Human voice, never mono. */
-/** Section heading inside a page. */
 /** Show the word under each number. On by default for the first row in a
-/** Smallest supporting text — counts, hints, timestamps in dense rows. */
 /** Stack the control under the label (default) or inline beside it. */
-/** Sub-heading — card titles, rail group titles. */
 /** The focused item. Scrolls independently. */
 /** The page gutter + vertical rhythm. Wraps every route's content. */
 /** The scannable list. Scrolls independently. */
@@ -185,7 +161,6 @@ currentPath: string;
 declare const applyTheme: typeof applyMode;
 declare const Badge: react.ForwardRefExoticComponent<BadgeProps & react.RefAttributes<HTMLSpanElement>>;
 declare const badgeVariants: (props?: ({
-declare const BODY = "text-[13px] leading-relaxed text-fg";
 declare const Button: react.ForwardRefExoticComponent<ButtonProps & react.RefAttributes<HTMLButtonElement>>;
 declare const buttonVariants: (props?: ({
 declare const Card: react.ForwardRefExoticComponent<HTMLAttributes<HTMLDivElement> & react.RefAttributes<HTMLDivElement>>;
@@ -202,14 +177,8 @@ declare const DialogOverlay: react.ForwardRefExoticComponent<Omit<DialogPrimitiv
 declare const DialogPortal: react.FC<DialogPrimitive.DialogPortalProps>;
 declare const DialogTitle: react.ForwardRefExoticComponent<Omit<DialogPrimitive.DialogTitleProps & react.RefAttributes<HTMLHeadingElement>, "ref"> & react.RefAttributes<HTMLHeadingElement>>;
 declare const DialogTrigger: react.ForwardRefExoticComponent<DialogPrimitive.DialogTriggerProps & react.RefAttributes<HTMLButtonElement>>;
-declare const DISPLAY = "text-[22px] font-light tracking-tight text-fg-strong";
-declare const HEADING = "text-[15px] font-light tracking-tight text-fg-strong";
 declare const Input: react.ForwardRefExoticComponent<InputProps & react.RefAttributes<HTMLInputElement>>;
 declare const Kbd: react.ForwardRefExoticComponent<HTMLAttributes<HTMLElement> & react.RefAttributes<HTMLElement>>;
-declare const META = "text-[11px] text-fg-muted-2";
-declare const MICRO = "label";
-declare const MONO = "font-mono text-[12px] text-fg-muted";
-declare const MUTED = "text-[13px] leading-relaxed text-fg-muted";
 declare const PALETTES: readonly [{
 declare const Pill: react.ForwardRefExoticComponent<PillProps & react.RefAttributes<HTMLSpanElement>>;
 declare const Popover: react.FC<PopoverPrimitive.PopoverProps>;
@@ -225,7 +194,6 @@ declare const SelectItem: react.ForwardRefExoticComponent<Omit<SelectPrimitive.S
 declare const SelectTrigger: react.ForwardRefExoticComponent<Omit<SelectPrimitive.SelectTriggerProps & react.RefAttributes<HTMLButtonElement>, "ref"> & react.RefAttributes<HTMLButtonElement>>;
 declare const SelectValue: react.ForwardRefExoticComponent<SelectPrimitive.SelectValueProps & react.RefAttributes<HTMLSpanElement>>;
 declare const SHELL_HEADER_PX = 44;
-declare const SUBHEADING = "text-[13px] font-light tracking-tight text-fg-strong";
 declare const Tabs: react.ForwardRefExoticComponent<TabsPrimitive.TabsProps & react.RefAttributes<HTMLDivElement>>;
 declare const TabsContent: react.ForwardRefExoticComponent<Omit<TabsPrimitive.TabsContentProps & react.RefAttributes<HTMLDivElement>, "ref"> & react.RefAttributes<HTMLDivElement>>;
 declare const TabsList: react.ForwardRefExoticComponent<Omit<TabsPrimitive.TabsListProps & react.RefAttributes<HTMLDivElement>, "ref"> & react.RefAttributes<HTMLDivElement>>;
@@ -236,14 +204,6 @@ declare const TooltipContent: react.ForwardRefExoticComponent<Omit<TooltipPrimit
 declare const TooltipProvider: react.FC<TooltipPrimitive.TooltipProviderProps>;
 declare const TooltipRoot: react.FC<TooltipPrimitive.TooltipProps>;
 declare const TooltipTrigger: react.ForwardRefExoticComponent<TooltipPrimitive.TooltipTriggerProps & react.RefAttributes<HTMLButtonElement>>;
-declare const type_BODY: typeof BODY;
-declare const type_DISPLAY: typeof DISPLAY;
-declare const type_HEADING: typeof HEADING;
-declare const type_META: typeof META;
-declare const type_MICRO: typeof MICRO;
-declare const type_MONO: typeof MONO;
-declare const type_MUTED: typeof MUTED;
-declare const type_SUBHEADING: typeof SUBHEADING;
 declare function applyMode(mode: Mode): void;
 declare function applyPalette(palette: Palette): void;
 declare function AppShell({ sidebar, topbar, breadcrumbs, children, className, }: AppShellProps): react_jsx_runtime.JSX.Element;
@@ -291,7 +251,6 @@ declare function ToolCallDelta({ a, b, className }: ToolCallDeltaProps): react_j
 declare function Tooltip({ content, children, side, delayDuration, }: TooltipProps): react_jsx_runtime.JSX.Element;
 declare function TriagePane({ item, onScore, onAcceptPrefill, onSkip, onOpenFull, saving, }: TriagePaneProps): react_jsx_runtime.JSX.Element;
 declare function WelcomePanel({ className }: {
-declare namespace type {
 delayDuration?: number;
 delta?: {
 description?: ReactNode;
@@ -309,9 +268,8 @@ emptyDescription?: string;
 emptyTitle?: string;
 error: string;
 errorMessage?: string;
-export { AppShell, type AppShellProps, AutosaveBadge, Badge, type BadgeProps, type BreadcrumbItem, Button, type ButtonProps, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, type CommandAction, type CommandContext, CommandPalette, DashboardPage, Dialog, DialogClose, DialogContent, type DialogContentProps, DialogDescription, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, DiffPage, DiffRow, DimensionExplainer, EmptyState, type EmptyStateProps, Field, type FieldProps, GateTimeline, type GateTimelineProps, HelpMenu, type InboxItemLite, InboxRow, type InboxRowProps, InboxView, type InboxViewProps, type InitialScoreEntry, InlineHelp, type InlineHelpProps, Input, type InputProps, Kbd, type Mode, type NavItem, PALETTES, Page, PageHeader, type PageHeaderProps, type Palette, Pill, type PillProps, Popover, PopoverAnchor, PopoverContent, PopoverTrigger, type PrefillResult, ProgressRing, type ProgressRingProps, RUN_TABLE_COLUMNS, RegressionSummary, RunReviewPage, type RunReviewPageProps, RunTable, type RunTableProps, RunTableRow, SHELL_HEADER_PX, ScoreSlider, Section, type SectionProps, Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, SessionTracker, type SessionTrackerProps, SidebarNav, Sparkline, type SparklineProps, SplitPane, type SplitPaneProps, StatCard, StatCardGroup, type StatCardProps, StepReviewCard, Tabs, TabsContent, TabsList, TabsTrigger, TaskProgressItem, Textarea, type TextareaProps, type Theme, ThemeToggle, ToolCallDelta, Toolbar, Tooltip, TooltipContent, type TooltipProps, TooltipProvider, TooltipRoot, TooltipTrigger, TriagePane, type TriagePaneProps, WelcomePanel, applyMode, applyPalette, applyTheme, badgeVariants, buttonVariants, cn, isMac, modLabel, readMode, readPalette, readTheme, recordScoreInSession, shortcutLabel, themeInitScript, type };
+export { AppShell, type AppShellProps, AutosaveBadge, Badge, type BadgeProps, type BreadcrumbItem, Button, type ButtonProps, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, type CommandAction, type CommandContext, CommandPalette, DashboardPage, Dialog, DialogClose, DialogContent, type DialogContentProps, DialogDescription, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, DiffPage, DiffRow, DimensionExplainer, EmptyState, type EmptyStateProps, Field, type FieldProps, GateTimeline, type GateTimelineProps, HelpMenu, type InboxItemLite, InboxRow, type InboxRowProps, InboxView, type InboxViewProps, type InitialScoreEntry, InlineHelp, type InlineHelpProps, Input, type InputProps, Kbd, type Mode, type NavItem, PALETTES, Page, PageHeader, type PageHeaderProps, type Palette, Pill, type PillProps, Popover, PopoverAnchor, PopoverContent, PopoverTrigger, type PrefillResult, ProgressRing, type ProgressRingProps, RUN_TABLE_COLUMNS, RegressionSummary, RunReviewPage, type RunReviewPageProps, RunTable, type RunTableProps, RunTableRow, SHELL_HEADER_PX, ScoreSlider, Section, type SectionProps, Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, SessionTracker, type SessionTrackerProps, SidebarNav, Sparkline, type SparklineProps, SplitPane, type SplitPaneProps, StatCard, StatCardGroup, type StatCardProps, StepReviewCard, Tabs, TabsContent, TabsList, TabsTrigger, TaskProgressItem, Textarea, type TextareaProps, type Theme, ThemeToggle, ToolCallDelta, Toolbar, Tooltip, TooltipContent, type TooltipProps, TooltipProvider, TooltipRoot, TooltipTrigger, TriagePane, type TriagePaneProps, WelcomePanel, applyMode, applyPalette, applyTheme, badgeVariants, buttonVariants, cn, isMac, modLabel, readMode, readPalette, readTheme, recordScoreInSession, shortcutLabel, themeInitScript };
 export { DIMENSION_DESCRIPTIONS, DIMENSION_LABELS, DIMENSION_RUBRIC_EXAMPLES } from '@eval-kit/core';
-export { type_BODY as BODY, type_DISPLAY as DISPLAY, type_HEADING as HEADING, type_META as META, type_MICRO as MICRO, type_MONO as MONO, type_MUTED as MUTED, type_SUBHEADING as SUBHEADING };
 external?: boolean;
 eyebrow?: ReactNode;
 focused?: boolean;

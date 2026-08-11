@@ -1,6 +1,4 @@
 @import "@eval-kit/ui/styles.css";
-/* Palette registry — must follow tokens.css so [data-theme] blocks win. */
-@import "@eval-kit/ui/themes.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

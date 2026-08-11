@@ -19,7 +19,7 @@ import { describe, expect, it } from "vitest";
 
 const DIR = dirname(fileURLToPath(import.meta.url));
 const TOKENS = readFileSync(join(DIR, "tokens.css"), "utf8");
-const THEMES = readFileSync(join(DIR, "themes.css"), "utf8");
+const THEMES = TOKENS; // palettes and shared tokens live in one stylesheet
 
 /** Every palette in the generated registry. */
 const PALETTES = [
@@ -27,7 +27,12 @@ const PALETTES = [
   "red", "rose", "orange", "green", "blue", "yellow", "violet",
 ] as const;
 
-/** Pull a triple from a specific palette block in themes.css. */
+/**
+ * Read a triple from a palette block. Scans EVERY block matching the selector
+ * and returns the first that defines the token — tokens.css emits a shared
+ * `:root` (radius, fonts, shadows) before the neutral palette's `:root`, so
+ * taking the first match alone finds a block with no colours in it.
+ */
 function paletteToken(
   palette: string,
   name: string,
@@ -39,22 +44,27 @@ function paletteToken(
       : theme === "light"
         ? `[data-theme="${palette}"] {`
         : `[data-theme="${palette}"].dark {`;
-  const start = THEMES.indexOf(sel);
-  if (start < 0) throw new Error(`block ${sel} not found`);
-  const block = THEMES.slice(start, THEMES.indexOf("}", start));
-  const m = new RegExp(`--${name}:\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)\\s*;`).exec(block);
-  if (!m) throw new Error(`--${name} not found in ${sel}`);
-  return [Number(m[1]), Number(m[2]), Number(m[3])];
+  const re = new RegExp(`--${name}:\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)\\s*;`);
+  let from = 0;
+  for (;;) {
+    const start = THEMES.indexOf(sel, from);
+    if (start < 0) break;
+    // A bare `.dark {` also matches `[data-theme="x"].dark {`; skip those when
+    // we asked for the default palette.
+    const prevChar = THEMES[start - 1];
+    const isScoped = prevChar === "]" || prevChar === '"';
+    if (!(palette === "neutral" && theme === "dark" && isScoped)) {
+      const block = THEMES.slice(start, THEMES.indexOf("}", start));
+      const m = re.exec(block);
+      if (m) return [Number(m[1]), Number(m[2]), Number(m[3])];
+    }
+    from = start + sel.length;
+  }
+  throw new Error(`--${name} not found in ${sel} (${palette}/${theme})`);
 }
 
-/** Pull an `R G B` triple out of a given block of tokens.css. */
 function token(name: string, theme: "light" | "dark"): [number, number, number] {
-  // :root is light; the .dark block follows it.
-  const darkIdx = TOKENS.indexOf(".dark {");
-  const block = theme === "light" ? TOKENS.slice(0, darkIdx) : TOKENS.slice(darkIdx);
-  const m = new RegExp(`--${name}:\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)\\s*;`).exec(block);
-  if (!m) throw new Error(`token --${name} not found in ${theme} block`);
-  return [Number(m[1]), Number(m[2]), Number(m[3])];
+  return paletteToken("neutral", name, theme);
 }
 
 function luminance([r, g, b]: [number, number, number]): number {

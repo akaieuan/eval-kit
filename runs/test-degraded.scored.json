@@ -1,0 +1,157 @@
+{
+  "suite_id": "research-agent-v1",
+  "suite_version": "0.1.0",
+  "run_id": "06941f4d-ea77-4e12-a028-8eb81e52a3a2",
+  "started_at": "2026-04-23T02:31:23.727Z",
+  "ended_at": "2026-04-23T02:31:23.841Z",
+  "adapter": {
+    "name": "mock",
+    "model": "mock-degraded",
+    "config": {
+      "degraded": true,
+      "latency_ms": 10
+    }
+  },
+  "task_results": [
+    {
+      "task_id": "task-001-superdeterminism",
+      "step_results": [
+        {
+          "step_n": 1,
+          "agent_tool_calls": [],
+          "agent_final_output": "I'm not sure, and I couldn't attempt the task.",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": false,
+            "distraction_caught": null
+          },
+          "score": null
+        },
+        {
+          "step_n": 2,
+          "agent_tool_calls": [],
+          "agent_final_output": "I'm not sure, and I couldn't attempt the task.",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": false,
+            "distraction_caught": null
+          },
+          "score": null
+        },
+        {
+          "step_n": 3,
+          "agent_tool_calls": [],
+          "agent_final_output": "I'm not sure, and I couldn't attempt the task.",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": false,
+            "distraction_caught": null
+          },
+          "score": null
+        },
+        {
+          "step_n": 4,
+          "agent_tool_calls": [],
+          "agent_final_output": "I'm not sure, and I couldn't attempt the task.",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": false,
+            "distraction_caught": null
+          },
+          "score": null
+        }
+      ]
+    },
+    {
+      "task_id": "task-002-grammar-audit",
+      "step_results": [
+        {
+          "step_n": 1,
+          "agent_tool_calls": [],
+          "agent_final_output": "I'm not sure, and I couldn't attempt the task.",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": false,
+            "distraction_caught": null
+          },
+          "score": null
+        }
+      ]
+    },
+    {
+      "task_id": "task-003-future-papers",
+      "step_results": [
+        {
+          "step_n": 1,
+          "agent_tool_calls": [],
+          "agent_final_output": "I'm not sure, and I couldn't attempt the task.",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": false,
+            "distraction_caught": true
+          },
+          "score": null
+        }
+      ]
+    },
+    {
+      "task_id": "task-004-cover-letter",
+      "step_results": [
+        {
+          "step_n": 1,
+          "agent_tool_calls": [],
+          "agent_final_output": "I'm not sure, and I couldn't attempt the task.",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": false,
+            "distraction_caught": null
+          },
+          "score": null
+        },
+        {
+          "step_n": 2,
+          "agent_tool_calls": [],
+          "agent_final_output": "I'm not sure, and I couldn't attempt the task.",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": false,
+            "distraction_caught": null
+          },
+          "score": null
+        }
+      ]
+    },
+    {
+      "task_id": "task-005-quote-finding",
+      "step_results": [
+        {
+          "step_n": 1,
+          "agent_tool_calls": [],
+          "agent_final_output": "I'm not sure, and I couldn't attempt the task.",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": false,
+            "distraction_caught": null
+          },
+          "score": null
+        }
+      ]
+    },
+    {
+      "task_id": "task-006-current-weather",
+      "step_results": [
+        {
+          "step_n": 1,
+          "agent_tool_calls": [],
+          "agent_final_output": "I'm not sure, and I couldn't attempt the task.",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": false,
+            "distraction_caught": null
+          },
+          "score": null
+        }
+      ]
+    }
+  ]
+}

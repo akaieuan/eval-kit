@@ -1,0 +1,297 @@
+{
+  "suite_id": "research-agent-v1",
+  "suite_version": "0.1.0",
+  "run_id": "ad2ca26b-2c4b-4244-9530-fd6882d7ee63",
+  "started_at": "2026-04-23T02:31:18.306Z",
+  "ended_at": "2026-04-23T02:31:18.418Z",
+  "adapter": {
+    "name": "mock",
+    "model": "mock-1",
+    "config": {
+      "degraded": false,
+      "latency_ms": 10
+    }
+  },
+  "task_results": [
+    {
+      "task_id": "task-001-superdeterminism",
+      "step_results": [
+        {
+          "step_n": 1,
+          "agent_tool_calls": [
+            {
+              "tool": "read_pdf",
+              "args": {
+                "prompt": "What is the paper [@source:superdeterminism-guide.pdf] about, who wrote it, when was it published? Also highlight 10 findings in the paper that show claims about what superdeterminism is.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "take_detailed_notes",
+              "args": {
+                "prompt": "What is the paper [@source:superdeterminism-guide.pdf] about, who wrote it, when was it published? Also highlight 10 findings in the paper that show claims about what superdeterminism is.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            }
+          ],
+          "agent_final_output": "Mock response to: What is the paper [@source:superdeterminism-guide.pdf] about, who wrote it, when was it published? Also highlight 10 fin",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": true,
+            "distraction_caught": null
+          },
+          "score": null
+        },
+        {
+          "step_n": 2,
+          "agent_tool_calls": [
+            {
+              "tool": "academic_search",
+              "args": {
+                "prompt": "Find counter-positioned academic papers that challenge the superdeterminism claims in the source paper.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            }
+          ],
+          "agent_final_output": "Mock response to: Find counter-positioned academic papers that challenge the superdeterminism claims in the source paper.\n",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": true,
+            "distraction_caught": null
+          },
+          "score": null
+        },
+        {
+          "step_n": 3,
+          "agent_tool_calls": [
+            {
+              "tool": "take_detailed_notes",
+              "args": {
+                "prompt": "Take detailed notes on the counter-positioned papers."
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            }
+          ],
+          "agent_final_output": "Mock response to: Take detailed notes on the counter-positioned papers.",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": true,
+            "distraction_caught": null
+          },
+          "score": null
+        },
+        {
+          "step_n": 4,
+          "agent_tool_calls": [
+            {
+              "tool": "canvas_create",
+              "args": {
+                "prompt": "Generate a paper in a new canvas that argues superdeterminism is the correct interpretation, using the notes from both sides.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            }
+          ],
+          "agent_final_output": "Mock response to: Generate a paper in a new canvas that argues superdeterminism is the correct interpretation, using the notes from both s",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": true,
+            "distraction_caught": null
+          },
+          "score": null
+        }
+      ]
+    },
+    {
+      "task_id": "task-002-grammar-audit",
+      "step_results": [
+        {
+          "step_n": 1,
+          "agent_tool_calls": [
+            {
+              "tool": "take_detailed_notes",
+              "args": {
+                "prompt": "Go through my draft [@source:draft.pdf] and highlight every grammatical error you find and provide a fix to it in a highlighted note.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            }
+          ],
+          "agent_final_output": "Mock response to: Go through my draft [@source:draft.pdf] and highlight every grammatical error you find and provide a fix to it in a high",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": true,
+            "distraction_caught": null
+          },
+          "score": null
+        }
+      ]
+    },
+    {
+      "task_id": "task-003-future-papers",
+      "step_results": [
+        {
+          "step_n": 1,
+          "agent_tool_calls": [
+            {
+              "tool": "academic_search",
+              "args": {
+                "prompt": "Search for academic papers published in 2099."
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            }
+          ],
+          "agent_final_output": "Mock response to: Search for academic papers published in 2099.",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": true,
+            "distraction_caught": false
+          },
+          "score": {
+            "step_n": 1,
+            "tool_match": true,
+            "golden_truth": 1,
+            "distraction_caught": false,
+            "dimensions": {},
+            "reviewer_notes": "",
+            "reviewer_id": "local",
+            "reviewed_at": "2026-04-23T11:55:43.637Z",
+            "pre_filled": false
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "task-004-cover-letter",
+      "step_results": [
+        {
+          "step_n": 1,
+          "agent_tool_calls": [
+            {
+              "tool": "web_search",
+              "args": {
+                "prompt": "Help me find entry-level marketing jobs in NYC posted recently."
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            }
+          ],
+          "agent_final_output": "Mock response to: Help me find entry-level marketing jobs in NYC posted recently.",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": true,
+            "distraction_caught": null
+          },
+          "score": null
+        },
+        {
+          "step_n": 2,
+          "agent_tool_calls": [
+            {
+              "tool": "document_create",
+              "args": {
+                "prompt": "I need to write a cover letter for these jobs — draft one that would help me stand out.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            }
+          ],
+          "agent_final_output": "Mock response to: I need to write a cover letter for these jobs — draft one that would help me stand out.\n",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": true,
+            "distraction_caught": null
+          },
+          "score": null
+        }
+      ]
+    },
+    {
+      "task_id": "task-005-quote-finding",
+      "step_results": [
+        {
+          "step_n": 1,
+          "agent_tool_calls": [
+            {
+              "tool": "read_pdf",
+              "args": {
+                "prompt": "Find direct quotes across [@source:paper-a.pdf] and [@source:paper-b.pdf] that support the claim \"observer effects are ontologically real.\" Give page numbers.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            },
+            {
+              "tool": "take_detailed_notes",
+              "args": {
+                "prompt": "Find direct quotes across [@source:paper-a.pdf] and [@source:paper-b.pdf] that support the claim \"observer effects are ontologically real.\" Give page numbers.\n"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            }
+          ],
+          "agent_final_output": "Mock response to: Find direct quotes across [@source:paper-a.pdf] and [@source:paper-b.pdf] that support the claim \"observer effects are o",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": true,
+            "distraction_caught": null
+          },
+          "score": null
+        }
+      ]
+    },
+    {
+      "task_id": "task-006-current-weather",
+      "step_results": [
+        {
+          "step_n": 1,
+          "agent_tool_calls": [
+            {
+              "tool": "web_search",
+              "args": {
+                "prompt": "What's the weather like in Brooklyn right now?"
+              },
+              "result": {
+                "ok": true,
+                "mock": true
+              }
+            }
+          ],
+          "agent_final_output": "Mock response to: What's the weather like in Brooklyn right now?",
+          "latency_ms": 10,
+          "auto_score": {
+            "tool_match": true,
+            "distraction_caught": null
+          },
+          "score": null
+        }
+      ]
+    }
+  ]
+}

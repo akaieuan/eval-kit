@@ -1,5 +1,10 @@
 // Primitives
 export * from "./components/primitives/index.js";
+// Layout primitives — page chrome. Routes should never hand-roll gutters,
+// title blocks, section rhythm, or filter rows again.
+export * from "./components/layout/index.js";
+// The type scale: six named roles. See lib/type.ts for the rule.
+export * as type from "./lib/type.js";
 // Utilities
 export { cn } from "./lib/cn.js";
 export { isMac, modLabel, shortcutLabel } from "./lib/kbd.js";

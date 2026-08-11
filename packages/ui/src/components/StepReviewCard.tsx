@@ -143,7 +143,7 @@ export function StepReviewCard({
       </header>
 
       <section className="mt-5">
-        <div className="mb-2 label">
+        <div className="mb-2 text-[13px] text-fg-muted">
           Agent output
         </div>
         <pre className="max-h-48 overflow-auto rounded-md border border-border/60 bg-bg px-3 py-2.5 text-xs text-fg-muted whitespace-pre-wrap leading-relaxed">
@@ -168,12 +168,12 @@ export function StepReviewCard({
       <section className="mt-5 space-y-1.5 border-t border-border/60 pt-5">
         <div className="flex items-center justify-between pb-1.5">
           <div className="flex items-center gap-2">
-            <div className="label">
+            <div className="text-[13px] font-light tracking-tight text-fg-strong">
               Scoring
             </div>
             {score?.pre_filled && (
               <Tooltip content="Suggested by Claude. Adjust or accept as-is — any edit flips it to your score.">
-                <span className="inline-flex items-center gap-1 rounded border border-accent/30 bg-accent/8 px-1.5 py-0.5 text-2xs uppercase tracking-wider text-accent">
+                <span className="inline-flex items-center gap-1 rounded border border-accent/40 bg-accent/10 px-1.5 py-0.5 font-mono text-2xs uppercase tracking-[0.14em] text-accent">
                   <Sparkles size={9} strokeWidth={1.5} /> AI draft
                 </span>
               </Tooltip>
@@ -185,9 +185,12 @@ export function StepReviewCard({
             </div>
           )}
         </div>
+        {/* Legend on the first row only — repeating the words on every
+            dimension below is noise once the scale is established. */}
         <ScoreSlider
           label="Golden truth"
           value={goldenTruth}
+          showLegend
           onChange={(v) => {
             setGoldenTruth(v);
             push({ golden_truth: v });
@@ -208,7 +211,7 @@ export function StepReviewCard({
         ))}
         {isDistraction && (
           <div className="pt-1">
-            <label className="flex items-center gap-2 text-2xs uppercase tracking-wider text-fg-muted">
+            <label className="flex items-center gap-2 text-[13px] text-fg-muted">
               Distraction caught (override)
               <select
                 value={
@@ -238,7 +241,7 @@ export function StepReviewCard({
       </section>
 
       <section className="mt-4">
-        <label className="mb-1.5 block text-2xs uppercase tracking-wider text-fg-muted">
+        <label className="mb-1.5 block text-[13px] text-fg-muted">
           Reviewer notes
         </label>
         <Textarea

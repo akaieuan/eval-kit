@@ -10,21 +10,52 @@ export interface ScoreSliderProps {
   disabled?: boolean;
   dimension?: Dimension;
   compact?: boolean;
+  /** Show the word under each number. On by default for the first row in a
+   *  group; repeating it on every dimension is noise. */
+  showLegend?: boolean;
 }
 
-const RUBRIC: { value: RubricScore; label: string; tone: string }[] = [
-  { value: 0, label: "0", tone: "data-[selected=true]:text-danger data-[selected=true]:border-danger/50 data-[selected=true]:bg-danger/5" },
-  { value: 1, label: "1", tone: "data-[selected=true]:text-warn data-[selected=true]:border-warn/50 data-[selected=true]:bg-warn/5" },
-  { value: 2, label: "2", tone: "data-[selected=true]:text-info data-[selected=true]:border-info/50 data-[selected=true]:bg-info/5" },
-  { value: 3, label: "3", tone: "data-[selected=true]:text-good data-[selected=true]:border-good/50 data-[selected=true]:bg-good/5" },
+/*
+ * The rubric control. This is the single most-repeated action in the product —
+ * a reviewer hits it once per dimension per step, thousands of times across a
+ * corpus — so it gets real targets and a legible selected state rather than
+ * spreadsheet cells.
+ *
+ * Tone runs cold-to-warm across the scale (danger → warn → info → good) and is
+ * applied ONLY when selected: unselected options stay neutral so the row reads
+ * as a question, not as four competing signals. Accents stay punctuation.
+ */
+const RUBRIC: {
+  value: RubricScore;
+  word: string;
+  hint: string;
+  tone: string;
+}[] = [
+  {
+    value: 0,
+    word: "missed",
+    hint: "0 — didn't attempt, or wrong",
+    tone: "data-[selected=true]:text-danger data-[selected=true]:border-danger/40 data-[selected=true]:bg-danger/10",
+  },
+  {
+    value: 1,
+    word: "partial",
+    hint: "1 — partial, major gaps",
+    tone: "data-[selected=true]:text-warn data-[selected=true]:border-warn/40 data-[selected=true]:bg-warn/10",
+  },
+  {
+    value: 2,
+    word: "mostly",
+    hint: "2 — mostly correct, minor gaps",
+    tone: "data-[selected=true]:text-info data-[selected=true]:border-info/40 data-[selected=true]:bg-info/10",
+  },
+  {
+    value: 3,
+    word: "full",
+    hint: "3 — fully hit the golden truth",
+    tone: "data-[selected=true]:text-good data-[selected=true]:border-good/40 data-[selected=true]:bg-good/10",
+  },
 ];
-
-const DESCRIPTIONS: Record<RubricScore, string> = {
-  0: "0 — fail",
-  1: "1 — partial",
-  2: "2 — mostly",
-  3: "3 — full",
-};
 
 export function ScoreSlider({
   label,
@@ -33,16 +64,31 @@ export function ScoreSlider({
   disabled,
   dimension,
   compact,
+  showLegend = false,
 }: ScoreSliderProps) {
   return (
-    <div className={cn("flex items-center gap-3", compact && "py-0.5")}>
-      <div className="flex min-w-0 flex-1 items-center gap-1.5">
-        <div className="truncate label">
-          {label}
-        </div>
+    <div
+      className={cn(
+        "flex flex-wrap items-center justify-between gap-x-6 gap-y-2",
+        compact ? "py-1" : "py-1.5",
+      )}
+    >
+      {/* Human voice: the dimension name is Inter, sentence case. Only
+          machine-generated strings get mono in this system. */}
+      {/* No truncate: in the narrow review column "Collaborative performance"
+          was clipping to "Collaborativ…". The row already wraps, so the label
+          takes a second line rather than losing the word that identifies what
+          is being scored. */}
+      <div className="flex min-w-[8rem] flex-1 items-center gap-1.5">
+        <span className="text-[13px] leading-snug text-fg-muted">{label}</span>
         {dimension && <DimensionExplainer dimension={dimension} />}
       </div>
-      <div className="flex gap-1" role="radiogroup" aria-label={label}>
+
+      <div
+        className="flex items-stretch gap-1"
+        role="radiogroup"
+        aria-label={label}
+      >
         {RUBRIC.map((opt) => (
           <button
             key={opt.value}
@@ -52,13 +98,23 @@ export function ScoreSlider({
             disabled={disabled}
             onClick={() => onChange(opt.value)}
             data-selected={value === opt.value}
-            title={DESCRIPTIONS[opt.value]}
+            title={opt.hint}
             className={cn(
-              "h-6 w-7 rounded-md border border-border bg-bg-elev text-xs font-mono text-fg-muted-2 transition-colors hover:border-border-strong hover:text-fg",
+              "group flex min-w-[2.75rem] flex-col items-center justify-center gap-0.5 rounded-md border border-border/60 px-2 py-1.5",
+              "text-fg-muted-2 transition-all",
+              "hover:border-border-strong hover:bg-bg-elev-2/60 hover:text-fg",
+              "focus-visible:focus-ring disabled:pointer-events-none disabled:opacity-40",
               opt.tone,
             )}
           >
-            {opt.label}
+            <span className="font-mono text-[13px] leading-none tabular-nums">
+              {opt.value}
+            </span>
+            {showLegend && (
+              <span className="text-[9px] leading-none tracking-wide opacity-70">
+                {opt.word}
+              </span>
+            )}
           </button>
         ))}
       </div>

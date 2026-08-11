@@ -55,7 +55,7 @@ export default async function Page({
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="q"
-            className="label"
+            className="text-[13px] text-fg-muted"
           >
             Search
           </label>
@@ -70,7 +70,7 @@ export default async function Page({
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="status"
-            className="label"
+            className="text-[13px] text-fg-muted"
           >
             Status
           </label>

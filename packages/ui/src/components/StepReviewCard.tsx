@@ -2,6 +2,7 @@
 import type {
   Dimension,
   EvalStep,
+  MandatedGate,
   RubricScore,
   StepResult,
   StepScore,
@@ -15,6 +16,7 @@ import { Kbd } from "./primitives/kbd.js";
 import { Tooltip } from "./primitives/tooltip.js";
 import { Textarea } from "./primitives/textarea.js";
 import { DIMENSION_LABELS } from "./review/dimension-copy.js";
+import { GateTimeline } from "./review/GateTimeline.js";
 import { ScoreSlider } from "./ScoreSlider.js";
 
 export interface StepReviewCardProps {
@@ -22,6 +24,8 @@ export interface StepReviewCardProps {
   result: StepResult;
   dimensions: Dimension[];
   isDistraction: boolean;
+  /** Mandated gates declared on the parent task — drives the gate timeline. */
+  mandatedGates?: MandatedGate[];
   score: StepScore | null;
   reviewerId: string;
   onChange: (partial: Partial<StepScore> & { step_n: number }) => void;
@@ -35,6 +39,7 @@ export function StepReviewCard({
   result,
   dimensions,
   isDistraction,
+  mandatedGates = [],
   score,
   reviewerId,
   onChange,
@@ -149,20 +154,14 @@ export function StepReviewCard({
         <pre className="max-h-48 overflow-auto rounded-md border border-border/60 bg-bg px-3 py-2.5 text-xs text-fg-muted whitespace-pre-wrap leading-relaxed">
           {result.agent_final_output}
         </pre>
-        {result.agent_tool_calls.length > 0 && (
-          <details className="mt-2 text-xs">
-            <summary className="cursor-pointer text-fg-muted-2 hover:text-fg">
-              Tool calls ({result.agent_tool_calls.length})
-            </summary>
-            <ul className="mt-2 space-y-1 pl-3">
-              {result.agent_tool_calls.map((tc, i) => (
-                <li key={i} className="font-mono text-xs text-fg-muted">
-                  <code>{tc.tool}</code>
-                </li>
-              ))}
-            </ul>
-          </details>
-        )}
+      </section>
+
+      <section className="mt-5">
+        {/* The trace, in order, with gate calls interleaved. Ordering IS the
+            compliance claim, so it is drawn rather than summarised — a
+            reviewer can see approval precede the action, or fail to. */}
+        <div className="mb-2 text-[13px] text-fg-muted">Trace</div>
+        <GateTimeline result={result} mandatedGates={mandatedGates} />
       </section>
 
       <section className="mt-5 space-y-1.5 border-t border-border/60 pt-5">

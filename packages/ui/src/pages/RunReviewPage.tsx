@@ -403,6 +403,7 @@ export function RunReviewPage({
                     result={sr}
                     dimensions={dims}
                     isDistraction={activeTask.is_distraction}
+                    mandatedGates={activeTask.mandated_gates}
                     score={currentScore}
                     reviewerId={reviewerId}
                     focused={isFocused}

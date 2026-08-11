@@ -1,0 +1,112 @@
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { describe, expect, it } from "vitest";
+
+/**
+ * Contrast is a build-time property of the tokens, so it is tested like one.
+ *
+ * This exists because a token rename silently destroyed readability across the
+ * whole app: shadcn's `--muted` is a SURFACE, eval-kit's `--muted` had been the
+ * muted FOREGROUND, and after the contract landed every muted label rendered
+ * at 26,26,25 on a 10,10,9 ground. Nothing failed — not the build, not
+ * typecheck, not a single test — because no check knew what these values are
+ * FOR. `--muted-2` was independently below AA on every surface (2.5–3.6:1) and
+ * had been since long before that.
+ *
+ * WCAG 2.1 AA: 4.5:1 for body text, 3:1 for large text and UI boundaries.
+ */
+
+const TOKENS = readFileSync(
+  join(dirname(fileURLToPath(import.meta.url)), "tokens.css"),
+  "utf8",
+);
+
+/** Pull an `R G B` triple out of a given block of tokens.css. */
+function token(name: string, theme: "light" | "dark"): [number, number, number] {
+  // :root is light; the .dark block follows it.
+  const darkIdx = TOKENS.indexOf(".dark {");
+  const block = theme === "light" ? TOKENS.slice(0, darkIdx) : TOKENS.slice(darkIdx);
+  const m = new RegExp(`--${name}:\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)\\s*;`).exec(block);
+  if (!m) throw new Error(`token --${name} not found in ${theme} block`);
+  return [Number(m[1]), Number(m[2]), Number(m[3])];
+}
+
+function luminance([r, g, b]: [number, number, number]): number {
+  const f = (v: number) => {
+    const s = v / 255;
+    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  };
+  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+}
+
+function contrast(
+  a: [number, number, number],
+  b: [number, number, number],
+): number {
+  const la = luminance(a);
+  const lb = luminance(b);
+  return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+}
+
+/**
+ * Surfaces that body text actually lands on. `secondary` and `accent` are
+ * excluded deliberately: they are hover/fill states that carry CONTROL labels,
+ * not prose, and shadcn's own preset puts muted-foreground at 4.35:1 and
+ * 4.01:1 on them. Those are checked at the 3:1 UI threshold below rather than
+ * silently held to a bar the upstream theme does not meet.
+ */
+const SURFACES = ["bg", "sidebar", "card"] as const;
+const UI_SURFACES = ["secondary", "accent"] as const;
+/** Text tokens and the minimum ratio each must clear on every surface. */
+const TEXT: { name: string; min: number }[] = [
+  { name: "fg", min: 4.5 },
+  { name: "fg-strong", min: 4.5 },
+  { name: "muted-foreground", min: 4.5 },
+  { name: "muted-2", min: 4.5 },
+];
+/** Status colours carry words (GATE VIOLATED, DISTRACTION), so they are body text. */
+const STATUS: string[] = ["good", "warn", "danger", "brand"];
+
+describe.each(["light", "dark"] as const)("%s theme contrast", (theme) => {
+  it.each(TEXT)("$name clears $min:1 on every surface", ({ name, min }) => {
+    const fg = token(name, theme);
+    for (const s of SURFACES) {
+      const ratio = contrast(fg, token(s, theme));
+      expect(
+        ratio,
+        `--${name} on --${s} is ${ratio.toFixed(2)}:1, below ${min}:1`,
+      ).toBeGreaterThanOrEqual(min);
+    }
+  });
+
+  it.each(TEXT)("$name clears the 3:1 UI bar on hover/fill surfaces", ({ name }) => {
+    const fg = token(name, theme);
+    for (const s of UI_SURFACES) {
+      const ratio = contrast(fg, token(s, theme));
+      expect(
+        ratio,
+        `--${name} on --${s} is ${ratio.toFixed(2)}:1, below 3:1`,
+      ).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it.each(STATUS)("status colour %s clears 4.5:1 on bg and card", (name) => {
+    const fg = token(name, theme);
+    for (const s of ["bg", "card"] as const) {
+      const ratio = contrast(fg, token(s, theme));
+      expect(
+        ratio,
+        `--${name} on --${s} is ${ratio.toFixed(2)}:1`,
+      ).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it("surfaces form a visible elevation ladder", () => {
+    // Chrome must be distinguishable from content — the whole reason the
+    // sidebar family was added. Adjacent steps need a real delta.
+    const bg = luminance(token("bg", theme));
+    const sidebar = luminance(token("sidebar", theme));
+    expect(Math.abs(sidebar - bg)).toBeGreaterThan(0.0005);
+  });
+});

@@ -1,118 +1,96 @@
 /*
- * eval-kit design tokens — the akaOSS palette.
+ * eval-kit design tokens — the shadcn theme contract.
  *
- * SOURCE OF TRUTH: akaoss/src/app/globals.css. Every value below is that
- * file's oklch converted to sRGB; the akaOSS hex table (docs at
- * akaoss/src/app/demo) is the check — #0d0d0c, #5e5e5b, #1d6bde, #eaeae8,
- * #898987, #f0be67 all reproduce exactly. If akaOSS retints, re-derive from
- * there rather than nudging these by eye.
+ * SOURCE: the shadcn theme preset at
+ *   https://ui.shadcn.com/create?preset=bcivVKXQ
+ * imported directly. Values were read from the live preset (which serves
+ * CIELAB) and converted to sRGB, because eval-kit is on Tailwind v3, whose
+ * alpha syntax (`bg-card/40`) requires bare "R G B" triples rather than a
+ * colour function.
  *
- * Why triples and not oklch: akaOSS is Tailwind v4 (CSS-first, oklch native);
- * eval-kit is Tailwind v3, whose alpha syntax (`bg-accent/20`) needs
- * `rgb(var(--x) / <alpha-value>)`, so the vars must be bare "R G B".
+ * The full contract is here — background, card, popover, primary, secondary,
+ * muted, accent, destructive, border, input, ring, chart-1..5, and the whole
+ * sidebar family — so shadcn and registry components drop in with no mapping,
+ * and chrome finally has a surface separate from content.
  *
- * The palette's rule: every surface sits on hue 107 at near-zero chroma.
- * Hierarchy comes from lightness and alpha, NEVER from hue. The five accents
- * are punctuation — dots, rules, a date, a status word — never fills. Amber
- * is 3.27:1 on light paper, which is why accents never carry small text.
+ * TWO RULES worth keeping in mind when editing:
+ *  1. `accent` is the HOVER/active surface and `secondary` is a low-emphasis
+ *     fill. Neither is a brand colour. eval-kit's blue is `--brand`.
+ *  2. `muted` is a SURFACE; the muted TEXT colour is `muted-foreground`.
+ *     Confusing the two made every label near-black on a near-black ground,
+ *     which is why tokens.contrast.test.ts exists and runs with the suite.
  *
- * Base (:root) = LIGHT. `.dark` on <html> flips to dark, and dark is default.
+ * Base (:root) = LIGHT. `.dark` on <html> flips to dark; dark is the default.
  */
 
 :root {
-  /* Warm paper. Cards read as lifted near-white against a grayer ground. */
-  --bg: 240 240 238; /* akaOSS --background  oklch(0.955 0.003 107) */
-  --bg-elev: 253 253 251; /* akaOSS --card        oklch(0.993 0.002 107) */
-  --bg-elev-2: 230 230 228; /* akaOSS --muted       oklch(0.925 0.003 107) */
-  --bg-elev-3: 222 222 220;
+  --background: 255 255 255;
+  --foreground: 0 0 0;
+  --card: 255 255 255;
+  --card-foreground: 0 0 0;
+  --popover: 255 255 255;
+  --popover-foreground: 0 0 0;
+  --primary: 0 0 0;
+  --primary-foreground: 250 250 250;
+  --secondary: 245 245 245;
+  --secondary-foreground: 23 23 23;
+  --muted: 245 245 245;
+  --muted-foreground: 115 115 115;
+  --accent: 245 245 245;
+  --accent-foreground: 23 23 23;
+  --destructive: 235 0 5;
+  --destructive-foreground: 250 250 250;
+  --border: 229 229 229;
+  --input: 229 229 229;
+  --ring: 161 161 161;
 
-  /* Composited from akaOSS's alpha borders (ink @14%/18%/20% over paper) —
-     eval-kit components apply their own /60–/80 on top of these. */
-  --border: 210 210 208;
-  --border-strong: 197 197 195;
+  --chart-1: 126 198 255;
+  --chart-2: 0 131 255;
+  --chart-3: 0 98 251;
+  --chart-4: 0 77 229;
+  --chart-5: 0 64 184;
 
-  --fg: 13 13 12; /* akaOSS --foreground        oklch(0.16 0.002 107) */
-  --fg-strong: 3 3 3;
-  --muted: 94 94 91; /* akaOSS --muted-foreground  oklch(0.48 0.004 107) */
-  --muted-2: 134 134 132;
+  --sidebar: 250 250 250;
+  --sidebar-foreground: 0 0 0;
+  --sidebar-primary: 23 23 23;
+  --sidebar-primary-foreground: 250 250 250;
+  --sidebar-accent: 245 245 245;
+  --sidebar-accent-foreground: 23 23 23;
+  --sidebar-border: 229 229 229;
+  --sidebar-ring: 161 161 161;
 
-  /* shadcn semantics: `accent` is the HOVER/active surface and `secondary`
-     is a low-emphasis filled surface. Neither is a brand colour. eval-kit's
-     blue lives in --brand, which is akaOSS's --accent-blue. Getting this
-     backwards is what left chrome and content sharing one surface. */
-  --accent: 232 232 230;
-  --accent-foreground: 27 27 26;
-  --secondary: 230 230 228;
-  --secondary-foreground: 27 27 26;
-  --muted: 230 230 228;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius: 10px; /* preset --radius: 0.625rem */
+  --radius-lg: 14px;
+  --radius-xl: 18px;
 
-  /* Brand + status. The five akaOSS accents; punctuation, never fills. */
-  --brand: 29 107 222; /* accent-blue   */
-  --brand-hover: 45 120 232;
-  --brand-pressed: 22 92 196;
-  --good: 55 114 73; /* accent-green  */
-  --warn: 179 121 3; /* accent-amber  */
-  --danger: 198 73 91; /* accent-rose   */
-  --info: 113 82 181; /* accent-violet */
+  /* ── eval-kit semantics layered on the contract ───────────────────────────
+     Elevation aliases the app already uses, pointed at contract surfaces so
+     both vocabularies stay in step. */
+  --bg: 255 255 255;
+  --bg-elev: 250 250 250;
+  --bg-elev-2: 245 245 245;
+  --bg-elev-3: 235 235 235;
+  --fg: 0 0 0;
+  --fg-strong: 0 0 0;
+  --muted-2: 115 115 115; /* = muted-foreground; see contrast test */
+  --border-strong: 200 200 200;
 
-  /* Chart series — the five accents in a fixed order so a sparkline in one
-     surface matches a chart in another. */
-  --chart-1: 29 107 222;
-  --chart-2: 55 114 73;
-  --chart-3: 179 121 3;
-  --chart-4: 198 73 91;
-  --chart-5: 113 82 181;
-
-  /* Sidebar. Chrome is a DIFFERENT surface from content — this is the token
-     family that was missing, and why the app read as one flat plane. */
-  --sidebar: 246 246 244;
-  --sidebar-foreground: 13 13 12;
-  --sidebar-primary: 20 20 19;
-  --sidebar-primary-foreground: 250 250 248;
-  --sidebar-accent: 230 230 228;
-  --sidebar-accent-foreground: 27 27 26;
-  --sidebar-border: 210 210 208;
-  --sidebar-ring: 94 94 91;
-
-  /* akaOSS puts no shadow on a card — lift is border + translate. Shadows
-     survive only for genuinely floating layers (popover, dialog, palette). */
-
-  /* ── shadcn token contract ──────────────────────────────────────────────
-     eval-kit already had shadcn's ARCHITECTURE (Radix + CVA + tailwind-merge)
-     but not its token contract, so there was no vocabulary to distinguish a
-     card from a popover from an inset well — every surface reached for
-     bg-bg-elev/40 and the layout flattened. These are the standard names,
-     with akaOSS's values, so registry components and akaoss-authored markup
-     drop in unmodified.
-
-     One deliberate divergence: shadcn treats `accent` as a hover SURFACE.
-     eval-kit uses --accent as the brand blue (per akaOSS's --accent-blue) and
-     spells the hover surface `secondary`. Documented rather than silently
-     different. */
-  --card: 253 253 251;
-  --card-foreground: 13 13 12;
-  --popover: 253 253 251;
-  --popover-foreground: 13 13 12;
-  --primary: 20 20 19;
-  --primary-foreground: 250 250 248;
-  --muted-foreground: 94 94 91;
-  --destructive: 198 73 91;
-  --destructive-foreground: 253 253 251;
-  --input: 201 201 200;
-  --ring: 94 94 91;
+  /* Status + brand. NOT shadcn surfaces — these carry words (GATE VIOLATED,
+     DISTRACTION), so each is verified as body text by the contrast test
+     rather than picked by eye. */
+  --brand: 0 98 251; /* chart-3 */
+  --brand-hover: 0 77 229;
+  --brand-pressed: 0 64 184;
+  --good: 21 128 61;
+  --warn: 161 98 7;
+  --danger: 235 0 5;
+  --info: 0 98 251;
 
   --shadow-sm: 0 0 0 0 transparent;
   --shadow-md: 0 0 0 0 transparent;
   --shadow-lg: 0 12px 32px rgb(0 0 0 / 0.1), 0 1px 2px rgb(0 0 0 / 0.06);
-
-  /* Rebased on akaOSS --radius: 0.625rem = 10px, card tier = 1.125rem = 18px
-     (their `rounded-2xl`). `lg` lands on the card tier so every existing
-     `rounded-lg` surface picks up the house radius without a sweep. */
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius: 10px;
-  --radius-lg: 18px;
-  --radius-xl: 24px;
 
   --font-sans:
     var(--font-inter), ui-sans-serif, -apple-system, BlinkMacSystemFont,
@@ -120,80 +98,63 @@
   --font-mono:
     var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* akaOSS-name aliases. Components copied verbatim from akaoss (PixelHead)
-     consume `--foreground` directly; aliasing here means those files stay
-     byte-identical to their source and never drift. Substitution happens at
-     computed-value time, so this one definition follows .dark automatically. */
-  --foreground: rgb(var(--fg));
-  --accent-amber: rgb(var(--warn));
-  --accent-green: rgb(var(--good));
-  --accent-rose: rgb(var(--danger));
-  --accent-blue: rgb(var(--accent));
-  --accent-violet: rgb(var(--secondary));
-
   color-scheme: light;
 }
 
-/* Warm near-black. akaOSS's default, and eval-kit's. */
 .dark {
-  --bg: 10 10 9; /* akaOSS --background  oklch(0.146 0.002 107) */
-  --bg-elev: 17 17 16; /* akaOSS --card        oklch(0.176 0.002 107) */
-  --bg-elev-2: 27 27 26; /* akaOSS --secondary   oklch(0.22 0.002 107)  */
-  --bg-elev-3: 36 36 35;
+  --background: 10 10 10;
+  --foreground: 250 250 250;
+  --card: 23 23 23;
+  --card-foreground: 250 250 250;
+  --popover: 23 23 23;
+  --popover-foreground: 250 250 250;
+  --primary: 229 229 229;
+  --primary-foreground: 23 23 23;
+  --secondary: 38 38 38;
+  --secondary-foreground: 250 250 250;
+  --muted: 38 38 38;
+  --muted-foreground: 161 161 161;
+  --accent: 64 64 64;
+  --accent-foreground: 250 250 250;
+  --destructive: 255 100 102;
+  --destructive-foreground: 23 23 23;
+  /* The preset ships these as white at 10% / 15%; composited over the ground
+     so Tailwind's alpha syntax still works on top of them. */
+  --border: 35 35 35;
+  --input: 47 47 47;
+  --ring: 115 115 115;
 
-  /* white @10%/18% over the near-black ground */
-  --border: 34 34 34;
-  --border-strong: 54 54 53;
+  --chart-1: 126 198 255;
+  --chart-2: 0 131 255;
+  --chart-3: 0 98 251;
+  --chart-4: 0 77 229;
+  --chart-5: 0 64 184;
 
-  --fg: 234 234 232; /* akaOSS --foreground        oklch(0.937 0.003 107) */
-  --fg-strong: 248 249 246;
-  --muted: 137 137 135; /* akaOSS --muted-foreground  oklch(0.63 0.004 107)  */
-  --muted-2: 94 94 91;
+  --sidebar: 23 23 23;
+  --sidebar-foreground: 250 250 250;
+  --sidebar-primary: 0 77 229;
+  --sidebar-primary-foreground: 250 250 250;
+  --sidebar-accent: 38 38 38;
+  --sidebar-accent-foreground: 250 250 250;
+  --sidebar-border: 35 35 35;
+  --sidebar-ring: 82 82 82;
 
-  --accent: 31 31 30;
-  --accent-foreground: 234 234 232;
-  --secondary: 27 27 26;
-  --secondary-foreground: 234 234 232;
-  --muted: 26 26 25;
+  --bg: 10 10 10;
+  --bg-elev: 23 23 23;
+  --bg-elev-2: 38 38 38;
+  --bg-elev-3: 64 64 64;
+  --fg: 250 250 250;
+  --fg-strong: 255 255 255;
+  --muted-2: 161 161 161; /* = muted-foreground; see contrast test */
+  --border-strong: 64 64 64;
 
-  --brand: 93 152 244; /* accent-blue   */
-  --brand-hover: 124 172 247;
-  --brand-pressed: 74 136 232;
-  --good: 105 181 127; /* accent-green  */
-  --warn: 240 190 103; /* accent-amber  */
-  --danger: 236 115 128; /* accent-rose   */
-  --info: 179 160 236; /* accent-violet */
-
-  --chart-1: 93 152 244;
-  --chart-2: 105 181 127;
-  --chart-3: 240 190 103;
-  --chart-4: 236 115 128;
-  --chart-5: 179 160 236;
-
-  /* Sidebar sits slightly ABOVE the content ground in dark, which is what
-     gives the app its chrome/content separation. */
-  --sidebar: 15 15 14;
-  --sidebar-foreground: 234 234 232;
-  --sidebar-primary: 234 234 232;
-  --sidebar-primary-foreground: 15 15 14;
-  --sidebar-accent: 31 31 30;
-  --sidebar-accent-foreground: 234 234 232;
-  --sidebar-border: 30 30 29;
-  --sidebar-ring: 128 128 126;
-
-
-  /* shadcn contract — dark */
-  --card: 17 17 16;
-  --card-foreground: 234 234 232;
-  --popover: 17 17 16;
-  --popover-foreground: 234 234 232;
-  --primary: 234 234 232;
-  --primary-foreground: 15 15 14;
-  --muted-foreground: 137 137 135;
-  --destructive: 236 115 128;
-  --destructive-foreground: 17 17 16;
-  --input: 42 42 41;
-  --ring: 128 128 126;
+  --brand: 126 198 255; /* chart-1 — the readable end of the ramp on dark */
+  --brand-hover: 160 214 255;
+  --brand-pressed: 0 131 255;
+  --good: 74 222 128;
+  --warn: 250 204 21;
+  --danger: 255 100 102;
+  --info: 126 198 255;
 
   --shadow-sm: 0 0 0 0 transparent;
   --shadow-md: 0 0 0 0 transparent;

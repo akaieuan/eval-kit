@@ -23,7 +23,10 @@ const config: Config = {
         fg: {
           DEFAULT: rgb("--fg"),
           strong: rgb("--fg-strong"),
-          muted: rgb("--muted"),
+          // --muted is a SURFACE under the shadcn contract. The muted TEXT
+          // colour is --muted-foreground. Pointing fg.muted at --muted made
+          // every muted label near-black on a near-black ground.
+          muted: rgb("--muted-foreground"),
           "muted-2": rgb("--muted-2"),
         },
         // shadcn: accent = hover/active surface, secondary = low-emphasis fill.

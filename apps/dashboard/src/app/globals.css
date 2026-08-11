@@ -4,6 +4,12 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* PixelHead (copied verbatim from akaoss) reads --foreground as a colour;
+       the shadcn contract stores triples. Resolve it here so the component
+       needs no edit and cannot drift from its source. */
+    --foreground: rgb(var(--fg));
+  }
   * {
     box-sizing: border-box;
     border-color: rgb(var(--border));

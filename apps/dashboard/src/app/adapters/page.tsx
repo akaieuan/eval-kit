@@ -63,7 +63,7 @@ export default async function Page() {
         Implement the <code>AgentAdapter</code> interface — one async{" "}
         <code>run()</code> method that returns <code>tool_calls</code>,{" "}
         <code>final_output</code>, and <code>latency_ms</code>. See{" "}
-        <a href="/docs/adapters" className="text-accent underline underline-offset-2">
+        <a href="/docs/adapters" className="text-brand underline underline-offset-2">
           the adapters guide
         </a>
         .

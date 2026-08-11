@@ -26,12 +26,36 @@ const config: Config = {
           muted: rgb("--muted"),
           "muted-2": rgb("--muted-2"),
         },
+        // shadcn: accent = hover/active surface, secondary = low-emphasis fill.
         accent: {
           DEFAULT: rgb("--accent"),
-          hover: rgb("--accent-hover"),
-          pressed: rgb("--accent-pressed"),
+          foreground: rgb("--accent-foreground"),
         },
-        secondary: rgb("--secondary"),
+        secondary: {
+          DEFAULT: rgb("--secondary"),
+          foreground: rgb("--secondary-foreground"),
+        },
+        // The brand blue, which is NOT a shadcn surface token.
+        brand: {
+          DEFAULT: rgb("--brand"),
+          hover: rgb("--brand-hover"),
+          pressed: rgb("--brand-pressed"),
+        },
+        // Chrome is its own surface family — the piece that was missing.
+        sidebar: {
+          DEFAULT: rgb("--sidebar"),
+          foreground: rgb("--sidebar-foreground"),
+          primary: rgb("--sidebar-primary"),
+          "primary-foreground": rgb("--sidebar-primary-foreground"),
+          accent: rgb("--sidebar-accent"),
+          "accent-foreground": rgb("--sidebar-accent-foreground"),
+          border: rgb("--sidebar-border"),
+          ring: rgb("--sidebar-ring"),
+        },
+        chart: {
+          1: rgb("--chart-1"), 2: rgb("--chart-2"), 3: rgb("--chart-3"),
+          4: rgb("--chart-4"), 5: rgb("--chart-5"),
+        },
         // shadcn token contract — semantic SURFACES with paired foregrounds.
         // Without these there was no way to say "this is a card" vs "this is
         // a popover" vs "this is an inset well": everything was bg-bg-elev.

@@ -45,7 +45,7 @@ export default async function Page() {
               </pre>
               <p>
                 Or read the{" "}
-                <a href="/docs/quickstart" className="text-accent underline underline-offset-2">
+                <a href="/docs/quickstart" className="text-brand underline underline-offset-2">
                   quickstart
                 </a>{" "}
                 for the full adapter walkthrough.
@@ -172,7 +172,7 @@ export default async function Page() {
         The Inbox surfaces work that needs your attention — start there. The
         Diff page flags regressions once you have two scored runs. New to
         eval-kit?{" "}
-        <Link href="/docs/quickstart" className="text-accent underline underline-offset-2">
+        <Link href="/docs/quickstart" className="text-brand underline underline-offset-2">
           Open the quickstart →
         </Link>
       </InlineHelp>

@@ -8,7 +8,7 @@ export default function Page() {
       <H1>Quickstart</H1>
       <Lead>
         Five steps from zero to a scored eval run. This is the 60-second tour —
-        for the why, read the <a href="/docs/paradigm" className="text-accent underline">paradigm essay</a>.
+        for the why, read the <a href="/docs/paradigm" className="text-brand underline">paradigm essay</a>.
       </Lead>
 
       <H2 id="install">1. Install</H2>
@@ -27,11 +27,11 @@ pnpm -r build`}</Pre>
           Hand-write YAML. See the <Code>packages/seed-suite/suites/research-agent-v1.yaml</Code> file for a reference.
         </Li>
         <Li>
-          <a href="/suites/new" className="text-accent underline">Use the in-app &quot;New suite&quot; flow</a> — Blank template or copy from seed.
+          <a href="/suites/new" className="text-brand underline">Use the in-app &quot;New suite&quot; flow</a> — Blank template or copy from seed.
         </Li>
         <Li>
           <strong>AI-assist</strong> — paste a real agent-user transcript, Claude drafts a task for you.{" "}
-          <a href="/docs/authoring#transcript" className="text-accent underline">Walkthrough →</a>
+          <a href="/docs/authoring#transcript" className="text-brand underline">Walkthrough →</a>
         </Li>
       </Ol>
 
@@ -57,16 +57,16 @@ pnpm -r build`}</Pre>
 
       <H2 id="diff">5. Diff versions</H2>
       <P>
-        Once you have at least two scored runs (a baseline and a new one), the <a href="/diff" className="text-accent underline">Diff page</a> flags regressions and improvements step-by-step.
+        Once you have at least two scored runs (a baseline and a new one), the <a href="/diff" className="text-brand underline">Diff page</a> flags regressions and improvements step-by-step.
       </P>
 
       <H2 id="next">What&apos;s next?</H2>
       <Ol>
         <Li>
-          Write your first real adapter — see <a href="/docs/adapters" className="text-accent underline">Writing adapters</a>.
+          Write your first real adapter — see <a href="/docs/adapters" className="text-brand underline">Writing adapters</a>.
         </Li>
         <Li>
-          Read the <a href="/docs/rubric" className="text-accent underline">scoring rubric</a> so your grades are consistent across runs.
+          Read the <a href="/docs/rubric" className="text-brand underline">scoring rubric</a> so your grades are consistent across runs.
         </Li>
         <Li>
           Start a project of your own: <Pre>npx @eval-kit/core init my-evals</Pre>

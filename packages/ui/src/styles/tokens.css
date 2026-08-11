@@ -36,16 +36,43 @@
   --muted: 94 94 91; /* akaOSS --muted-foreground  oklch(0.48 0.004 107) */
   --muted-2: 134 134 132;
 
-  /* Accents. --accent is akaOSS accent-blue; the status trio maps to
-     green / amber / rose so tone is a family decision, not a local one. */
-  --accent: 29 107 222; /* accent-blue   */
-  --accent-hover: 45 120 232;
-  --accent-pressed: 22 92 196;
-  --secondary: 113 82 181; /* accent-violet */
+  /* shadcn semantics: `accent` is the HOVER/active surface and `secondary`
+     is a low-emphasis filled surface. Neither is a brand colour. eval-kit's
+     blue lives in --brand, which is akaOSS's --accent-blue. Getting this
+     backwards is what left chrome and content sharing one surface. */
+  --accent: 232 232 230;
+  --accent-foreground: 27 27 26;
+  --secondary: 230 230 228;
+  --secondary-foreground: 27 27 26;
+  --muted: 230 230 228;
+
+  /* Brand + status. The five akaOSS accents; punctuation, never fills. */
+  --brand: 29 107 222; /* accent-blue   */
+  --brand-hover: 45 120 232;
+  --brand-pressed: 22 92 196;
   --good: 55 114 73; /* accent-green  */
   --warn: 179 121 3; /* accent-amber  */
   --danger: 198 73 91; /* accent-rose   */
   --info: 113 82 181; /* accent-violet */
+
+  /* Chart series — the five accents in a fixed order so a sparkline in one
+     surface matches a chart in another. */
+  --chart-1: 29 107 222;
+  --chart-2: 55 114 73;
+  --chart-3: 179 121 3;
+  --chart-4: 198 73 91;
+  --chart-5: 113 82 181;
+
+  /* Sidebar. Chrome is a DIFFERENT surface from content — this is the token
+     family that was missing, and why the app read as one flat plane. */
+  --sidebar: 246 246 244;
+  --sidebar-foreground: 13 13 12;
+  --sidebar-primary: 20 20 19;
+  --sidebar-primary-foreground: 250 250 248;
+  --sidebar-accent: 230 230 228;
+  --sidebar-accent-foreground: 27 27 26;
+  --sidebar-border: 210 210 208;
+  --sidebar-ring: 94 94 91;
 
   /* akaOSS puts no shadow on a card — lift is border + translate. Shadows
      survive only for genuinely floating layers (popover, dialog, palette). */
@@ -123,14 +150,36 @@
   --muted: 137 137 135; /* akaOSS --muted-foreground  oklch(0.63 0.004 107)  */
   --muted-2: 94 94 91;
 
-  --accent: 93 152 244; /* accent-blue   */
-  --accent-hover: 124 172 247;
-  --accent-pressed: 74 136 232;
-  --secondary: 179 160 236; /* accent-violet */
+  --accent: 31 31 30;
+  --accent-foreground: 234 234 232;
+  --secondary: 27 27 26;
+  --secondary-foreground: 234 234 232;
+  --muted: 26 26 25;
+
+  --brand: 93 152 244; /* accent-blue   */
+  --brand-hover: 124 172 247;
+  --brand-pressed: 74 136 232;
   --good: 105 181 127; /* accent-green  */
   --warn: 240 190 103; /* accent-amber  */
   --danger: 236 115 128; /* accent-rose   */
   --info: 179 160 236; /* accent-violet */
+
+  --chart-1: 93 152 244;
+  --chart-2: 105 181 127;
+  --chart-3: 240 190 103;
+  --chart-4: 236 115 128;
+  --chart-5: 179 160 236;
+
+  /* Sidebar sits slightly ABOVE the content ground in dark, which is what
+     gives the app its chrome/content separation. */
+  --sidebar: 15 15 14;
+  --sidebar-foreground: 234 234 232;
+  --sidebar-primary: 234 234 232;
+  --sidebar-primary-foreground: 15 15 14;
+  --sidebar-accent: 31 31 30;
+  --sidebar-accent-foreground: 234 234 232;
+  --sidebar-border: 30 30 29;
+  --sidebar-ring: 128 128 126;
 
 
   /* shadcn contract — dark */

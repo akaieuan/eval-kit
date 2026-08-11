@@ -173,7 +173,7 @@ export function StepReviewCard({
             </div>
             {score?.pre_filled && (
               <Tooltip content="Suggested by Claude. Adjust or accept as-is — any edit flips it to your score.">
-                <span className="inline-flex items-center gap-1 rounded border border-accent/40 bg-accent/10 px-1.5 py-0.5 font-mono text-2xs uppercase tracking-[0.14em] text-accent">
+                <span className="inline-flex items-center gap-1 rounded border border-brand/40 bg-brand/10 px-1.5 py-0.5 font-mono text-2xs uppercase tracking-[0.14em] text-brand">
                   <Sparkles size={9} strokeWidth={1.5} /> AI draft
                 </span>
               </Tooltip>

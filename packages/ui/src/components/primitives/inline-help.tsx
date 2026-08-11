@@ -26,7 +26,7 @@ const variantClasses = {
 
 const markerClasses = {
   info: "bg-fg-muted-2",
-  accent: "bg-accent",
+  accent: "bg-brand",
   warn: "bg-warn",
 };
 

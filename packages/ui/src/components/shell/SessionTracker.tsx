@@ -129,7 +129,7 @@ export function SessionTracker({ className }: SessionTrackerProps) {
             size={11}
             strokeWidth={1.5}
             className={cn(
-              session.scoredCount > 0 ? "text-accent" : "text-fg-muted-2",
+              session.scoredCount > 0 ? "text-brand" : "text-fg-muted-2",
             )}
           />
           <span className="tabular-nums">{session.scoredCount}</span>

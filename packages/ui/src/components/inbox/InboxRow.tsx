@@ -69,7 +69,7 @@ export function InboxRow({
     item.status === "reviewed"
       ? "bg-good"
       : item.status === "pre_filled"
-        ? "bg-accent"
+        ? "bg-brand"
         : "bg-warn";
 
   return (

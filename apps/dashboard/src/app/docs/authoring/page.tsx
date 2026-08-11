@@ -36,7 +36,7 @@ export default function Page() {
 
       <H2 id="blank">Path 1 — blank template</H2>
       <P>
-        Open <a href="/suites/new" className="text-accent underline">New suite</a>, switch to the <strong>Blank template</strong> tab, edit YAML, save.
+        Open <a href="/suites/new" className="text-brand underline">New suite</a>, switch to the <strong>Blank template</strong> tab, edit YAML, save.
         Best when the task is small and tight.
       </P>
 

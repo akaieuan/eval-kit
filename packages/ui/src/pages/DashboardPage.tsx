@@ -72,7 +72,7 @@ export function DashboardPage({
       <InlineHelp id="home-next-steps" title="What's next?">
         Score unreviewed runs to populate the stat cards. Once you have two
         scored runs, the Diff page will flag regressions. New to eval-kit?{" "}
-        <a href="/docs/quickstart" className="text-accent underline underline-offset-2">
+        <a href="/docs/quickstart" className="text-brand underline underline-offset-2">
           Open the quickstart →
         </a>
       </InlineHelp>

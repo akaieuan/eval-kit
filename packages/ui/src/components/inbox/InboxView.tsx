@@ -153,7 +153,7 @@ export function InboxView({
               {unscoredCount} <span className="text-warn">unscored</span>
             </span>
             <span className={cn(MICRO, "tabular-nums")}>
-              {prefilledCount} <span className="text-accent">drafts</span>
+              {prefilledCount} <span className="text-brand">drafts</span>
             </span>
             <span className={cn(MICRO, "tabular-nums")}>
               {doneCount} <span className="text-good">done</span>

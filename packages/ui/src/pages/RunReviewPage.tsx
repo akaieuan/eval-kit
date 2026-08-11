@@ -321,7 +321,7 @@ export function RunReviewPage({
         </div>
       </aside>
 
-      <section className="min-w-0 overflow-y-auto px-[clamp(1.25rem,3vw,3rem)] py-6">
+      <section className="min-w-0 overflow-y-auto px-[clamp(1.25rem,3.5vw,3.5rem)] py-6">
         <InlineHelp
           id="review-intro"
           title="You are the judge"

@@ -14,13 +14,13 @@ export default async function Page() {
   const agents = await listAgents();
 
   return (
-    <div className="space-y-5 px-8 py-6">
+    <div className="space-y-7 px-[clamp(1.25rem,3.5vw,3.5rem)] py-7 pb-16">
       <div className="flex items-end justify-between">
         <div>
-          <h1 className="text-[18px] font-light tracking-tight text-fg-strong">
+          <h1 className="text-[22px] font-light tracking-tight text-fg-strong">
             Agents
           </h1>
-          <p className="mt-1 text-xs text-fg-muted">
+          <p className="mt-1.5 max-w-2xl text-[13px] leading-relaxed text-fg-muted">
             YAML-defined agent profiles. No code required.
           </p>
         </div>
@@ -43,7 +43,7 @@ export default async function Page() {
       {agents.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border px-8 py-12 text-center">
           <div className="text-[13px] text-fg-strong">No agents yet</div>
-          <p className="mt-1 text-xs text-fg-muted">
+          <p className="mt-1.5 max-w-2xl text-[13px] leading-relaxed text-fg-muted">
             Create one with the button above, or copy from{" "}
             <code>agents/claude-research-v1.yaml</code> in the repo.
           </p>

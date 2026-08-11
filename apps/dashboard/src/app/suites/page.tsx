@@ -7,13 +7,13 @@ export default async function Page() {
   const suites = await listSuiteFiles();
 
   return (
-    <div className="space-y-5 px-[clamp(1.25rem,3.5vw,3.5rem)] py-6">
+    <div className="space-y-7 px-[clamp(1.25rem,3.5vw,3.5rem)] py-7 pb-16">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[18px] font-light tracking-tight text-fg-strong">
+          <h1 className="text-[22px] font-light tracking-tight text-fg-strong">
             Suites
           </h1>
-          <p className="mt-1 text-xs text-fg-muted">
+          <p className="mt-1.5 max-w-2xl text-[13px] leading-relaxed text-fg-muted">
             YAML files under <code>packages/seed-suite/suites/</code>.
           </p>
         </div>

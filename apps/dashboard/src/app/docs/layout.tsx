@@ -55,7 +55,7 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
           ))}
         </nav>
       </aside>
-      <article className="prose-eval-kit mx-auto w-full max-w-[68ch] px-[clamp(1.25rem,3.5vw,3rem)] py-[clamp(2rem,3.5vw,3rem)]">
+      <article className="mx-auto w-full max-w-[68ch] px-[clamp(1.25rem,3.5vw,3.5rem)] py-[clamp(2rem,3.5vw,3rem)]">
         {children}
       </article>
     </div>

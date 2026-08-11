@@ -102,7 +102,11 @@
     font-size: 0.6875rem; /* 11px */
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: rgb(var(--muted));
+    /* --muted is a SURFACE. The muted TEXT colour is --muted-foreground.
+       Using the surface here rendered every label at 38,38,38 on a 10,10,10
+       ground — invisible — while the token contrast test passed, because the
+       test checked the token and this class never used it. */
+    color: rgb(var(--muted-foreground));
   }
 }
 

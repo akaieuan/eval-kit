@@ -18,7 +18,7 @@ export default async function Page({
   const suite = entry.suite.suite;
 
   return (
-    <div className="space-y-5 px-[clamp(1.25rem,3.5vw,3.5rem)] py-6">
+    <div className="space-y-7 px-[clamp(1.25rem,3.5vw,3.5rem)] py-7 pb-16">
       <div>
         <Link
           href="/suites"

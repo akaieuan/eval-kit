@@ -17,7 +17,7 @@ export default async function Page({
   const tools = "tools" in a && Array.isArray(a.tools) ? a.tools : [];
 
   return (
-    <div className="space-y-5 px-8 py-6">
+    <div className="space-y-7 px-[clamp(1.25rem,3.5vw,3.5rem)] py-7 pb-16">
       <div>
         <Link
           href="/agents"

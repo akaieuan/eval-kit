@@ -28,7 +28,7 @@ export default async function Page() {
 
   if (all.length === 0) {
     return (
-      <div className="px-8 py-10">
+      <div className="space-y-7 px-[clamp(1.25rem,3.5vw,3.5rem)] py-7 pb-16">
         <EmptyState
           icon={<Rocket size={16} strokeWidth={1.5} />}
           title="No runs yet"
@@ -70,7 +70,7 @@ export default async function Page() {
     }));
 
   return (
-    <div className="space-y-8 px-[clamp(1.25rem,3.5vw,3.5rem)] py-6">
+    <div className="space-y-8 px-[clamp(1.25rem,3.5vw,3.5rem)] py-7 pb-16">
       <WelcomePanel />
 
       <section>

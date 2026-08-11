@@ -1,12 +1,12 @@
 <picture>
-  <img src="./docs/images/inbox.png" alt="eval-kit — measuring whether human approval was real" width="100%">
+  <img src="./docs/images/inbox.png" alt="eval-kit — scoring whether the agent respects human authority" width="100%">
 </picture>
 
 # eval-kit
 
-**Measures whether a human approval was real oversight or a rubber stamp.**
+**Scores whether your agent respects human authority — stops when it must, asks when it should, scored by people rather than LLMs.**
 
-When an agent pauses to ask permission, every protocol in the ecosystem records *that* it paused. None of them record whether the pause did anything. A considered review and a reflexive click produce identical event streams. eval-kit scores the difference.
+Agent protocols now standardize that an agent *can* pause for approval. Nothing measures whether it *does* — whether approval actually preceded the irreversible call, whether the agent asked when it faced a real blocker or asked about everything to be safe. eval-kit replays your agent against suites built from real workflows and scores exactly that: gate compliance as pass/fail, asking as precision/recall, never averaged — with a human, not an LLM judge, holding the rubric.
 
 [![CI](https://github.com/akaieuan/eval-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/akaieuan/eval-kit/actions/workflows/ci.yml)
 [![npm (@eval-kit/core)](https://img.shields.io/npm/v/@eval-kit/core?label=%40eval-kit%2Fcore)](https://www.npmjs.com/package/@eval-kit/core)
@@ -32,6 +32,8 @@ That gap widens as models improve, which is the counterintuitive part:
 So the better your agent gets, the more the residual error concentrates in cases a fatigued reviewer waves through — and the less any aggregate accuracy number tells you about it.
 
 **The value of a gate is inversely proportional to how often it fires.** A gate firing on 30% of cases is a bottleneck people route around. A gate firing on 0.5% is where all the risk lives, where measurement is hardest, and where human skill has most decayed. That 0.5% is what eval-kit is built to measure.
+
+Measuring the agent's side of the gate — did approval precede the action, did it ask when it should — is what ships today. Measuring the reviewer's side, whether the approval itself was considered or reflexive, is where the roadmap points: reviewer calibration lands in 0.5.
 
 ## Where this applies
 

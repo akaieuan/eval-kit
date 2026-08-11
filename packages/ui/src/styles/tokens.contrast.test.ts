@@ -17,10 +17,35 @@ import { describe, expect, it } from "vitest";
  * WCAG 2.1 AA: 4.5:1 for body text, 3:1 for large text and UI boundaries.
  */
 
-const TOKENS = readFileSync(
-  join(dirname(fileURLToPath(import.meta.url)), "tokens.css"),
-  "utf8",
-);
+const DIR = dirname(fileURLToPath(import.meta.url));
+const TOKENS = readFileSync(join(DIR, "tokens.css"), "utf8");
+const THEMES = readFileSync(join(DIR, "themes.css"), "utf8");
+
+/** Every palette in the generated registry. */
+const PALETTES = [
+  "neutral", "zinc", "slate", "stone", "gray",
+  "red", "rose", "orange", "green", "blue", "yellow", "violet",
+] as const;
+
+/** Pull a triple from a specific palette block in themes.css. */
+function paletteToken(
+  palette: string,
+  name: string,
+  theme: "light" | "dark",
+): [number, number, number] {
+  const sel =
+    palette === "neutral"
+      ? theme === "light" ? ":root {" : ".dark {"
+      : theme === "light"
+        ? `[data-theme="${palette}"] {`
+        : `[data-theme="${palette}"].dark {`;
+  const start = THEMES.indexOf(sel);
+  if (start < 0) throw new Error(`block ${sel} not found`);
+  const block = THEMES.slice(start, THEMES.indexOf("}", start));
+  const m = new RegExp(`--${name}:\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)\\s*;`).exec(block);
+  if (!m) throw new Error(`--${name} not found in ${sel}`);
+  return [Number(m[1]), Number(m[2]), Number(m[3])];
+}
 
 /** Pull an `R G B` triple out of a given block of tokens.css. */
 function token(name: string, theme: "light" | "dark"): [number, number, number] {
@@ -108,5 +133,43 @@ describe.each(["light", "dark"] as const)("%s theme contrast", (theme) => {
     const bg = luminance(token("bg", theme));
     const sidebar = luminance(token("sidebar", theme));
     expect(Math.abs(sidebar - bg)).toBeGreaterThan(0.0005);
+  });
+});
+
+/**
+ * Every generated palette is held to the same bar as the default. A theme
+ * picker that ships an unreadable option is worse than not shipping it.
+ */
+describe.each(PALETTES)("palette %s", (palette) => {
+  describe.each(["light", "dark"] as const)("%s", (theme) => {
+    it("body text clears 4.5:1 on bg, sidebar and card", () => {
+      for (const t of ["fg", "muted-foreground"]) {
+        const fg = paletteToken(palette, t, theme);
+        for (const s of ["bg", "sidebar", "card"]) {
+          const ratio = contrast(fg, paletteToken(palette, s, theme));
+          expect(
+            ratio,
+            `${palette}/${theme}: --${t} on --${s} is ${ratio.toFixed(2)}:1`,
+          ).toBeGreaterThanOrEqual(4.5);
+        }
+      }
+    });
+
+    it("primary-foreground is readable on primary", () => {
+      const ratio = contrast(
+        paletteToken(palette, "primary-foreground", theme),
+        paletteToken(palette, "primary", theme),
+      );
+      expect(
+        ratio,
+        `${palette}/${theme}: primary pair is ${ratio.toFixed(2)}:1`,
+      ).toBeGreaterThanOrEqual(4.5);
+    });
+
+    it("sidebar is a distinct surface from content", () => {
+      const bg = luminance(paletteToken(palette, "bg", theme));
+      const sb = luminance(paletteToken(palette, "sidebar", theme));
+      expect(Math.abs(sb - bg)).toBeGreaterThan(0.0005);
+    });
   });
 });

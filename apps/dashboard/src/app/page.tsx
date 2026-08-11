@@ -8,7 +8,8 @@ import {
   StatCardGroup,
   WelcomePanel,
 } from "@eval-kit/ui";
-import { Inbox as InboxIcon, Rocket } from "lucide-react";
+import { Inbox as InboxIcon } from "lucide-react";
+import { PixelHead } from "@/components/brand/PixelHead";
 import { listInboxItems } from "@/lib/inbox";
 import {
   listRuns,
@@ -30,7 +31,11 @@ export default async function Page() {
     return (
       <div className="space-y-7 px-[clamp(1.25rem,3.5vw,3.5rem)] py-7 pb-16">
         <EmptyState
-          icon={<Rocket size={16} strokeWidth={1.5} />}
+          mark={
+            <span aria-hidden>
+              <PixelHead size={72} grid={18} gap={0.12} icon="podium" once />
+            </span>
+          }
           title="No runs yet"
           description={
             <div className="space-y-3">

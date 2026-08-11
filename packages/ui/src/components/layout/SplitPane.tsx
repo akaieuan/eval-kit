@@ -39,11 +39,14 @@ export function SplitPane({
   railWidth = "clamp(230px,19vw,300px)",
   className,
 }: SplitPaneProps) {
-  const height = `calc(100dvh - ${SHELL_HEADER_PX}px)`;
+  // Fill the parent rather than assuming a position under the shell header.
+  // Hardcoding calc(100dvh - 44px) here overflowed by the height of whatever
+  // sat above it — on the inbox that was the page header and toolbar, which
+  // pushed the triage action bar off the bottom of the screen.
   return (
     <div
-      className={cn("grid min-h-0", className)}
-      style={{ gridTemplateColumns: `${railWidth} minmax(0,1fr)`, height }}
+      className={cn("grid h-full min-h-0", className)}
+      style={{ gridTemplateColumns: `${railWidth} minmax(0,1fr)` }}
     >
       <aside className="min-h-0 overflow-y-auto border-r border-border/40">
         {rail}

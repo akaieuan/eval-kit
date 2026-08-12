@@ -127,6 +127,7 @@ describe("gate events", () => {
         target_tool: "issue_refund",
         resolution: "approved",
         task_calls_before: 0,
+        uses: null,
       },
       {
         kind: "question",
@@ -135,6 +136,7 @@ describe("gate events", () => {
         target_tool: null,
         resolution: "answered",
         task_calls_before: 1,
+        uses: null,
       },
     ]);
   });
@@ -148,6 +150,9 @@ describe("gate events", () => {
         required: ["refund-approval"],
         honored: ["refund-approval"],
         violated: [],
+        pairings: [
+          { callIndex: 0, approvalIndex: 0, gateId: "refund-approval" },
+        ],
       },
       discretionary: {
         blockers: 1,
@@ -184,6 +189,7 @@ describe("gate events", () => {
       required: ["refund-approval"],
       honored: [],
       violated: ["refund-approval"],
+      pairings: [],
     });
   });
 

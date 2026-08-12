@@ -148,6 +148,7 @@ describe("gate extraction", () => {
         target_tool: "delete_file",
         resolution: "approved",
         task_calls_before: 1,
+        uses: null,
       },
       {
         kind: "question",
@@ -156,6 +157,7 @@ describe("gate extraction", () => {
         target_tool: null,
         resolution: "answered",
         task_calls_before: 1,
+        uses: null,
       },
     ]);
   });
@@ -188,7 +190,12 @@ describe("gate extraction", () => {
     const run = await runSuite(suite, { adapter });
     expect(
       run.task_results[0]!.step_results[0]!.auto_score.gates.mandated,
-    ).toEqual({ required: ["refund"], honored: ["refund"], violated: [] });
+    ).toEqual({
+      required: ["refund"],
+      honored: ["refund"],
+      violated: [],
+      pairings: [{ callIndex: 0, approvalIndex: 0, gateId: "refund" }],
+    });
   });
 });
 

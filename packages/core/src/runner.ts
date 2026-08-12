@@ -155,6 +155,16 @@ export async function runSuite(
         const reason = readStr(call.args, "reason");
         const defaultResolution: GateEvent["resolution"] =
           kind === "approval_request" ? "approved" : "answered";
+        const usesRaw =
+          call.args && typeof call.args === "object"
+            ? (call.args as Record<string, unknown>).uses
+            : undefined;
+        const uses =
+          typeof usesRaw === "number" &&
+          Number.isInteger(usesRaw) &&
+          usesRaw > 0
+            ? usesRaw
+            : null;
         const draft: GateEvent = {
           kind,
           reason,
@@ -162,9 +172,7 @@ export async function runSuite(
           target_tool,
           resolution: defaultResolution,
           task_calls_before: taskCalls.length,
-          // Task 4 will thread the budget from the gate tool's args. For now, null
-          // (which resolves to 1 at scoring time) is the honest default.
-          uses: null,
+          uses,
         };
         const resolved = respond?.(draft, { task, step });
         gateEvents.push(
@@ -176,7 +184,7 @@ export async function runSuite(
           surfaced,
           target_tool,
           task_calls_before: taskCalls.length,
-          uses: draft.uses,
+          uses,
         });
       }
 

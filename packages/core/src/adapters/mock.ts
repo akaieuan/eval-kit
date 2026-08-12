@@ -13,9 +13,9 @@ export interface MockAdapterOptions {
    *   task tools are called with no approval, so every triggered mandated
    *   gate scores as violated. This is the "output looks fine, authorization
    *   never happened" agent.
-   * - `"honor"`: emit one blanket `request_approval` before any task tool
-   *   (scored as covering every gate on the step — `target_tool: null`), and
-   *   emit an `ask_user` when the step prompt matches `askOn`.
+   * - `"honor"`: emit one `request_approval` per tool listed in
+   *   `approveTools`, each naming that tool, and emit an `ask_user` when the
+   *   step prompt matches `askOn`.
    */
   gateBehavior?: "honor" | "bypass";
   /**
@@ -24,6 +24,14 @@ export interface MockAdapterOptions {
    * blocker whose `description` is a phrase of the prompt will match it.
    */
   askOn?: RegExp;
+  /**
+   * Tools this mock requests approval for before calling, one approval each,
+   * naming the tool. The mock cannot infer which tools are gated because
+   * AgentRunInput carries no mandated_gates, and approving the whole toolbox
+   * would emit nonsense approvals for un-gated tools. Only consulted in
+   * `gateBehavior: "honor"` mode.
+   */
+  approveTools?: string[];
 }
 
 /**
@@ -40,6 +48,7 @@ export function createMockAdapter(opts: MockAdapterOptions = {}): AgentAdapter {
   const latency = opts.latency_ms ?? 10;
   const gateBehavior = opts.gateBehavior ?? "bypass";
   const askOn = opts.askOn;
+  const approveTools = opts.approveTools ?? [];
   return {
     name: "mock",
     model,
@@ -50,6 +59,7 @@ export function createMockAdapter(opts: MockAdapterOptions = {}): AgentAdapter {
       // RegExp doesn't survive JSON; record the source so run artifacts stay
       // self-describing.
       ...(askOn ? { ask_on: askOn.source } : {}),
+      ...(approveTools.length > 0 ? { approve_tools: approveTools } : {}),
     },
     async run(input: AgentRunInput): Promise<AgentRunOutput> {
       await new Promise((r) => setTimeout(r, latency));
@@ -57,16 +67,23 @@ export function createMockAdapter(opts: MockAdapterOptions = {}): AgentAdapter {
       if (!degraded && gateBehavior === "honor") {
         const offered = new Set(input.toolbox.map((t) => t.name));
         if (offered.has(REQUEST_APPROVAL_TOOL)) {
-          gatePrefix.push({
-            tool: REQUEST_APPROVAL_TOOL,
-            args: {
-              reason: "mock honor mode: approval precedes any task action",
-              summary: `Requesting approval to act on: ${input.prompt.slice(0, 120)}`,
-              // no target_tool: a blanket approval, which scoring treats as
-              // covering every mandated gate triggered on this step
-            },
-            result: { ok: true, mock: true },
-          });
+          // One approval per tool the caller declared gated, each NAMING that
+          // tool. The previous version emitted a single untargeted approval,
+          // which under v2 rules authorizes nothing, and meant no shipped
+          // fixture ever exercised targeted approval.
+          for (const name of approveTools) {
+            if (!offered.has(name)) continue;
+            gatePrefix.push({
+              tool: REQUEST_APPROVAL_TOOL,
+              args: {
+                reason: "mock honor mode: approval precedes this action",
+                summary: `Requesting approval to call ${name}`,
+                target_tool: name,
+                uses: 1,
+              },
+              result: { ok: true, mock: true },
+            });
+          }
         }
         if (offered.has(ASK_USER_TOOL) && askOn?.test(input.prompt)) {
           gatePrefix.push({

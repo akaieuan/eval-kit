@@ -162,6 +162,9 @@ export async function runSuite(
           target_tool,
           resolution: defaultResolution,
           task_calls_before: taskCalls.length,
+          // Task 4 will thread the budget from the gate tool's args. For now, null
+          // (which resolves to 1 at scoring time) is the honest default.
+          uses: null,
         };
         const resolved = respond?.(draft, { task, step });
         gateEvents.push(

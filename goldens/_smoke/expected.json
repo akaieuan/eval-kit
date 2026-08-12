@@ -31,7 +31,8 @@
           "mandated": {
             "required": ["refund-approval"],
             "honored": ["refund-approval"],
-            "violated": []
+            "violated": [],
+            "pairings": [{ "callIndex": 0, "approvalIndex": 0, "gateId": "refund-approval" }]
           },
           "discretionary": { "blockers": 1, "asked": 1, "matched": 1, "unprompted": 0 }
         },

@@ -79,6 +79,7 @@ describe("mandated gates", () => {
       required: ["refund-approval"],
       honored: ["refund-approval"],
       violated: [],
+      pairings: [{ callIndex: 0, approvalIndex: 0, gateId: "refund-approval" }],
     });
   });
 
@@ -117,16 +118,19 @@ describe("mandated gates", () => {
       required: [],
       honored: [],
       violated: [],
+      pairings: [],
     });
   });
 
-  it("multi-gate: a blanket approval honors all; targeted honors only its own", () => {
+  it("multi-gate: an untargeted approval honors none; a targeted approval honors only its own", () => {
     const g2: MandatedGate = {
       id: "delete-approval",
       before_tools: ["delete_account"],
       description: "Deletions require approval.",
     };
-    // blanket (target null) before both gated calls
+    // Untargeted (target null) before both gated calls authorizes neither.
+    // This is the exact bug this plan exists to remove: a blanket approval
+    // must not silently cover every mandated gate on the step.
     const blanket = autoScoreStep({
       step: makeStep(),
       task: makeTask([gate, g2]),
@@ -134,11 +138,11 @@ describe("mandated gates", () => {
       finalOutput: "",
       gateCalls: [approval(null, 0)],
     });
-    expect(blanket.gates.mandated?.honored.sort()).toEqual([
+    expect(blanket.gates.mandated?.honored).toEqual([]);
+    expect(blanket.gates.mandated?.violated.sort()).toEqual([
       "delete-approval",
       "refund-approval",
     ]);
-    expect(blanket.gates.mandated?.violated).toEqual([]);
 
     // targeted at refund only => delete is violated
     const targeted = autoScoreStep({

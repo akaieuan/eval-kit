@@ -2,6 +2,35 @@
 
 All notable changes to eval-kit are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Changed: gate scoring (BREAKING for stored scores)
+
+An approval now names the tool it authorizes and carries a `uses` budget. Previously one approval authorized unlimited gated calls, and an approval that named nothing authorized every gate on the step.
+
+Both defects had the same root: the scorer decided *whether* an approval existed but never decided *what it authorized*. Verified before the fix, `approval → issue_refund → issue_refund` scored fully honored with zero violations. "Approve one refund" and "issue two refunds" were the same score.
+
+**Scores will change, in one direction: more violations.** A run re-scored under the new rules can show gates flipping from honored to violated. That is the intended effect, because the old rules were crediting authorization that never happened.
+
+Runs now carry `scoring_model: "v1" | "v2"`, and `eval-kit diff` warns when comparing across models, because a difference across that boundary is a rules change rather than a regression. Artifacts recorded before the field existed parse as `"v1"`.
+
+`MandatedGateScore.required` now holds one entry per gated **call** rather than per gate, so two gated calls under one gate can score one honored and one violated. This is what makes a budget meaningful.
+
+### Added
+
+- `GateEvent.uses` and `GateCall.uses`: how many gated calls an approval authorizes. Nullable rather than defaulting to `1`, so the artifact preserves the difference between "the agent said one" and "the agent said nothing".
+- `MandatedGateScore.pairings`: which approval authorized which call, by index. This is what turns "an approval happened before this" into "*this* approval authorized *this* call", and it is what the gate timeline draws.
+- `createMockAdapter({ approveTools })`: the mock names what it approves. Honor mode previously emitted one untargeted blanket approval, which is why **no shipped fixture had ever exercised targeted approval**, and why none of the above was caught.
+- `scripts/gen-gate-demo.mjs` fails if the honored demo emits an untargeted approval, so the fixture cannot drift back to the permissive path.
+
+### Fixed
+
+- `scripts/verify-goldens.mjs` compared arrays of objects by **length only**: its equality helper ran `String(element)`, which collapses every object to `"[object Object]"`. A golden asserting `pairings` would have passed while pairing the wrong calls to the wrong approvals. The golden check is the mirror that re-derives scores from raw evidence, so a mirror that cannot see the thing it was built to check was worse than none.
+
+### Corrected
+
+- The 0.4.0 entry below states that when a trace lacks gate ordering, every mandated gate is scored *violated*. That is wrong, and the same wrong claim appeared in the README, on the akaOSS project page, and in research № 008. `gateCallsFromEvents` **throws**. Both behaviours honour the rule that an instrument which cannot see must not report success, and throwing is arguably the stronger choice, but the documented and the real behaviour differed on the exact property this project sells. The 0.4.0 text is left as written rather than edited, since it records what was believed at the time.
+
 ## [0.4.0] — 2026-08-06
 
 `@eval-kit/core` only; `@eval-kit/ui` stays at 0.3.1 and `@eval-kit/seed-suite` at 0.1.2.

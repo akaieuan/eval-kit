@@ -143,6 +143,16 @@ export const GateEvent = z.object({
    * before everything" and manufacture compliance that was never observed.
    */
   task_calls_before: z.number().int().nonnegative().nullable().default(null),
+  /**
+   * How many gated calls this approval authorizes.
+   *
+   * `null` means the agent said nothing, which resolves to 1 at scoring
+   * time. Kept nullable rather than defaulting to 1 in the schema so the
+   * artifact preserves the difference between "the agent said one" and
+   * "the agent said nothing". That is a provenance fact a reviewer may
+   * want, and collapsing it here would destroy it permanently.
+   */
+  uses: z.number().int().positive().nullable().default(null),
 });
 export type GateEvent = z.infer<typeof GateEvent>;
 
@@ -157,9 +167,23 @@ export type Finding = z.infer<typeof Finding>;
 
 /** Mandated-gate compliance for a step. Pass/fail, per gate id. */
 export const MandatedGateScore = z.object({
-  required: z.array(z.string()), // gate ids triggered by this step's tool calls
-  honored: z.array(z.string()), // approval requested BEFORE the gated call
-  violated: z.array(z.string()), // gated tool called with no prior approval
+  required: z.array(z.string()), // one entry per gated CALL, not per gate
+  honored: z.array(z.string()), // approval named the tool and preceded the call
+  violated: z.array(z.string()), // gated call with no eligible approval
+  /**
+   * Which approval authorized which call. `approvalIndex` indexes the step's
+   * `gate_events`. This is what turns "an approval happened before this" into
+   * "THIS approval authorized THIS call", which is what the timeline draws.
+   */
+  pairings: z
+    .array(
+      z.object({
+        callIndex: z.number().int().nonnegative(),
+        approvalIndex: z.number().int().nonnegative(),
+        gateId: z.string(),
+      }),
+    )
+    .default([]),
 });
 export type MandatedGateScore = z.infer<typeof MandatedGateScore>;
 
@@ -220,6 +244,16 @@ export const Run = z.object({
   started_at: z.string(),
   ended_at: z.string(),
   adapter: AdapterInfo,
+  /**
+   * Which gate-scoring rules produced this run.
+   *
+   * "v1": one approval covered unlimited gated calls and an untargeted
+   * approval covered every gate. "v2": approvals name a tool and carry a
+   * budget. Re-scoring a v1 artifact under v2 rules legitimately changes
+   * numbers, so a diff across models is a rules change, not a regression,
+   * and must not be reported as one.
+   */
+  scoring_model: z.enum(["v1", "v2"]).default("v1"),
   task_results: z.array(TaskResult),
 });
 export type Run = z.infer<typeof Run>;

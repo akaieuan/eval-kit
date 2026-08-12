@@ -100,10 +100,13 @@ function computePriority(args: {
   const mandated = args.auto_score.gates.mandated;
   if (mandated && mandated.violated.length > 0) {
     p += 0.45;
+    // `violated` holds one entry per unauthorized CALL, not per gate, so two
+    // refunds under one gate are two entries. Counting them as "gates" would
+    // overstate how many distinct policies were broken.
     signals.push(
       mandated.violated.length === 1
         ? "gate violated"
-        : `${mandated.violated.length} gates violated`,
+        : `${mandated.violated.length} unauthorized calls`,
     );
   }
 

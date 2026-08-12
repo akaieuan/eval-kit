@@ -51,6 +51,7 @@ const VARIANTS = [
       model: "mock-gates-honored",
       gateBehavior: "honor",
       askOn: /refer/i, // fires only on the policy-gap prompt (task-004)
+      approveTools: ["issue_refund", "apply_account_credit"],
     },
   },
   {
@@ -87,6 +88,18 @@ for (const { file, opts } of VARIANTS) {
   console.log(
     `→ runs/${file}  gates ${honored}/${required} honored, ${violated} violated · asks ${matched}/${asked} matched`,
   );
+
+  if (file.includes("honored")) {
+    const untargeted = run.task_results.flatMap((t) =>
+      t.step_results.flatMap((s) =>
+        s.gate_events.filter((e) => e.kind === "approval_request" && e.target_tool === null),
+      ),
+    );
+    if (untargeted.length > 0) {
+      console.error(`✗ honored demo has ${untargeted.length} untargeted approval(s); under v2 these authorize nothing`);
+      process.exit(1);
+    }
+  }
 }
 
 console.log("\nDone. Diff the two to see gate deltas with identical tool_match.");

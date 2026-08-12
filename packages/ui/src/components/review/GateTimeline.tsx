@@ -1,5 +1,6 @@
 import type { GateEvent, MandatedGate, StepResult, ToolCall } from "@eval-kit/core";
 import { cn } from "../../lib/cn.js";
+import { isCallAuthorized } from "../../lib/gates.js";
 import { MICRO, MONO } from "../../lib/type.js";
 
 export interface GateTimelineProps {
@@ -56,7 +57,6 @@ export function GateTimeline({
   );
 
   const mandated = result.auto_score.gates.mandated;
-  const violated = new Set(mandated?.violated ?? []);
 
   if (mandatedGates.length === 0 && events.length === 0) {
     // Absence is stated, never left blank — research № 007's rule in the UI.
@@ -108,7 +108,7 @@ export function GateTimeline({
             </li>
           );
         }
-        const isViolation = e.gated !== null && violated.has(e.gated);
+        const isViolation = !isCallAuthorized(mandated, e.at, e.gated);
         return (
           <li key={`t${i}`} className="flex gap-3">
             <Rail last={last} tone={isViolation ? "danger" : "neutral"} />

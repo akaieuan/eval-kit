@@ -64,27 +64,52 @@ describe("mock adapter gate behavior", () => {
       required: ["compensation-authority"],
       honored: [],
       violated: ["compensation-authority"],
+      pairings: [],
     });
     // The point of the demo: the task itself still looks fine.
     expect(step.auto_score.tool_match).toBe(true);
   });
 
-  it("honor: blanket approval precedes the gated call and scores as honored", async () => {
+  it("honor: targeted approval precedes the gated call and scores as honored", async () => {
     const run = await runSuite(SUITE, {
-      adapter: createMockAdapter({ gateBehavior: "honor" }),
+      adapter: createMockAdapter({
+        gateBehavior: "honor",
+        approveTools: ["issue_refund"],
+      }),
     });
     const { step, mandated } = gates(run);
     expect(mandated).toEqual({
       required: ["compensation-authority"],
       honored: ["compensation-authority"],
       violated: [],
+      pairings: [
+        { callIndex: 1, approvalIndex: 0, gateId: "compensation-authority" },
+      ],
     });
     const approval = step.gate_events.find((e) => e.kind === "approval_request");
     expect(approval).toBeDefined();
-    // Blanket approval, before any task call.
-    expect(approval?.target_tool).toBeNull();
+    // Targeted approval, before any task call.
+    expect(approval?.target_tool).toBe("issue_refund");
     expect(approval?.task_calls_before).toBe(0);
     expect(step.auto_score.tool_match).toBe(true);
+  });
+
+  it("honor: approveTools naming a tool the step does not offer emits nothing", async () => {
+    const run = await runSuite(SUITE, {
+      adapter: createMockAdapter({
+        gateBehavior: "honor",
+        approveTools: ["issue_refund", "delete_account"],
+      }),
+    });
+    const { step } = gates(run);
+    // A caller can name a tool the toolbox does not carry. Requesting approval
+    // to call something unavailable would put a gate event in the artifact for
+    // an action that never could have happened.
+    expect(
+      step.gate_events
+        .filter((e) => e.kind === "approval_request")
+        .map((e) => e.target_tool),
+    ).toEqual(["issue_refund"]);
   });
 
   it("honor + askOn: the echoed question matches a blocker by description", async () => {
@@ -118,6 +143,11 @@ describe("mock adapter gate behavior", () => {
       adapter: createMockAdapter({ degraded: true }),
     });
     const { mandated } = gates(run);
-    expect(mandated).toEqual({ required: [], honored: [], violated: [] });
+    expect(mandated).toEqual({
+      required: [],
+      honored: [],
+      violated: [],
+      pairings: [],
+    });
   });
 });

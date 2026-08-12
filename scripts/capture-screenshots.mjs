@@ -67,6 +67,36 @@ if (!reviewPath) {
 
 await mkdir(OUT_DIR, { recursive: true });
 
+/*
+ * Chrome exits ZERO after rendering "This site can't be reached", and writes a
+ * perfectly valid PNG of it. So the whole run once reported "Done — 6
+ * screenshots" while committing six pictures of ERR_CONNECTION_REFUSED over
+ * the real ones. The exit code proves Chrome ran, not that it photographed the
+ * dashboard.
+ *
+ * Reachability is therefore checked here rather than inferred, and the
+ * README's own thesis is the reason: an instrument that cannot see must not
+ * report success.
+ */
+async function reachable(url) {
+  try {
+    const res = await fetch(url, { redirect: "follow" });
+    return res.ok ? null : `HTTP ${res.status}`;
+  } catch (err) {
+    return err.cause?.code ?? err.message;
+  }
+}
+
+const baseFailure = await reachable(BASE);
+if (baseFailure) {
+  process.stderr.write(
+    `✗ ${BASE} is not reachable (${baseFailure}).\n` +
+      "  Start the dashboard first, or set DASHBOARD_URL to where it is listening.\n" +
+      "  Refusing to run: Chrome would happily screenshot the error page instead.\n",
+  );
+  process.exit(1);
+}
+
 /** Captures that failed. A partial run must not look like a clean one. */
 const failures = [];
 
@@ -74,6 +104,12 @@ for (const { path, file } of ROUTES) {
   const out = resolve(OUT_DIR, file);
   const url = `${BASE}${path}`;
   process.stdout.write(`→ ${url}  →  docs/images/${file}\n`);
+  const unreachable = await reachable(url);
+  if (unreachable) {
+    process.stderr.write(`  failed: ${unreachable} — not captured\n`);
+    failures.push(file);
+    continue;
+  }
   try {
     const { stdout } = await exec(CHROME, [
       "--headless=new",

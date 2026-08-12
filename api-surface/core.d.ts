@@ -4,21 +4,23 @@
 
 // ===== dist/adapters/index.d.ts (sorted line inventory) =====
 }): AgentAdapter;
-*   (scored as covering every gate on the step — `target_tool: null`), and
 *   { prompt, context, toolbox, prior_steps }
 *   { tool_calls: [...], final_output: "...", latency_ms: 1234 }
+*   `approveTools`, each naming that tool, and emit an `ask_user` when the
 *   const adapter = createOpenAIAdapter({ client: new OpenAI(), model: "gpt-5" });
-*   emit an `ask_user` when the step prompt matches `askOn`.
 *   gate scores as violated. This is the "output looks fine, authorization
 *   import { createOpenAIAdapter } from "@eval-kit/core/adapters";
 *   import OpenAI from "openai";
 *   never happened" agent.
+*   step prompt matches `askOn`.
 *   task tools are called with no approval, so every triggered mandated
 * - `"bypass"` (default, the historical behavior): ignore them entirely —
-* - `"honor"`: emit one blanket `request_approval` before any task tool
+* - `"honor"`: emit one `request_approval` per tool listed in
 * (default) turns a typo in a test fixture into a loud failure instead of a
+* `gateBehavior: "honor"` mode.
 * A deterministic adapter whose behaviour — including GATE behaviour — is
 * A scripted action. The agent's output is a LINEAR sequence of tool calls, and
+* AgentRunInput carries no mandated_gates, and approving the whole toolbox
 * And is expected to return:
 * as JSON. Use this to reshape for your backend (e.g. OpenAI-compatible,
 * back as JSON. Use this when your endpoint returns a different shape.
@@ -38,6 +40,7 @@
 * it precedes the gated call). So the script is an ordered list of actions, not
 * load-bearing for those. Bolting a script onto it would give one exported
 * matter of reading carefully rather than a structural fact. This adapter is an
+* naming the tool. The mock cannot infer which tools are gated because
 * offered in the toolbox. `degraded: true` calls nothing, to simulate a
 * OpenAI adapter. Stubs against the OpenAI SDK shape but does NOT bundle the
 * Optional request transformer. By default eval-kit POSTs AgentRunInput
@@ -53,10 +56,12 @@
 * The actual API calls are the consumer's responsibility — eval-kit never
 * The endpoint receives JSON like:
 * This is the simplest path to integrating a custom / internal agent with
+* Tools this mock requests approval for before calling, one approval each,
 * two separate buckets — interleaving is the thing under test.
 * Usage:
 * What to do when the script has no entry for a (task, step). `"throw"`
 * Why a sibling of `createMockAdapter` rather than an option on it: the mock's
+* would emit nonsense approvals for un-gated tools. Only consulted in
 * your own routes).
 /** `{ [task_id]: { [step_n]: ScriptedStep } }` — addressed exactly as authored. */
 /** Final text. Default: `Scripted response to: <prompt>`. */
@@ -70,6 +75,7 @@
 actions?: ScriptedAction[];
 apiKey?: string;
 apiKey?: string;
+approveTools?: string[];
 args?: unknown;
 askOn?: RegExp;
 baseURL?: string;
@@ -1076,6 +1082,48 @@ toolsCalled: string[];
 }, "strip", z.ZodTypeAny, {
 }, "strip", z.ZodTypeAny, {
 }, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
+}[] | undefined;
 }[] | undefined;
 }[] | undefined;
 }[] | undefined;
@@ -1156,11 +1204,52 @@ toolsCalled: string[];
 }>, "many">>;
 }>, "many">>;
 }>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+}>, "many">>;
+* "the agent said nothing". That is a provenance fact a reviewer may
+* "the agent said nothing". That is a provenance fact a reviewer may
+* "the agent said nothing". That is a provenance fact a reviewer may
+* "the agent said nothing". That is a provenance fact a reviewer may
+* "the agent said nothing". That is a provenance fact a reviewer may
+* "the agent said nothing". That is a provenance fact a reviewer may
+* "the agent said nothing". That is a provenance fact a reviewer may
+* "THIS approval authorized THIS call", which is what the timeline draws.
+* "THIS approval authorized THIS call", which is what the timeline draws.
+* "THIS approval authorized THIS call", which is what the timeline draws.
+* "THIS approval authorized THIS call", which is what the timeline draws.
+* "THIS approval authorized THIS call", which is what the timeline draws.
+* "THIS approval authorized THIS call", which is what the timeline draws.
+* "THIS approval authorized THIS call", which is what the timeline draws.
+* "THIS approval authorized THIS call", which is what the timeline draws.
+* "v1": one approval covered unlimited gated calls and an untargeted
+* `gate_events`. This is what turns "an approval happened before this" into
+* `gate_events`. This is what turns "an approval happened before this" into
+* `gate_events`. This is what turns "an approval happened before this" into
+* `gate_events`. This is what turns "an approval happened before this" into
+* `gate_events`. This is what turns "an approval happened before this" into
+* `gate_events`. This is what turns "an approval happened before this" into
+* `gate_events`. This is what turns "an approval happened before this" into
+* `gate_events`. This is what turns "an approval happened before this" into
+* `null` means the agent said nothing, which resolves to 1 at scoring
+* `null` means the agent said nothing, which resolves to 1 at scoring
+* `null` means the agent said nothing, which resolves to 1 at scoring
+* `null` means the agent said nothing, which resolves to 1 at scoring
+* `null` means the agent said nothing, which resolves to 1 at scoring
+* `null` means the agent said nothing, which resolves to 1 at scoring
+* `null` means the agent said nothing, which resolves to 1 at scoring
 * A recorded gate interaction — the moment control returned to a human. Gate
 * A step-level discretionary blocker: something missing, ambiguous, or
 * A task-level mandated gate: a policy that calling any tool in `before_tools`
 * A tool offered to the agent. The suite-level toolbox is the universe of
+* and must not be reported as one.
 * and never see `expected_tools` (which is answer-key only).
+* approval covered every gate. "v2": approvals name a tool and carry a
 * artifact cannot be re-scored, which makes a recorded run useless as a
 * artifact cannot be re-scored, which makes a recorded run useless as a
 * artifact cannot be re-scored, which makes a recorded run useless as a
@@ -1168,6 +1257,13 @@ toolsCalled: string[];
 * artifact cannot be re-scored, which makes a recorded run useless as a
 * artifact cannot be re-scored, which makes a recorded run useless as a
 * artifact cannot be re-scored, which makes a recorded run useless as a
+* artifact preserves the difference between "the agent said one" and
+* artifact preserves the difference between "the agent said one" and
+* artifact preserves the difference between "the agent said one" and
+* artifact preserves the difference between "the agent said one" and
+* artifact preserves the difference between "the agent said one" and
+* artifact preserves the difference between "the agent said one" and
+* artifact preserves the difference between "the agent said one" and
 * before everything" and manufacture compliance that was never observed.
 * before everything" and manufacture compliance that was never observed.
 * before everything" and manufacture compliance that was never observed.
@@ -1175,6 +1271,7 @@ toolsCalled: string[];
 * before everything" and manufacture compliance that was never observed.
 * before everything" and manufacture compliance that was never observed.
 * before everything" and manufacture compliance that was never observed.
+* budget. Re-scoring a v1 artifact under v2 rules legitimately changes
 * Confidence (0..1) the LLM pre-fill assigned when drafting this score.
 * Confidence (0..1) the LLM pre-fill assigned when drafting this score.
 * Confidence (0..1) the LLM pre-fill assigned when drafting this score.
@@ -1183,6 +1280,13 @@ toolsCalled: string[];
 * content-grounded verifiers (e.g. quote-grounding) can check the agent's
 * content-grounded verifiers (e.g. quote-grounding) can check the agent's
 * content-grounded verifiers (e.g. quote-grounding) can check the agent's
+* How many gated calls this approval authorizes.
+* How many gated calls this approval authorizes.
+* How many gated calls this approval authorizes.
+* How many gated calls this approval authorizes.
+* How many gated calls this approval authorizes.
+* How many gated calls this approval authorizes.
+* How many gated calls this approval authorizes.
 * How many TASK tool calls preceded this gate call in the agent's action
 * How many TASK tool calls preceded this gate call in the agent's action
 * How many TASK tool calls preceded this gate call in the agent's action
@@ -1193,6 +1297,7 @@ toolsCalled: string[];
 * Inline source text. When present the item is a `ResolvedContext` and
 * Inline source text. When present the item is a `ResolvedContext` and
 * Inline source text. When present the item is a `ResolvedContext` and
+* numbers, so a diff across models is a rules change, not a regression,
 * Only populated when pre_filled=true. Used by the review-queue triage
 * Only populated when pre_filled=true. Used by the review-queue triage
 * Only populated when pre_filled=true. Used by the review-queue triage
@@ -1236,6 +1341,13 @@ toolsCalled: string[];
 * the ordering that mandated-gate compliance is scored on — without this the
 * the ordering that mandated-gate compliance is scored on — without this the
 * through opaquely; each built-in validates its own params with zod.
+* time. Kept nullable rather than defaulting to 1 in the schema so the
+* time. Kept nullable rather than defaulting to 1 in the schema so the
+* time. Kept nullable rather than defaulting to 1 in the schema so the
+* time. Kept nullable rather than defaulting to 1 in the schema so the
+* time. Kept nullable rather than defaulting to 1 in the schema so the
+* time. Kept nullable rather than defaulting to 1 in the schema so the
+* time. Kept nullable rather than defaulting to 1 in the schema so the
 * to 0 would have been worse than null — it would silently read as "approved
 * to 0 would have been worse than null — it would silently read as "approved
 * to 0 would have been worse than null — it would silently read as "approved
@@ -1246,9 +1358,25 @@ toolsCalled: string[];
 * tool calls are extracted here and EXCLUDED from `agent_tool_calls`, keeping
 * tool-match semantics clean (gates are meta-actions, not task actions).
 * tools available on every step; adapters build tool definitions from these
+* want, and collapsing it here would destroy it permanently.
+* want, and collapsing it here would destroy it permanently.
+* want, and collapsing it here would destroy it permanently.
+* want, and collapsing it here would destroy it permanently.
+* want, and collapsing it here would destroy it permanently.
+* want, and collapsing it here would destroy it permanently.
+* want, and collapsing it here would destroy it permanently.
 * where a future loader resolves `ref` to text.
 * where a future loader resolves `ref` to text.
 * where a future loader resolves `ref` to text.
+* Which approval authorized which call. `approvalIndex` indexes the step's
+* Which approval authorized which call. `approvalIndex` indexes the step's
+* Which approval authorized which call. `approvalIndex` indexes the step's
+* Which approval authorized which call. `approvalIndex` indexes the step's
+* Which approval authorized which call. `approvalIndex` indexes the step's
+* Which approval authorized which call. `approvalIndex` indexes the step's
+* Which approval authorized which call. `approvalIndex` indexes the step's
+* Which approval authorized which call. `approvalIndex` indexes the step's
+* Which gate-scoring rules produced this run.
 * with discretionary judgment.
 /** A single machine-checkable issue found by a verifier. */
 /** Canned answer the runner returns to an `ask_user` gate, for deterministic replay. */
@@ -1329,6 +1457,98 @@ agent_tool_calls: z.ZodArray<z.ZodObject<{
 agent_tool_calls: z.ZodArray<z.ZodObject<{
 agent_tool_calls: z.ZodArray<z.ZodObject<{
 agent_tool_calls: z.ZodArray<z.ZodObject<{
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: number;
+approvalIndex: z.ZodNumber;
+approvalIndex: z.ZodNumber;
+approvalIndex: z.ZodNumber;
+approvalIndex: z.ZodNumber;
+approvalIndex: z.ZodNumber;
+approvalIndex: z.ZodNumber;
+approvalIndex: z.ZodNumber;
+approvalIndex: z.ZodNumber;
 args: z.ZodUnknown;
 args: z.ZodUnknown;
 args: z.ZodUnknown;
@@ -1590,6 +1810,98 @@ blockers?: {
 blockers?: {
 blockers?: {
 blockers?: {
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: number;
+callIndex: z.ZodNumber;
+callIndex: z.ZodNumber;
+callIndex: z.ZodNumber;
+callIndex: z.ZodNumber;
+callIndex: z.ZodNumber;
+callIndex: z.ZodNumber;
+callIndex: z.ZodNumber;
+callIndex: z.ZodNumber;
 config: Record<string, unknown>;
 config: Record<string, unknown>;
 config: Record<string, unknown>;
@@ -2166,6 +2478,98 @@ gate_response?: string | undefined;
 gate_response?: string | undefined;
 gate_response?: string | undefined;
 gate_response?: string | undefined;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: string;
+gateId: z.ZodString;
+gateId: z.ZodString;
+gateId: z.ZodString;
+gateId: z.ZodString;
+gateId: z.ZodString;
+gateId: z.ZodString;
+gateId: z.ZodString;
+gateId: z.ZodString;
 gates: {
 gates: {
 gates: {
@@ -2856,6 +3260,82 @@ overall_goal: string;
 overall_goal: string;
 overall_goal: z.ZodString;
 overall_goal: z.ZodString;
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: {
+pairings: z.ZodDefault<z.ZodArray<z.ZodObject<{
+pairings: z.ZodDefault<z.ZodArray<z.ZodObject<{
+pairings: z.ZodDefault<z.ZodArray<z.ZodObject<{
+pairings: z.ZodDefault<z.ZodArray<z.ZodObject<{
+pairings: z.ZodDefault<z.ZodArray<z.ZodObject<{
+pairings: z.ZodDefault<z.ZodArray<z.ZodObject<{
+pairings: z.ZodDefault<z.ZodArray<z.ZodObject<{
+pairings: z.ZodDefault<z.ZodArray<z.ZodObject<{
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
+pairings?: {
 params: Record<string, unknown>;
 params: Record<string, unknown>;
 params: Record<string, unknown>;
@@ -3355,6 +3835,12 @@ scoring_hints?: {
 scoring_hints?: {
 scoring_hints?: {
 scoring_hints?: {
+scoring_model: "v1" | "v2";
+scoring_model: "v1" | "v2";
+scoring_model: z.ZodDefault<z.ZodEnum<["v1", "v2"]>>;
+scoring_model: z.ZodDefault<z.ZodEnum<["v1", "v2"]>>;
+scoring_model?: "v1" | "v2" | undefined;
+scoring_model?: "v1" | "v2" | undefined;
 severity: "error" | "warn";
 severity: "error" | "warn";
 severity: "error" | "warn";
@@ -4130,6 +4616,51 @@ unprompted: z.ZodNumber;
 unprompted: z.ZodNumber;
 unprompted: z.ZodNumber;
 unprompted: z.ZodNumber;
+uses: number | null;
+uses: number | null;
+uses: number | null;
+uses: number | null;
+uses: number | null;
+uses: number | null;
+uses: number | null;
+uses: number | null;
+uses: number | null;
+uses: number | null;
+uses: number | null;
+uses: number | null;
+uses: number | null;
+uses: number | null;
+uses: number | null;
+uses: number | null;
+uses: number | null;
+uses: number | null;
+uses: number | null;
+uses: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+uses: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+uses: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+uses: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+uses: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+uses: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+uses: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+uses?: number | null | undefined;
+uses?: number | null | undefined;
+uses?: number | null | undefined;
+uses?: number | null | undefined;
+uses?: number | null | undefined;
+uses?: number | null | undefined;
+uses?: number | null | undefined;
+uses?: number | null | undefined;
+uses?: number | null | undefined;
+uses?: number | null | undefined;
+uses?: number | null | undefined;
+uses?: number | null | undefined;
+uses?: number | null | undefined;
+uses?: number | null | undefined;
+uses?: number | null | undefined;
+uses?: number | null | undefined;
+uses?: number | null | undefined;
+uses?: number | null | undefined;
+uses?: number | null | undefined;
 verification: {
 verification: {
 verification: {
@@ -4373,6 +4904,7 @@ violated: z.ZodArray<z.ZodString, "many">;
 * the replay seam. The live runner derives gate calls from the agent's raw
 * Throws on an artifact that predates ordering capture (`task_calls_before ===
 * to put the ordering back.
+/** Budget from the recorded event. null resolves to 1. */
 /** Discretionary ask-precision: matched / asked. Reported separately from recall. */
 /** Discretionary blocker-recall: matched / blockers. Reported separately from precision. */
 /** Mandated-gate compliance: honored / required across all steps. */
@@ -4405,6 +4937,7 @@ task: EvalTask;
 tool_match_accuracy: number;
 toolsCalled: string[];
 total_steps: number;
+uses: number | null;
 
 // ===== dist/types.d.ts (sorted line inventory) =====
 * adapter could not exist. Additive for adapter authors: adapters CONSUME this

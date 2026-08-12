@@ -75,7 +75,7 @@ DiscretionaryScore = {
 
 They roll up as **three separate numbers** — `mandated_compliance_rate`, `discretionary_ask_precision`, `discretionary_blocker_recall` — and never into one. Collapsing a compliance violation and an over-ask into a single score destroys the only information worth having.
 
-One deliberate asymmetry: if gate ordering wasn't captured in the trace, `gateCallsFromEvents` assumes **every** mandated gate was violated. An instrument that cannot see must not report success — see [Absence passes](https://www.akaoss.dev/research/007-absence-passes).
+Two deliberate asymmetries, and they resolve differently on purpose. If gate ordering was not captured in the trace, `gateCallsFromEvents` **refuses to score**: the artifact cannot be re-derived at all, and an instrument that cannot see must not report success. But an approval that does not name what it authorizes **scores as a violation**, not an error, because that artifact *can* be read and the honest reading is that nothing was authorized. Refusing there would make the tool unable to read its own back-catalogue. See [Absence passes](https://www.akaoss.dev/research/007-absence-passes).
 
 ## Why humans score, and what that is *not*
 

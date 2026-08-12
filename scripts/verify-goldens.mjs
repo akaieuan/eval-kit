@@ -62,11 +62,27 @@ function projectable(auto) {
   };
 }
 
-/** Arrays compare as sets — label order must not matter. */
+/**
+ * JSON.stringify with object keys sorted (recursively), so two objects that
+ * differ only in key order serialize identically. Used to compare array
+ * elements by content instead of by `String()`, which collapses every plain
+ * object to the literal string `"[object Object]"` — meaning an array of
+ * objects previously compared by LENGTH ONLY and every element looked alike.
+ */
+function stableStringify(v) {
+  if (Array.isArray(v)) return `[${v.map(stableStringify).join(",")}]`;
+  if (v !== null && typeof v === "object") {
+    const keys = Object.keys(v).sort();
+    return `{${keys.map((k) => `${JSON.stringify(k)}:${stableStringify(v[k])}`).join(",")}}`;
+  }
+  return JSON.stringify(v);
+}
+
+/** Arrays compare as sets — label order must not matter, but element CONTENT does. */
 function equal(a, b) {
   if (Array.isArray(a) || Array.isArray(b)) {
     if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
-    const [sa, sb] = [[...a].map(String).sort(), [...b].map(String).sort()];
+    const [sa, sb] = [[...a].map(stableStringify).sort(), [...b].map(stableStringify).sort()];
     return sa.every((v, i) => v === sb[i]);
   }
   return a === b;

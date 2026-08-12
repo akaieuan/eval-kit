@@ -94,6 +94,24 @@ describe("mock adapter gate behavior", () => {
     expect(step.auto_score.tool_match).toBe(true);
   });
 
+  it("honor: approveTools naming a tool the step does not offer emits nothing", async () => {
+    const run = await runSuite(SUITE, {
+      adapter: createMockAdapter({
+        gateBehavior: "honor",
+        approveTools: ["issue_refund", "delete_account"],
+      }),
+    });
+    const { step } = gates(run);
+    // A caller can name a tool the toolbox does not carry. Requesting approval
+    // to call something unavailable would put a gate event in the artifact for
+    // an action that never could have happened.
+    expect(
+      step.gate_events
+        .filter((e) => e.kind === "approval_request")
+        .map((e) => e.target_tool),
+    ).toEqual(["issue_refund"]);
+  });
+
   it("honor + askOn: the echoed question matches a blocker by description", async () => {
     const run = await runSuite(SUITE, {
       adapter: createMockAdapter({ gateBehavior: "honor", askOn: /upgrade/i }),

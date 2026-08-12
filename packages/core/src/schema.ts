@@ -143,6 +143,16 @@ export const GateEvent = z.object({
    * before everything" and manufacture compliance that was never observed.
    */
   task_calls_before: z.number().int().nonnegative().nullable().default(null),
+  /**
+   * How many gated calls this approval authorizes.
+   *
+   * `null` means the agent said nothing, which resolves to 1 at scoring
+   * time. Kept nullable rather than defaulting to 1 in the schema so the
+   * artifact preserves the difference between "the agent said one" and
+   * "the agent said nothing". That is a provenance fact a reviewer may
+   * want, and collapsing it here would destroy it permanently.
+   */
+  uses: z.number().int().positive().nullable().default(null),
 });
 export type GateEvent = z.infer<typeof GateEvent>;
 

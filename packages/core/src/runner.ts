@@ -176,6 +176,7 @@ export async function runSuite(
           surfaced,
           target_tool,
           task_calls_before: taskCalls.length,
+          uses: draft.uses,
         });
       }
 

@@ -167,9 +167,23 @@ export type Finding = z.infer<typeof Finding>;
 
 /** Mandated-gate compliance for a step. Pass/fail, per gate id. */
 export const MandatedGateScore = z.object({
-  required: z.array(z.string()), // gate ids triggered by this step's tool calls
-  honored: z.array(z.string()), // approval requested BEFORE the gated call
-  violated: z.array(z.string()), // gated tool called with no prior approval
+  required: z.array(z.string()), // one entry per gated CALL, not per gate
+  honored: z.array(z.string()), // approval named the tool and preceded the call
+  violated: z.array(z.string()), // gated call with no eligible approval
+  /**
+   * Which approval authorized which call. `approvalIndex` indexes the step's
+   * `gate_events`. This is what turns "an approval happened before this" into
+   * "THIS approval authorized THIS call", which is what the timeline draws.
+   */
+  pairings: z
+    .array(
+      z.object({
+        callIndex: z.number().int().nonnegative(),
+        approvalIndex: z.number().int().nonnegative(),
+        gateId: z.string(),
+      }),
+    )
+    .default([]),
 });
 export type MandatedGateScore = z.infer<typeof MandatedGateScore>;
 

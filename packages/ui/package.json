@@ -43,7 +43,7 @@
     "dev": "tsup --watch",
     "prepublishOnly": "pnpm run build",
     "typecheck": "tsc --noEmit",
-    "test": "echo 'no ui tests yet'",
+    "test": "vitest run",
     "clean": "rm -rf dist"
   },
   "dependencies": {
@@ -74,6 +74,7 @@
     "react-dom": "^19.0.0",
     "tailwindcss": "^3.4.17",
     "tsup": "^8.3.5",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vitest": "^4.1.8"
   }
 }

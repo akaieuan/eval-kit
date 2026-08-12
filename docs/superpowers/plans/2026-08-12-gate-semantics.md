@@ -496,22 +496,56 @@ Expected: FAIL. Record which assertions fail. They fail because the mock emits o
 
 - [ ] **Step 2: Make honor mode name its targets**
 
-In `packages/core/src/adapters/mock.ts`, replace the blanket approval inside the `gateBehavior === "honor"` branch. The mock knows which task tools it is about to call, so it approves each gated-looking one by name:
+Pre-flight ruling (owner, 2026-08-12): the mock gets an explicit
+`approveTools: string[]` option rather than approving everything in the
+toolbox. `AgentRunInput` carries no `mandated_gates`, so the mock cannot know
+which tools are gated; looping the toolbox would emit seven approvals per step
+on the support suite, including "requesting approval to call `lookup_order`".
+The mock is a test double, so telling it what to approve is legitimate, and it
+keeps "should an agent know its own policy?" as a separate design question
+instead of smuggling it in through `AgentRunInput`.
+
+In `packages/core/src/adapters/mock.ts`, add to `MockAdapterOptions`:
+
+```ts
+  /**
+   * Tools this mock requests approval for before calling, one approval each,
+   * naming the tool. The mock cannot infer which tools are gated because
+   * AgentRunInput carries no mandated_gates, and approving the whole toolbox
+   * would emit nonsense approvals for un-gated tools. Only consulted in
+   * `gateBehavior: "honor"` mode.
+   */
+  approveTools?: string[];
+```
+
+Destructure it alongside the others:
+
+```ts
+  const approveTools = opts.approveTools ?? [];
+```
+
+Add it to the recorded `config` so the artifact stays self-describing:
+
+```ts
+      ...(approveTools.length > 0 ? { approve_tools: approveTools } : {}),
+```
+
+Then replace the blanket approval inside the `gateBehavior === "honor"` branch:
 
 ```ts
         if (offered.has(REQUEST_APPROVAL_TOOL)) {
-          // One approval per task tool, each NAMING that tool. The previous
-          // version emitted a single untargeted approval, which under v2
-          // rules authorizes nothing, and meant no shipped fixture ever
-          // exercised targeted approval.
-          for (const t of input.toolbox) {
-            if (isGateTool(t.name)) continue;
+          // One approval per tool the caller declared gated, each NAMING that
+          // tool. The previous version emitted a single untargeted approval,
+          // which under v2 rules authorizes nothing, and meant no shipped
+          // fixture ever exercised targeted approval.
+          for (const name of approveTools) {
+            if (!offered.has(name)) continue;
             gatePrefix.push({
               tool: REQUEST_APPROVAL_TOOL,
               args: {
                 reason: "mock honor mode: approval precedes this action",
-                summary: `Requesting approval to call ${t.name}`,
-                target_tool: t.name,
+                summary: `Requesting approval to call ${name}`,
+                target_tool: name,
                 uses: 1,
               },
               result: { ok: true, mock: true },
@@ -586,6 +620,15 @@ blanket path."
 - Produces: demo artifacts under v2 rules whose byte-identical property still holds.
 
 - [ ] **Step 1: Rebuild and regenerate**
+
+First, pass the gated tool names through in `scripts/gen-gate-demo.mjs`. The
+honored variant's opts gain:
+
+```js
+      approveTools: ["issue_refund", "apply_account_credit"],
+```
+
+Then:
 
 ```bash
 pnpm -r build

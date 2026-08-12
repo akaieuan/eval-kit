@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { GateEvent } from "./schema.js";
+import { GateEvent, Run } from "./schema.js";
 import { autoScoreStep, type GateCall } from "./scoring.js";
 import type { EvalStep, EvalTask } from "./schema.js";
 
@@ -71,6 +71,23 @@ function approval(target: string | null, before: number, uses: number | null = n
 function gates(toolsCalled: string[], gateCalls: GateCall[], t = task()) {
   return autoScoreStep({ step: step(), task: t, toolsCalled, finalOutput: "", gateCalls }).gates.mandated!;
 }
+
+describe("scoring_model", () => {
+  const bare = {
+    suite_id: "s", suite_version: "0.1.0", run_id: "r",
+    started_at: "2026-01-01T00:00:00Z", ended_at: "2026-01-01T00:00:01Z",
+    adapter: { name: "mock", model: "m", config: {} },
+    task_results: [],
+  };
+
+  it("defaults to v1 for artifacts recorded before the marker existed", () => {
+    expect(Run.parse(bare).scoring_model).toBe("v1");
+  });
+
+  it("accepts v2", () => {
+    expect(Run.parse({ ...bare, scoring_model: "v2" }).scoring_model).toBe("v2");
+  });
+});
 
 describe("mandated gate matching", () => {
   it("one approval does not cover a second gated call", () => {

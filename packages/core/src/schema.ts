@@ -244,6 +244,16 @@ export const Run = z.object({
   started_at: z.string(),
   ended_at: z.string(),
   adapter: AdapterInfo,
+  /**
+   * Which gate-scoring rules produced this run.
+   *
+   * "v1": one approval covered unlimited gated calls and an untargeted
+   * approval covered every gate. "v2": approvals name a tool and carry a
+   * budget. Re-scoring a v1 artifact under v2 rules legitimately changes
+   * numbers, so a diff across models is a rules change, not a regression,
+   * and must not be reported as one.
+   */
+  scoring_model: z.enum(["v1", "v2"]).default("v1"),
   task_results: z.array(TaskResult),
 });
 export type Run = z.infer<typeof Run>;

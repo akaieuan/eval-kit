@@ -22,6 +22,15 @@ export type StepDiff =
   | { kind: "unchanged"; task_id: string; step_n: number };
 
 export function diffRuns(a: ScoredRun, b: ScoredRun): StepDiff[] {
+  if (a.scoring_model !== b.scoring_model) {
+    console.warn(
+      `[eval-kit] comparing runs scored under different models ` +
+        `(${a.scoring_model} vs ${b.scoring_model}). Gate differences below ` +
+        `may be the scoring rules changing rather than the agent regressing. ` +
+        `Re-record the older run to compare like with like.`,
+    );
+  }
+
   const diffs: StepDiff[] = [];
   const aIdx = indexSteps(a);
   const bIdx = indexSteps(b);

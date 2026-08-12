@@ -220,6 +220,10 @@ export async function runSuite(
       model: adapter.model,
       config: adapter.config,
     },
+    // runs produced by this runner are scored by the v2 matcher (budgeted,
+    // per-tool-targeted approvals), so they must be marked accordingly.
+    // the schema's "v1" default is for artifacts recorded before the field existed.
+    scoring_model: "v2",
     task_results,
   };
 }

@@ -101,7 +101,30 @@ export const EvalTask = z.object({
 });
 export type EvalTask = z.infer<typeof EvalTask>;
 
+/**
+ * The version of the trace + scoring protocol these artifacts conform to.
+ *
+ * One source of truth for the emitters (`runner.ts`), the generated JSON Schema
+ * (`scripts/gen-schemas.mjs`) and the docs. Bump per the policy table in
+ * `docs/SCHEMA.md`: adding an optional field is a patch, adding a required
+ * field or renaming one is a major.
+ */
+export const SCHEMA_VERSION = "1.0.0";
+
+/**
+ * `major.minor.patch`, validated — an unparseable version is worse than none,
+ * because a consumer will branch on it. Defaults rather than being optional so
+ * every parsed artifact carries a usable value while pre-field artifacts on
+ * disk still load.
+ */
+export const SchemaVersion = z
+  .string()
+  .regex(/^\d+\.\d+\.\d+$/, "schema_version must be major.minor.patch")
+  .default(SCHEMA_VERSION);
+
 export const EvalSuite = z.object({
+  /** See `SCHEMA_VERSION`. Optional in v1; required in v2+. */
+  schema_version: SchemaVersion,
   suite: z.object({
     id: z.string(),
     version: z.string(),
@@ -238,6 +261,16 @@ export const AdapterInfo = z.object({
 export type AdapterInfo = z.infer<typeof AdapterInfo>;
 
 export const Run = z.object({
+  /**
+   * Which version of the trace + scoring PROTOCOL this artifact conforms to —
+   * see `docs/SCHEMA.md`. Deliberately independent of the `@eval-kit/*` package
+   * version and of `suite_version`: three axes that must not be conflated.
+   *
+   * Optional in v1, so artifacts recorded before the field existed parse as
+   * "1.0.0". v2 will make it required and treat absence as a hard failure.
+   * Same shape as `scoring_model` below, for the same reason.
+   */
+  schema_version: SchemaVersion,
   suite_id: z.string(),
   suite_version: z.string(),
   run_id: z.string(),

@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "step-score.schema.json",
+  "title": "eval-kit StepScore",
+  "description": "One reviewer's judgement of one step: golden truth, per-dimension rubric, notes. Produced in the dashboard, merged into a Run by `mergeScores`. See docs/SCHEMA.md.",
+  "x-eval-kit": {
+    "schema_version": "1.0.0",
+    "generated_from": "packages/core/src/schema.ts (StepScore)",
+    "generator": "scripts/gen-schemas.mjs",
+    "warning": "GENERATED FILE — do not edit by hand. Change the Zod schema and run `pnpm schemas:build`."
+  },
+  "additionalProperties": false,
+  "properties": {
+    "dimensions": {
+      "additionalProperties": {
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "type": "number"
+      },
+      "default": {},
+      "propertyNames": {
+        "enum": [
+          "explainability",
+          "agency_preservation",
+          "long_term_capability",
+          "calibration",
+          "collaborative_performance"
+        ]
+      },
+      "type": "object"
+    },
+    "distraction_caught": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "golden_truth": {
+      "anyOf": [
+        {
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "pre_fill_confidence": {
+      "maximum": 1,
+      "minimum": 0,
+      "type": "number"
+    },
+    "pre_filled": {
+      "default": false,
+      "type": "boolean"
+    },
+    "reviewed_at": {
+      "type": "string"
+    },
+    "reviewer_id": {
+      "type": "string"
+    },
+    "reviewer_notes": {
+      "default": "",
+      "type": "string"
+    },
+    "step_n": {
+      "exclusiveMinimum": 0,
+      "type": "integer"
+    },
+    "tool_match": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "const": "partial",
+          "type": "string"
+        }
+      ]
+    }
+  },
+  "required": [
+    "step_n",
+    "tool_match",
+    "golden_truth",
+    "distraction_caught",
+    "reviewer_id",
+    "reviewed_at"
+  ],
+  "type": "object"
+}

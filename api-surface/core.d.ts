@@ -649,7 +649,7 @@ import { ToolDecl } from './schema.js';
 
 // ===== dist/index.d.ts (sorted line inventory) =====
 export { A as AgentAdapter, a as AgentRunInput, b as AgentRunOutput } from './types.js';
-export { AdapterInfo, AutoScore, Blocker, ContextItem, Dimension, DiscretionaryScore, EvalStep, EvalSuite, EvalTask, Finding, GateEvent, MandatedGate, MandatedGateScore, RubricScore, Run, ScoredRun, ScoredStepResult, ScoredTaskResult, ScoringHints, StepResult, StepScore, TaskResult, ToolCall, ToolDecl, VerifierRef, parseRun, parseScoredRun, parseSuite } from './schema.js';
+export { AdapterInfo, AutoScore, Blocker, ContextItem, Dimension, DiscretionaryScore, EvalStep, EvalSuite, EvalTask, Finding, GateEvent, MandatedGate, MandatedGateScore, RubricScore, Run, SCHEMA_VERSION, SchemaVersion, ScoredRun, ScoredStepResult, ScoredTaskResult, ScoringHints, StepResult, StepScore, TaskResult, ToolCall, ToolDecl, VerifierRef, parseRun, parseScoredRun, parseSuite } from './schema.js';
 export { AnthropicAdapterOptions, HttpAdapterOptions, MockAdapterOptions, OpenAIAdapterOptions, Script, ScriptedAction, ScriptedAdapterOptions, ScriptedStep, ToolDefinition, createAnthropicAdapter, createHttpAdapter, createMockAdapter, createOpenAIAdapter, createScriptedAdapter } from './adapters/index.js';
 export { ASK_USER_TOOL, GATE_TOOLBOX, GATE_TOOL_NAMES, REQUEST_APPROVAL_TOOL, isGateTool } from './gates.js';
 export { BUILT_IN_VERIFIERS, ResolvedContext, Verifier, VerifierInput, formatJsonVerifier, getVerifier, listVerifiers, quoteGroundingVerifier, registerVerifier, requiredSectionsVerifier, runStepVerifiers } from './verifiers/index.js';
@@ -1212,6 +1212,7 @@ toolsCalled: string[];
 }>, "many">>;
 }>, "many">>;
 }>, "many">>;
+* "1.0.0". v2 will make it required and treat absence as a hard failure.
 * "the agent said nothing". That is a provenance fact a reviewer may
 * "the agent said nothing". That is a provenance fact a reviewer may
 * "the agent said nothing". That is a provenance fact a reviewer may
@@ -1228,6 +1229,8 @@ toolsCalled: string[];
 * "THIS approval authorized THIS call", which is what the timeline draws.
 * "THIS approval authorized THIS call", which is what the timeline draws.
 * "v1": one approval covered unlimited gated calls and an untargeted
+* (`scripts/gen-schemas.mjs`) and the docs. Bump per the policy table in
+* `docs/SCHEMA.md`: adding an optional field is a patch, adding a required
 * `gate_events`. This is what turns "an approval happened before this" into
 * `gate_events`. This is what turns "an approval happened before this" into
 * `gate_events`. This is what turns "an approval happened before this" into
@@ -1236,6 +1239,7 @@ toolsCalled: string[];
 * `gate_events`. This is what turns "an approval happened before this" into
 * `gate_events`. This is what turns "an approval happened before this" into
 * `gate_events`. This is what turns "an approval happened before this" into
+* `major.minor.patch`, validated — an unparseable version is worse than none,
 * `null` means the agent said nothing, which resolves to 1 at scoring
 * `null` means the agent said nothing, which resolves to 1 at scoring
 * `null` means the agent said nothing, which resolves to 1 at scoring
@@ -1264,6 +1268,7 @@ toolsCalled: string[];
 * artifact preserves the difference between "the agent said one" and
 * artifact preserves the difference between "the agent said one" and
 * artifact preserves the difference between "the agent said one" and
+* because a consumer will branch on it. Defaults rather than being optional so
 * before everything" and manufacture compliance that was never observed.
 * before everything" and manufacture compliance that was never observed.
 * before everything" and manufacture compliance that was never observed.
@@ -1280,6 +1285,9 @@ toolsCalled: string[];
 * content-grounded verifiers (e.g. quote-grounding) can check the agent's
 * content-grounded verifiers (e.g. quote-grounding) can check the agent's
 * content-grounded verifiers (e.g. quote-grounding) can check the agent's
+* disk still load.
+* every parsed artifact carries a usable value while pre-field artifacts on
+* field or renaming one is a major.
 * How many gated calls this approval authorizes.
 * How many gated calls this approval authorizes.
 * How many gated calls this approval authorizes.
@@ -1298,10 +1306,12 @@ toolsCalled: string[];
 * Inline source text. When present the item is a `ResolvedContext` and
 * Inline source text. When present the item is a `ResolvedContext` and
 * numbers, so a diff across models is a rules change, not a regression,
+* One source of truth for the emitters (`runner.ts`), the generated JSON Schema
 * Only populated when pre_filled=true. Used by the review-queue triage
 * Only populated when pre_filled=true. Used by the review-queue triage
 * Only populated when pre_filled=true. Used by the review-queue triage
 * Only populated when pre_filled=true. Used by the review-queue triage
+* Optional in v1, so artifacts recorded before the field existed parse as
 * ordering unknown, so mandated-gate compliance is NOT re-derivable. Defaulting
 * ordering unknown, so mandated-gate compliance is NOT re-derivable. Defaulting
 * ordering unknown, so mandated-gate compliance is NOT re-derivable. Defaulting
@@ -1322,6 +1332,8 @@ toolsCalled: string[];
 * replayable golden. `null` on artifacts written before this field existed:
 * replayable golden. `null` on artifacts written before this field existed:
 * requires prior human approval. Scored pass/fail (compliance), never averaged
+* Same shape as `scoring_model` below, for the same reason.
+* see `docs/SCHEMA.md`. Deliberately independent of the `@eval-kit/*` package
 * sequence. Splitting gate calls out of `agent_tool_calls` otherwise destroys
 * sequence. Splitting gate calls out of `agent_tool_calls` otherwise destroys
 * sequence. Splitting gate calls out of `agent_tool_calls` otherwise destroys
@@ -1340,6 +1352,7 @@ toolsCalled: string[];
 * the ordering that mandated-gate compliance is scored on — without this the
 * the ordering that mandated-gate compliance is scored on — without this the
 * the ordering that mandated-gate compliance is scored on — without this the
+* The version of the trace + scoring protocol these artifacts conform to.
 * through opaquely; each built-in validates its own params with zod.
 * time. Kept nullable rather than defaulting to 1 in the schema so the
 * time. Kept nullable rather than defaulting to 1 in the schema so the
@@ -1358,6 +1371,7 @@ toolsCalled: string[];
 * tool calls are extracted here and EXCLUDED from `agent_tool_calls`, keeping
 * tool-match semantics clean (gates are meta-actions, not task actions).
 * tools available on every step; adapters build tool definitions from these
+* version and of `suite_version`: three axes that must not be conflated.
 * want, and collapsing it here would destroy it permanently.
 * want, and collapsing it here would destroy it permanently.
 * want, and collapsing it here would destroy it permanently.
@@ -1377,6 +1391,7 @@ toolsCalled: string[];
 * Which approval authorized which call. `approvalIndex` indexes the step's
 * Which approval authorized which call. `approvalIndex` indexes the step's
 * Which gate-scoring rules produced this run.
+* Which version of the trace + scoring PROTOCOL this artifact conforms to —
 * with discretionary judgment.
 /** A single machine-checkable issue found by a verifier. */
 /** Canned answer the runner returns to an `ask_user` gate, for deterministic replay. */
@@ -1391,6 +1406,7 @@ toolsCalled: string[];
 /** Did the agent call task tools anyway on a distraction? null on non-distractions. */
 /** Discretionary blocker handling for a step. Precision/recall, never averaged. */
 /** Mandated-gate compliance for a step. Pass/fail, per gate id. */
+/** See `SCHEMA_VERSION`. Optional in v1; required in v2+. */
 adapter: {
 adapter: {
 adapter: {
@@ -1957,6 +1973,8 @@ declare const MandatedGate: z.ZodObject<{
 declare const MandatedGateScore: z.ZodObject<{
 declare const RubricScore: z.ZodUnion<[z.ZodLiteral<0>, z.ZodLiteral<1>, z.ZodLiteral<2>, z.ZodLiteral<3>]>;
 declare const Run: z.ZodObject<{
+declare const SCHEMA_VERSION = "1.0.0";
+declare const SchemaVersion: z.ZodDefault<z.ZodString>;
 declare const ScoredRun: z.ZodObject<{
 declare const ScoredStepResult: z.ZodObject<{
 declare const ScoredTaskResult: z.ZodObject<{
@@ -2371,7 +2389,7 @@ expected_tools?: string[] | undefined;
 expected_tools?: string[] | undefined;
 expected_tools?: string[] | undefined;
 expected_tools?: string[] | undefined;
-export { AdapterInfo, AutoScore, Blocker, ContextItem, Dimension, DiscretionaryScore, EvalStep, EvalSuite, EvalTask, Finding, GateEvent, MandatedGate, MandatedGateScore, RubricScore, Run, ScoredRun, ScoredStepResult, ScoredTaskResult, ScoringHints, StepResult, StepScore, TaskResult, ToolCall, ToolDecl, VerifierRef, parseRun, parseScoredRun, parseSuite };
+export { AdapterInfo, AutoScore, Blocker, ContextItem, Dimension, DiscretionaryScore, EvalStep, EvalSuite, EvalTask, Finding, GateEvent, MandatedGate, MandatedGateScore, RubricScore, Run, SCHEMA_VERSION, SchemaVersion, ScoredRun, ScoredStepResult, ScoredTaskResult, ScoringHints, StepResult, StepScore, TaskResult, ToolCall, ToolDecl, VerifierRef, parseRun, parseScoredRun, parseSuite };
 findings: {
 findings: {
 findings: {
@@ -3803,6 +3821,15 @@ run_id: string;
 run_id: string;
 run_id: z.ZodString;
 run_id: z.ZodString;
+schema_version: string;
+schema_version: string;
+schema_version: string;
+schema_version: z.ZodDefault<z.ZodString>;
+schema_version: z.ZodDefault<z.ZodString>;
+schema_version: z.ZodDefault<z.ZodString>;
+schema_version?: string | undefined;
+schema_version?: string | undefined;
+schema_version?: string | undefined;
 score: {
 score: {
 score: {

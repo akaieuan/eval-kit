@@ -26,6 +26,8 @@ exports[`@eval-kit/core runtime exports 1`] = `
   "REQUEST_APPROVAL_TOOL",
   "RubricScore",
   "Run",
+  "SCHEMA_VERSION",
+  "SchemaVersion",
   "ScoredRun",
   "ScoredStepResult",
   "ScoredTaskResult",

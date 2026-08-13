@@ -1,0 +1,292 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "eval-suite.schema.json",
+  "title": "eval-kit EvalSuite",
+  "description": "A suite of evaluation tasks, authored as YAML. Input to `eval-kit run`. See docs/SCHEMA.md.",
+  "x-eval-kit": {
+    "schema_version": "1.0.0",
+    "generated_from": "packages/core/src/schema.ts (EvalSuite)",
+    "generator": "scripts/gen-schemas.mjs",
+    "warning": "GENERATED FILE — do not edit by hand. Change the Zod schema and run `pnpm schemas:build`."
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "default": "1.0.0",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "type": "string"
+    },
+    "suite": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "dimensions_in_scope": {
+          "items": {
+            "enum": [
+              "explainability",
+              "agency_preservation",
+              "long_term_capability",
+              "calibration",
+              "collaborative_performance"
+            ],
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "id": {
+          "type": "string"
+        },
+        "target_agent_type": {
+          "type": "string"
+        },
+        "tasks": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "context_items": {
+                "default": [],
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "content": {
+                      "type": "string"
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "ref": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "enum": [
+                        "pdf",
+                        "url",
+                        "text",
+                        "image",
+                        "canvas",
+                        "other"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "label",
+                    "ref"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "id": {
+                "type": "string"
+              },
+              "initial_purpose": {
+                "type": "string"
+              },
+              "is_distraction": {
+                "default": false,
+                "type": "boolean"
+              },
+              "mandated_gates": {
+                "default": [],
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "before_tools": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "minItems": 1,
+                      "type": "array"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "before_tools",
+                    "description"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "notes_on_observed_runs": {
+                "type": "string"
+              },
+              "overall_goal": {
+                "type": "string"
+              },
+              "steps": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "blockers": {
+                      "default": [],
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "description": {
+                            "type": "string"
+                          },
+                          "id": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "description"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "expected_tools": {
+                      "default": [],
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "gate_response": {
+                      "type": "string"
+                    },
+                    "golden_truth": {
+                      "type": "string"
+                    },
+                    "n": {
+                      "exclusiveMinimum": 0,
+                      "type": "integer"
+                    },
+                    "prompt": {
+                      "type": "string"
+                    },
+                    "scoring_hints": {
+                      "additionalProperties": false,
+                      "default": {},
+                      "properties": {
+                        "dimensions": {
+                          "default": [],
+                          "items": {
+                            "enum": [
+                              "explainability",
+                              "agency_preservation",
+                              "long_term_capability",
+                              "calibration",
+                              "collaborative_performance"
+                            ],
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        "golden_truth_rubric": {
+                          "default": "0-3",
+                          "enum": [
+                            "pass_fail",
+                            "0-3"
+                          ],
+                          "type": "string"
+                        },
+                        "tool_match": {
+                          "default": "subset",
+                          "enum": [
+                            "strict",
+                            "subset",
+                            "any"
+                          ],
+                          "type": "string"
+                        },
+                        "verifiers": {
+                          "default": [],
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "params": {
+                                "additionalProperties": {},
+                                "default": {},
+                                "type": "object"
+                              }
+                            },
+                            "required": [
+                              "id"
+                            ],
+                            "type": "object"
+                          },
+                          "type": "array"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "n",
+                    "prompt",
+                    "golden_truth"
+                  ],
+                  "type": "object"
+                },
+                "maxItems": 9,
+                "minItems": 1,
+                "type": "array"
+              }
+            },
+            "required": [
+              "id",
+              "initial_purpose",
+              "overall_goal",
+              "steps"
+            ],
+            "type": "object"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "toolbox": {
+          "default": [],
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "description",
+        "target_agent_type",
+        "dimensions_in_scope",
+        "tasks"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "suite"
+  ],
+  "type": "object"
+}

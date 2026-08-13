@@ -3,6 +3,7 @@ import type { AgentAdapter } from "./adapters/types.js";
 import { GATE_TOOLBOX, isGateTool } from "./gates.js";
 import { autoScoreStep, type GateCall } from "./scoring.js";
 import { runStepVerifiers } from "./verifiers/index.js";
+import { SCHEMA_VERSION } from "./schema.js";
 import type {
   AutoScore,
   EvalStep,
@@ -218,6 +219,7 @@ export async function runSuite(
   const ended_at = new Date().toISOString();
 
   return {
+    schema_version: SCHEMA_VERSION,
     suite_id: suite.suite.id,
     suite_version: suite.suite.version,
     run_id: randomUUID(),

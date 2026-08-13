@@ -55,6 +55,23 @@ jobs:
       - run: pnpm -r build
       - run: pnpm check:readme
 
+  doc-links:
+    name: doc-links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Pure markdown + git; no build needed. Catches relative links to paths that
+      # don't exist, and links that resolve locally but are untracked (they 404 in
+      # a clone). Nothing checked this before, which is how a docs set shipped
+      # eleven links to a `schemas/` directory that was never created.
+      - run: pnpm check:links
+
   goldens:
     name: goldens
     runs-on: ubuntu-latest
@@ -70,6 +87,24 @@ jobs:
       # Replays every recorded run through the live scoring path and diffs it
       # against its human labels. No network, no API key.
       - run: pnpm verify:goldens
+
+  schemas:
+    name: schemas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r build
+      # Regenerates the JSON Schema contract from the Zod source and fails if it differs
+      # from what is committed, then validates every committed artifact against it. A
+      # generated file that is committed but unverified is a second source of truth that
+      # lies — docs/SCHEMA.md promises the contract is readable without running the build.
+      - run: pnpm schemas:check
 
   api-surface:
     name: api-surface

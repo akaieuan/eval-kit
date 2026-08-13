@@ -1,0 +1,508 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "scored-run.schema.json",
+  "title": "eval-kit ScoredRun",
+  "description": "A Run with human StepScores attached. Input to `eval-kit diff`, the CI gate and the SFT/DPO exporters. See docs/SCHEMA.md.",
+  "x-eval-kit": {
+    "schema_version": "1.0.0",
+    "generated_from": "packages/core/src/schema.ts (ScoredRun)",
+    "generator": "scripts/gen-schemas.mjs",
+    "warning": "GENERATED FILE — do not edit by hand. Change the Zod schema and run `pnpm schemas:build`."
+  },
+  "additionalProperties": false,
+  "properties": {
+    "adapter": {
+      "additionalProperties": false,
+      "properties": {
+        "config": {
+          "additionalProperties": {},
+          "default": {},
+          "type": "object"
+        },
+        "model": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "model"
+      ],
+      "type": "object"
+    },
+    "ended_at": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "schema_version": {
+      "default": "1.0.0",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "type": "string"
+    },
+    "scoring_model": {
+      "default": "v1",
+      "enum": [
+        "v1",
+        "v2"
+      ],
+      "type": "string"
+    },
+    "started_at": {
+      "type": "string"
+    },
+    "suite_id": {
+      "type": "string"
+    },
+    "suite_version": {
+      "type": "string"
+    },
+    "task_results": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "step_results": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "agent_final_output": {
+                  "type": "string"
+                },
+                "agent_tool_calls": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "args": {},
+                      "result": {},
+                      "tool": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "tool"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "auto_score": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "distraction_acted": {
+                      "default": null,
+                      "type": [
+                        "boolean",
+                        "null"
+                      ]
+                    },
+                    "distraction_caught": {
+                      "type": [
+                        "boolean",
+                        "null"
+                      ]
+                    },
+                    "gates": {
+                      "additionalProperties": false,
+                      "default": {
+                        "discretionary": null,
+                        "mandated": null
+                      },
+                      "properties": {
+                        "discretionary": {
+                          "anyOf": [
+                            {
+                              "additionalProperties": false,
+                              "properties": {
+                                "asked": {
+                                  "type": "number"
+                                },
+                                "blockers": {
+                                  "type": "number"
+                                },
+                                "matched": {
+                                  "type": "number"
+                                },
+                                "unprompted": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": [
+                                "blockers",
+                                "asked",
+                                "matched",
+                                "unprompted"
+                              ],
+                              "type": "object"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "mandated": {
+                          "anyOf": [
+                            {
+                              "additionalProperties": false,
+                              "properties": {
+                                "honored": {
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "type": "array"
+                                },
+                                "pairings": {
+                                  "default": [],
+                                  "items": {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "approvalIndex": {
+                                        "minimum": 0,
+                                        "type": "integer"
+                                      },
+                                      "callIndex": {
+                                        "minimum": 0,
+                                        "type": "integer"
+                                      },
+                                      "gateId": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "callIndex",
+                                      "approvalIndex",
+                                      "gateId"
+                                    ],
+                                    "type": "object"
+                                  },
+                                  "type": "array"
+                                },
+                                "required": {
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "type": "array"
+                                },
+                                "violated": {
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "type": "array"
+                                }
+                              },
+                              "required": [
+                                "required",
+                                "honored",
+                                "violated"
+                              ],
+                              "type": "object"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "mandated",
+                        "discretionary"
+                      ],
+                      "type": "object"
+                    },
+                    "tool_match": {
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "const": "partial",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "verification": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "findings": {
+                              "items": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "message": {
+                                    "type": "string"
+                                  },
+                                  "severity": {
+                                    "enum": [
+                                      "error",
+                                      "warn"
+                                    ],
+                                    "type": "string"
+                                  },
+                                  "span": {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "end": {
+                                        "type": "number"
+                                      },
+                                      "start": {
+                                        "type": "number"
+                                      }
+                                    },
+                                    "required": [
+                                      "start",
+                                      "end"
+                                    ],
+                                    "type": "object"
+                                  },
+                                  "verifier": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "verifier",
+                                  "severity",
+                                  "message"
+                                ],
+                                "type": "object"
+                              },
+                              "type": "array"
+                            },
+                            "passed": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "passed",
+                            "findings"
+                          ],
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null
+                    }
+                  },
+                  "required": [
+                    "tool_match",
+                    "distraction_caught"
+                  ],
+                  "type": "object"
+                },
+                "gate_events": {
+                  "default": [],
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "kind": {
+                        "enum": [
+                          "approval_request",
+                          "question"
+                        ],
+                        "type": "string"
+                      },
+                      "reason": {
+                        "type": "string"
+                      },
+                      "resolution": {
+                        "enum": [
+                          "approved",
+                          "denied",
+                          "answered",
+                          "unresolved"
+                        ],
+                        "type": "string"
+                      },
+                      "surfaced": {
+                        "type": "string"
+                      },
+                      "target_tool": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "task_calls_before": {
+                        "anyOf": [
+                          {
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "default": null
+                      },
+                      "uses": {
+                        "anyOf": [
+                          {
+                            "exclusiveMinimum": 0,
+                            "type": "integer"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "default": null
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "reason",
+                      "surfaced",
+                      "target_tool",
+                      "resolution"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "latency_ms": {
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "score": {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "dimensions": {
+                          "additionalProperties": {
+                            "enum": [
+                              0,
+                              1,
+                              2,
+                              3
+                            ],
+                            "type": "number"
+                          },
+                          "default": {},
+                          "propertyNames": {
+                            "enum": [
+                              "explainability",
+                              "agency_preservation",
+                              "long_term_capability",
+                              "calibration",
+                              "collaborative_performance"
+                            ]
+                          },
+                          "type": "object"
+                        },
+                        "distraction_caught": {
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        },
+                        "golden_truth": {
+                          "anyOf": [
+                            {
+                              "enum": [
+                                0,
+                                1,
+                                2,
+                                3
+                              ],
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "pre_fill_confidence": {
+                          "maximum": 1,
+                          "minimum": 0,
+                          "type": "number"
+                        },
+                        "pre_filled": {
+                          "default": false,
+                          "type": "boolean"
+                        },
+                        "reviewed_at": {
+                          "type": "string"
+                        },
+                        "reviewer_id": {
+                          "type": "string"
+                        },
+                        "reviewer_notes": {
+                          "default": "",
+                          "type": "string"
+                        },
+                        "step_n": {
+                          "exclusiveMinimum": 0,
+                          "type": "integer"
+                        },
+                        "tool_match": {
+                          "anyOf": [
+                            {
+                              "type": "boolean"
+                            },
+                            {
+                              "const": "partial",
+                              "type": "string"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "step_n",
+                        "tool_match",
+                        "golden_truth",
+                        "distraction_caught",
+                        "reviewer_id",
+                        "reviewed_at"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "step_n": {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "step_n",
+                "agent_tool_calls",
+                "agent_final_output",
+                "latency_ms",
+                "auto_score",
+                "score"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "task_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "task_id",
+          "step_results"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "suite_id",
+    "suite_version",
+    "run_id",
+    "started_at",
+    "ended_at",
+    "adapter",
+    "task_results"
+  ],
+  "type": "object"
+}
